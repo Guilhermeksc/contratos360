@@ -1,0 +1,26 @@
+# Core
+Django>=5.1,<6.0
+gunicorn
+
+# Banco de dados
+psycopg2-binary
+django-environ
+
+# API REST
+djangorestframework
+django-cors-headers
+
+# Autenticação JWT
+djangorestframework-simplejwt
+
+# Segurança e utilitários
+django-filter
+whitenoise
+
+# Async compatibilidade (se desejar ASGI)
+uvicorn[standard]
+
+django-import-export
+
+pandas
+openpyxl

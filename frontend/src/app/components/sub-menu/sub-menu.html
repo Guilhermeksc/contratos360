@@ -1,0 +1,82 @@
+<div class="sub-menu-container" [class.collapsed]="isCollapsed">
+  
+  <!-- Botão discreto para expandir quando retraído -->
+  <div class="expand-button-container" *ngIf="isCollapsed">
+    <button 
+      mat-icon-button 
+      class="expand-button"
+      (click)="toggleCollapse()"
+      [attr.aria-label]="'Expandir submenu'">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
+  <!-- Conteúdo do sub-menu (visível apenas quando expandido) -->
+  <div class="sub-menu-content" [class.hidden]="isCollapsed">
+    
+    <!-- Cabeçalho do sub-menu -->
+    <div class="sub-menu-header" *ngIf="title">
+      <!-- Container para botões do cabeçalho -->
+      <div class="header-buttons">
+        <!-- Botão de voltar -->
+        <div class="back-button-container" *ngIf="showBackButton">
+          <button 
+            mat-button 
+            class="back-button"
+            (click)="onBackButtonClick()">
+            <mat-icon>arrow_back</mat-icon>
+            <span>{{ backButtonLabel }}</span>
+          </button>
+        </div>
+        
+        <!-- Botão para retrair -->
+        <button 
+          mat-icon-button 
+          class="collapse-button"
+          (click)="toggleCollapse()"
+          [attr.aria-label]="'Retrair submenu'">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <h3 class="sub-menu-title">{{ title }}</h3>
+      <h4 class="sub-menu-second-title">{{ secondtitle }}</h4>
+      <p class="sub-menu-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+    </div>
+
+    <!-- Lista de itens do sub-menu -->
+    <mat-nav-list class="sub-menu-list">
+    
+    <mat-list-item 
+      *ngFor="let item of items; let i = index"
+      class="sub-menu-item"
+      [class.active]="isSelected(item)"
+      (click)="selectItem(item)"
+    >
+      
+      <div class="sub-menu-item-content">
+        
+        <div class="sub-menu-item-text">
+          
+          
+          <span class="sub-menu-item-title">
+            {{ item.title }}
+          </span>
+          
+          <span 
+            class="sub-menu-item-description" 
+            *ngIf="item.description"
+          >
+            {{ item.description }}
+          </span>
+          
+        </div>
+        
+      </div>
+      
+    </mat-list-item>
+    
+  </mat-nav-list>
+    
+  </div>
+</div>

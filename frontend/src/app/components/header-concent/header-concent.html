@@ -1,0 +1,35 @@
+<header class="header-generic-content" role="banner">
+  <div class="header-left">
+    <div class="breadcrumb">
+      <a aria-label="Módulo pai">{{ moduleEmoji ? (moduleEmoji + ' ') : '' }}{{ moduleLabel || 'Módulo' }}</a>
+    </div>
+
+    <div *ngIf="title" class="page-title">
+      <h2>{{ title }}</h2>
+    </div>
+  </div>
+
+  <!-- botão de menu visível apenas em telas pequenas -->
+  <button class="menu-toggle" aria-label="Abrir menu" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen">☰</button>
+
+  <!-- navegação para desktop -->
+  <nav class="navigation-buttons desktop-nav" aria-label="Navegação">
+    <button *ngIf="showBibliografia" class="btn btn-stroked" (click)="navigateTo(getPath('bibliografia'))" aria-label="Voltar para Bibliografia">⬅️ Voltar à Bibliografia</button>
+    <button *ngIf="showFlashcards" class="btn btn-stroked" (click)="navigateTo(getPath('flash-cards'))">📇 Flashcards</button>
+    <button *ngIf="showMedia" class="btn btn-stroked" (click)="navigateTo(getPath('media'))">▶️ Media</button>
+    <button *ngIf="showPerguntas" class="btn btn-stroked" (click)="navigateTo(getPath('perguntas'))">❓ Perguntas</button>
+    <button *ngIf="showConceitos" class="btn btn-stroked" (click)="navigateTo(getPath('conceitos'))">🧭 Conceitos</button>
+  </nav>
+
+  <!-- dropdown discreto para mobile -->
+  <div class="mobile-dropdown" *ngIf="isMenuOpen" role="menu" aria-label="Menu" (click)="$event.stopPropagation()">
+    <div *ngIf="title" class="mobile-title">
+      <h2>{{ title }}</h2>
+    </div>
+    <button *ngIf="showBibliografia" class="btn btn-dropdown" (click)="navigateTo(getPath('bibliografia'))">⬅️ Voltar à Bibliografia</button>
+    <button *ngIf="showFlashcards" class="btn btn-dropdown" (click)="navigateTo(getPath('flash-cards'))">📇 Flashcards</button>
+    <button *ngIf="showMedia" class="btn btn-dropdown" (click)="navigateTo(getPath('media'))">▶️ Media</button>
+    <button *ngIf="showPerguntas" class="btn btn-dropdown" (click)="navigateTo(getPath('perguntas'))">❓ Perguntas</button>
+    <button *ngIf="showConceitos" class="btn btn-dropdown" (click)="navigateTo(getPath('conceitos'))">🧭 Conceitos</button>
+  </div>
+</header>

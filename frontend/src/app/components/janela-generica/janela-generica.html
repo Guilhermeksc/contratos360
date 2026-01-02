@@ -1,0 +1,54 @@
+<div 
+  class="janela-overlay" 
+  *ngIf="mostrar"
+  (click)="fecharAoClicarOverlay($event)"
+  [class.loading]="isLoading">
+  
+  <div 
+    class="janela-content"
+    [style.max-width]="maxWidth"
+    (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="janela-header">
+      <h2 class="janela-titulo">{{ titulo }}</h2>
+      <button 
+        *ngIf="mostrarBotaoFechar"
+        class="janela-close"
+        (click)="fecharJanela()"
+        [disabled]="isLoading"
+        aria-label="Fechar">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <!-- Body -->
+    <div class="janela-body">
+      <!-- Spinner de carregamento -->
+      <div *ngIf="isLoading" class="janela-loading-overlay">
+        <div class="janela-spinner-container">
+          <div class="janela-spinner"></div>
+          <p class="janela-spinner-message">Processando...</p>
+        </div>
+      </div>
+      <div [class.loading-content]="isLoading">
+        <ng-content></ng-content>
+      </div>
+    </div>
+    
+    <!-- Footer com Botões -->
+    <div class="janela-footer" *ngIf="mostrarFooter && botoes.length > 0">
+      <button
+        *ngFor="let botao of botoes"
+        class="janela-botao"
+        [class.primary]="botao.tipo === 'primary' || !botao.tipo"
+        [class.secondary]="botao.tipo === 'secondary'"
+        [class.danger]="botao.tipo === 'danger'"
+        [class.success]="botao.tipo === 'success'"
+        [disabled]="botao.disabled || isLoading"
+        (click)="executarAcao(botao)">
+        {{ botao.texto }}
+      </button>
+    </div>
+  </div>
+</div>

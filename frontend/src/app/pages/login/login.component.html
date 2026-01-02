@@ -1,0 +1,89 @@
+<div class="login-container">
+  <!-- Gradient overlays -->
+  <div class="gradient-overlay gradient-overlay--top-left"></div>
+  <div class="gradient-overlay gradient-overlay--bottom-right"></div>
+  
+  <div class="login-wrapper">
+    <mat-card class="login-card" appearance="outlined">
+      <mat-card-content>
+        <!-- Header -->
+        <div class="login-header">
+          <span class="login-title">CEMOS</span>
+          <span class="login-subtitle">2028</span>
+        </div>
+        <p class="login-description">Curso de Estado-Maior para Oficiais Superiores</p>
+        
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <!-- Username Field -->
+          <mat-form-field class="form-field">
+            <mat-label>Usuário</mat-label>
+            <input 
+              matInput 
+              formControlName="username" 
+              placeholder="Digite seu usuário"
+              [class.mat-input-invalid]="username?.invalid && username?.touched">
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="username?.errors?.['required'] && username?.touched">
+              Usuário é obrigatório
+            </mat-error>
+            <mat-error *ngIf="username?.errors?.['minlength'] && username?.touched">
+              Usuário deve ter pelo menos 3 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field class="form-field">
+            <mat-label>Senha</mat-label>
+            <input 
+              matInput 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password" 
+              placeholder="Digite sua senha"
+              [class.mat-input-invalid]="password?.invalid && password?.touched">
+            <mat-icon 
+              matSuffix 
+              (click)="togglePasswordVisibility()" 
+              class="password-toggle">
+              {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+            <mat-error *ngIf="password?.errors?.['required'] && password?.touched">
+              Senha é obrigatória
+            </mat-error>
+            <mat-error *ngIf="password?.errors?.['minlength'] && password?.touched">
+              Senha deve ter pelo menos 6 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Login Button -->
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="login-button" 
+            type="submit"
+            [disabled]="isLoading || loginForm.invalid">
+            
+            <span *ngIf="!isLoading">Entrar</span>
+            <span *ngIf="isLoading">Entrando...</span>
+            
+            <mat-icon 
+              *ngIf="!isLoading" 
+              fontIcon="arrow_forward" 
+              class="login-button__icon">
+            </mat-icon>
+            
+            <mat-icon 
+              *ngIf="isLoading" 
+              class="login-button__icon login-button__icon--loading">
+              refresh
+            </mat-icon>
+          </button>
+        </form>
+      </mat-card-content>
+      
+      <mat-card-actions>
+        <p class="developer-credit">Desenvolvido por CC (IM) Siqueira Campos</p>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

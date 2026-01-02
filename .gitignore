@@ -1,0 +1,63 @@
+# Arquivo .gitignore para projetos Python
+
+# Ambientes Virtuais
+venv/
+env/
+virtual/
+.venv/
+.env/
+.env
+
+
+# Arquivos de Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+**/*.pyc
+**/*.pyo
+**/*.pyd
+__pycache__/
+*.py[cod]
+**/__pycache__/
+**/*.py[cod]
+
+
+# Arquivos de Banco de Dados Locais
+database/
+*.db
+*.sqlite
+*.sqlite3
+config.json
+testes-locais/
+DB_offline/
+*.xml
+*.xlsx
+*.csv
+
+# Arquivos de configuração de IDEs
+.vscode/
+.idea/
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
+dist/
+
+# Aquivos Json
+teste.json
+jsons/
+
+#Imagens
+*.gif
+gifs/
+imgs/
+
+# I don't know about this past -> /config
+*.log
+app.py
+m_requirements.txt
+dist-linux/
+*.spec
+LICENSE.txt
+testes.py

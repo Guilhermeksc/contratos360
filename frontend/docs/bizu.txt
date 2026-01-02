@@ -1,0 +1,13 @@
+https://github.com/Guilhermeksc/360_novo/blob/mainnovo/src/modules/dispensa_eletronica/models.py
+
+✅ CONCLUÍDO - Layout simplificado implementado:
+- Prova carregada automaticamente ao iniciar
+- Todas as questões na mesma página (sem anterior/próximo)
+- Botão "Responder" em cada questão com feedback dinâmico
+- Permite alterar resposta após submissão (botão muda para "Atualizar Resposta")
+- Justificativa mostra resposta correta formatada:
+  * V/F: mostra "VERDADEIRO" ou "FALSO"
+  * Múltipla escolha: mostra letra e texto da alternativa
+  * Correlação: mostra todas as correlações corretas (1=A, 2=B, etc.)
+
+

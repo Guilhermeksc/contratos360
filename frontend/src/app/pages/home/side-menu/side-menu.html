@@ -1,0 +1,127 @@
+
+<!-- Container agrupador -->
+<div class="top-section-wrapper">
+  
+  <!-- Informação do usuário e botões - Apenas para desktop (sidebar) -->
+  <div class="user-actions-container" *ngIf="!isTopMenuMode && currentUsername()">
+    <button 
+      mat-flat-button 
+      class="logout-button"
+      (click)="logout()"
+      aria-label="Fazer logout">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
+    </button>
+  </div>
+
+
+<!-- Imagem do Brasil e Header - Apenas para desktop (sidebar) -->
+<div class="header-link" *ngIf="!isTopMenuMode" (click)="navigateHome()" tabindex="0" role="link" aria-label="Ir para Home">
+  <div class="brazil-image-container">
+    <img 
+      src="/assets/img/svg/brazil.png" 
+      alt="Bandeira do Brasil" 
+      class="brazil-image"
+      aria-hidden="true">
+  </div>
+  <div class="header-container">
+    <span class="header-title">CEMOS</span>
+    <span class="header-subtitle">2028</span>
+  </div>
+</div>
+
+</div>
+
+<div class="sidebar-content-wrapper">
+  <mat-nav-list class="nav-list">
+    <div class="nav-section" *ngFor="let item of menuItems(); let i = index">
+    <!-- Cabeçalho da seção clicável -->
+    <div 
+      class="nav-section-header"
+      [class.expanded]="item.expanded"
+      (click)="toggleSection(i)"
+      [attr.aria-expanded]="item.expanded"
+      [attr.aria-label]="'Seção ' + item.title"
+      tabindex="0"
+      role="button"
+    >
+      <mat-icon class="nav-section-expand-icon" aria-hidden="true">
+        {{ item.expanded ? 'expand_less' : 'expand_more' }}
+      </mat-icon>
+      <mat-icon class="nav-section-icon" aria-hidden="true">{{ item.icon }}</mat-icon>
+      <span class="nav-section-title">{{ item.title }}</span>
+    </div>
+
+    <!-- Itens da seção (colapsáveis) -->
+    <div 
+      class="nav-section-content"
+      [@expandCollapse]="item.expanded ? 'expanded' : 'collapsed'"
+    >
+      <ng-container *ngFor="let child of item.children; let childIndex = index">
+        <!-- Se é um objeto com subfilhos (SubMenuItem) -->
+        <div *ngIf="typeof child === 'object' && child.children" class="nav-subsection">
+          <!-- Cabeçalho da subseção -->
+          <div
+            class="nav-subsection-header"
+            [class.expanded]="child.expanded || false"
+            [class.active]="isItemActive(item.title, child.title)"
+            (click)="onSubSectionClick(item.title, child.title, i, childIndex)"
+            [attr.aria-expanded]="child.expanded || false"
+            [attr.aria-label]="'Subseção ' + child.title"
+            tabindex="0"
+            role="button"
+          >
+            <mat-icon aria-hidden="true"> 
+              {{ (child.expanded || false) ? 'expand_less' : 'expand_more' }} 
+            </mat-icon>
+            <span>{{ child.title }}</span>
+          </div>
+          
+          <!-- Itens da subseção -->
+          <div 
+            class="nav-subsection-content"
+            [@expandCollapse]="(child.expanded || false) ? 'expanded' : 'collapsed'"
+          >
+            <div
+              *ngFor="let subChild of child.children"
+              class="nav-subitem"
+              [class.active]="isItemActive(item.title, child.title, typeof subChild === 'string' ? subChild : subChild.title)"
+              (click)="navigate(item.title, child.title, typeof subChild === 'string' ? subChild : subChild.title)"
+              [attr.aria-label]="'Item ' + (typeof subChild === 'string' ? subChild : subChild.title)"
+              tabindex="0"
+              role="menuitem"
+            >
+              <span>{{ typeof subChild === 'string' ? subChild : subChild.title }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Se é uma string simples -->
+        <div
+          *ngIf="typeof child === 'string'"
+          class="nav-item-simple"
+          [class.active]="isItemActive(item.title, child)"
+          (click)="navigate(item.title, child)"
+          [attr.aria-label]="'Item ' + child"
+          tabindex="0"
+          role="menuitem"
+        >
+          <span>{{ child }}</span>
+        </div>
+        
+        <!-- Se é um objeto sem subfilhos -->
+        <div
+          *ngIf="typeof child === 'object' && !child.children"
+          class="nav-item-object"
+          [class.active]="isItemActive(item.title, child.title)"
+          (click)="navigate(item.title, child.title)"
+          [attr.aria-label]="'Item ' + child.title"
+          tabindex="0"
+          role="menuitem"
+        >
+          <span>{{ child.title }}</span>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  </mat-nav-list>

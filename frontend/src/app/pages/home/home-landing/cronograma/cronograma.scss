@@ -1,0 +1,210 @@
+.calendar-section {
+  @media (max-width: 600px) {
+    .navigation-buttons {
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+
+      button[mat-stroked-button] {
+        min-width: 0;
+        width: 100%;
+        font-size: 15px;
+        min-height: 38px;
+        padding: 8px 0;
+        border-radius: 5px;
+
+        mat-icon {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+  .calendar-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    mat-card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .calendar-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+
+      mat-card-title {
+        color: white;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin: 0;
+      }
+    }
+
+    mat-card-content {
+      padding: 1.5rem;
+
+      .calendar-description {
+        text-align: center;
+        color: #616161;
+        font-size: 1rem;
+        margin: 0 0 1.5rem 0;
+        font-style: italic;
+      }
+
+      .calendar-table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        @media (max-width: 768px) {
+          margin: 0 -1rem 2rem -1rem;
+          border-radius: 0;
+        }
+      }
+
+      .calendar-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        font-size: 0.95rem;
+
+        @media (max-width: 768px) {
+          font-size: 0.85rem;
+        }
+
+        thead {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+
+          th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+
+            @media (max-width: 768px) {
+              padding: 0.75rem 0.5rem;
+              font-size: 0.8rem;
+            }
+          }
+        }
+
+        tbody {
+          tr {
+            transition: background-color 0.2s ease;
+
+            &:hover {
+              background-color: #f5f5f5;
+            }
+
+            &.passada-1 {
+              border-left: 4px solid #667eea;
+            }
+
+            &.passada-2 {
+              border-left: 4px solid #43e97b;
+            }
+
+            &.passada-3 {
+              border-left: 4px solid #fa709a;
+            }
+
+            &.last-row {
+              border-bottom: 2px solid #e0e0e0;
+            }
+          }
+
+          td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            color: #424242;
+
+            @media (max-width: 768px) {
+              padding: 0.625rem 0.5rem;
+            }
+
+            &.passada-cell {
+              font-weight: 700;
+              font-size: 1.2rem;
+              text-align: center;
+              vertical-align: middle;
+              color: #1a237e;
+              background-color: #f8f9fa;
+
+              @media (max-width: 768px) {
+                font-size: 1rem;
+              }
+            }
+          }
+
+          tr:nth-child(odd):not(.last-row) {
+            background-color: #fafafa;
+          }
+        }
+      }
+
+      .calendar-legend {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+
+        @media (max-width: 768px) {
+          gap: 1rem;
+          padding: 1rem;
+        }
+
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          @media (max-width: 480px) {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .legend-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: white;
+            white-space: nowrap;
+
+            &.passada-1-badge {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            &.passada-2-badge {
+              background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            }
+
+            &.passada-3-badge {
+              background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            }
+          }
+
+          .legend-text {
+            color: #616161;
+            font-size: 0.9rem;
+
+            @media (max-width: 480px) {
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
+  }
+}

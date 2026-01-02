@@ -1,0 +1,1 @@
+default_app_config = 'django_licitacao360.apps.core.auth.apps.AuthConfig'

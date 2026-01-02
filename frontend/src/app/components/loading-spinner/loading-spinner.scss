@@ -1,0 +1,26 @@
+.loading-spinner-container {
+  text-align: center;
+  padding: 60px 20px;
+  border: none;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--geopolitica-light-gray);
+  border-top: 4px solid var(--geopolitica-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner-container p {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}

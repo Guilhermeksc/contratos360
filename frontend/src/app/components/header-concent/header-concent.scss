@@ -1,0 +1,116 @@
+.header-generic-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+  position: relative; /* garantir que o dropdown seja posicionado relativo ao header */
+  overflow: visible; /* permitir que o dropdown apareça fora do fluxo sem ser cortado */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.breadcrumb a {
+  color: #444;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.page-title h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navigation-buttons .btn {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.menu-toggle {
+  display: none; /* visível apenas no mobile */
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+}
+
+.mobile-dropdown {
+  display: none; /* controlado por *ngIf */
+  pointer-events: auto; /* garantir que o dropdown receba cliques */
+}
+
+.btn-dropdown {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.9rem;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+}
+
+@media (max-width: 720px) {
+  .header-generic-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* no mobile escondemos a navegação horizontal e mostramos o botão de menu */
+  .desktop-nav {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: inline-block;
+    align-self: flex-end;
+    margin-top: 0.4rem;
+  }
+
+  .page-title {
+    display: none; /* esconder título principal no mobile; título aparecerá dentro do dropdown */
+  }
+
+  .mobile-dropdown {
+    display: block;
+    position: absolute;
+    right: 1rem;
+    top: calc(100% + 0.5rem);
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border-radius: 6px;
+    z-index: 9999; /* garantir sobreposição sobre outros elementos */
+    min-width: 200px;
+    max-width: calc(100% - 2rem);
+    overflow: hidden;
+  }
+
+  .mobile-title {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    background: #fafafa;
+  }
+
+  .mobile-title h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #222;
+  }
+
+  .mobile-dropdown .btn-dropdown:hover {
+    background: rgba(0,0,0,0.03);
+  }
+}
