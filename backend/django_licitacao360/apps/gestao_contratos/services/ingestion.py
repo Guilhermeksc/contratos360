@@ -87,12 +87,37 @@ class ComprasNetIngestionService:
         return value
     
     def _parse_decimal(self, value: Optional[str]) -> Optional[Decimal]:
-        """Converte string numérica para Decimal"""
+        """Converte string numérica para Decimal
+        
+        Suporta formatos:
+        - "1.000.000,50" (vírgula como separador decimal, ponto como separador de milhar)
+        - "1000000.50" (ponto como separador decimal)
+        - "1000000,50" (vírgula como separador decimal)
+        - 1000000.50 (número float)
+        """
         if not value:
             return None
         try:
-            # Remove caracteres não numéricos exceto ponto e vírgula
-            cleaned = str(value).replace(',', '.')
+            value_str = str(value).strip()
+            
+            # Se for número, converte diretamente
+            if isinstance(value, (int, float)):
+                return Decimal(str(value))
+            
+            # Se contém vírgula, assume formato brasileiro (1.000.000,50)
+            if ',' in value_str:
+                # Remove pontos (separadores de milhar) e substitui vírgula por ponto
+                cleaned = value_str.replace('.', '').replace(',', '.')
+            else:
+                # Se não tem vírgula, pode ter ponto como separador decimal ou de milhar
+                # Se tem mais de um ponto, assume que são separadores de milhar
+                if value_str.count('.') > 1:
+                    # Remove todos os pontos (separadores de milhar)
+                    cleaned = value_str.replace('.', '')
+                else:
+                    # Um único ponto é separador decimal
+                    cleaned = value_str
+            
             return Decimal(cleaned)
         except (InvalidOperation, ValueError, TypeError):
             return None

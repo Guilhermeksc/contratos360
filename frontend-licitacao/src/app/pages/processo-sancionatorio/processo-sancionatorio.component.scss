@@ -1,0 +1,16 @@
+@use '../../styles/variables' as *;
+
+.processo-sancionatorio-container {
+  padding: $spacing-xxl;
+  color: $text-primary;
+  
+  h1 {
+    color: $text-primary;
+    margin-bottom: $spacing-lg;
+  }
+  
+  p {
+    color: $text-secondary;
+  }
+}
+

@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "0.0.0.0",
-    "195.200.1.112",
+    "72.60.52.231",
     "licitacao360.com",
     "www.licitacao360.com",
 ]
@@ -85,7 +85,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8088",         # Ambiente Angular local alternativo
     "http://127.0.0.1:4200",
     "http://127.0.0.1:8088",
-    "http://195.200.1.112",          # IP direto
+    "http://72.60.52.231",          # IP direto
     "http://licitacao360.com",         # Domínio sem HTTPS
     "https://licitacao360.com",        # Domínio com HTTPS
     "https://www.licitacao360.com",    # Domínio com HTTPS (www)
@@ -96,8 +96,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8088",
     "http://127.0.0.1:4200",
     "http://127.0.0.1:8088",
-    "http://195.200.1.112",
-    "https://195.200.1.112",
+    "http://72.60.52.231",
+    "https://72.60.52.231",
     "http://licitacao360.com",         # Domínio sem HTTPS
     "https://licitacao360.com",        # Domínio com HTTPS
     "https://www.licitacao360.com",    # Domínio com HTTPS (www) 

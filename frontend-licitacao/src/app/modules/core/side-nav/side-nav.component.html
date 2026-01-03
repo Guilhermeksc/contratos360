@@ -1,8 +1,23 @@
 <nav class="side-nav">
+  <!-- Logout Button -->
+  <div class="logout-container">
+    <button class="logout-button" (click)="logout()" title="Sair">
+      <mat-icon class="logout-icon">logout</mat-icon>
+    </button>
+  </div>
+
+  <!-- Brazil Image -->
+  <div class="brazil-image-container">
+    <img src="/assets/img/svg/brazil.png" alt="Brasil" class="brazil-image">
+  </div>
+
+  <!-- Navigation Items -->
   <ul class="nav-list">
-    <li *ngFor="let item of navItems" 
+    <li *ngFor="let item of navItems(); let i = index" 
         class="nav-item" 
         [class.active]="isActive(item.route)"
+        [class.module-nav]="moduleNavStartIndex() !== -1 && i >= moduleNavStartIndex()"
+        [class.first-module-nav]="moduleNavStartIndex() !== -1 && i === moduleNavStartIndex()"
         (click)="navigate(item.route)"
         [title]="item.tooltip">
       <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>

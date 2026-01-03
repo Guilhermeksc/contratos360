@@ -13,12 +13,12 @@ def create_default_admin(sender, **kwargs):
         Usuario = apps.get_model('users', 'Usuario')
         
         # Verifica se já existe um admin
-        if not Usuario.objects.filter(perfil='admin').exists():
-            # Cria o usuário admin padrão
+        if not Usuario.objects.filter(username='admin').exists():
+            # Cria o usuário admin padrão com nível 3 e acesso a todos os módulos
             admin_user = Usuario.objects.create_user(
                 username='admin',
                 password='@cemos2028',  # Senha padrão - deve ser alterada após primeiro login
-                perfil='admin'
+                nivel_acesso=3  # Nível 3 tem acesso automático a todos os módulos
             )
             admin_user.is_staff = True
             admin_user.is_superuser = True
@@ -36,7 +36,7 @@ def create_default_admin(sender, **kwargs):
             anderson_user = Usuario.objects.create_user(
                 username='anderson',
                 password='@cemos2028',  # Senha padrão
-                perfil='user'
+                nivel_acesso=1  # Nível 1 por padrão
             )
             # Não é staff nem superuser por padrão
             anderson_user.save()
@@ -52,7 +52,7 @@ def create_default_admin(sender, **kwargs):
             kopa_user = Usuario.objects.create_user(
                 username='kopa',
                 password='@cemos2028',  # Senha padrão
-                perfil='user'
+                nivel_acesso=1  # Nível 1 por padrão
             )
             # Não é staff nem superuser por padrão
             kopa_user.save()
@@ -68,7 +68,7 @@ def create_default_admin(sender, **kwargs):
             jornes_user = Usuario.objects.create_user(
                 username='jornes',
                 password='@cemos2028',  # Senha padrão
-                perfil='user'
+                nivel_acesso=1  # Nível 1 por padrão
             )
             # Não é staff nem superuser por padrão
             jornes_user.save()
@@ -85,7 +85,7 @@ def create_default_admin(sender, **kwargs):
             adam_user = Usuario.objects.create_user(
                 username='adam',
                 password='@cemos2027',  # Senha padrão
-                perfil='user'
+                nivel_acesso=1  # Nível 1 por padrão
             )
             # Não é staff nem superuser por padrão
             adam_user.save()
@@ -117,7 +117,7 @@ def create_default_admin(sender, **kwargs):
                 novo_user = Usuario.objects.create_user(
                     username=username,
                     password='@cemos2027',  # Senha padrão
-                    perfil='user'
+                    nivel_acesso=1  # Nível 1 por padrão
                 )
                 # Não é staff nem superuser por padrão
                 novo_user.save()

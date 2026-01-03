@@ -1,0 +1,16 @@
+<div class="home-landing-container">
+  <div class="landing-header">
+    <h1 class="landing-title">Licitação 360</h1>
+    <p class="landing-subtitle">Sistema de Gestão de Licitações</p>
+  </div>
+
+  <div class="features-grid">
+    <app-feature-card
+      *ngFor="let feature of features"
+      [title]="feature.title"
+      [iconPath]="feature.iconPath"
+      [route]="feature.route">
+    </app-feature-card>
+  </div>
+</div>
+

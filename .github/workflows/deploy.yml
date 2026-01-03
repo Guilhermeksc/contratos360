@@ -1,0 +1,42 @@
+name: 🚀 Deploy to Hostinger Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🔑 Configurar acesso SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🧩 Adicionar host ao known_hosts
+        run: |
+          ssh-keyscan -H 72.60.52.231 >> ~/.ssh/known_hosts
+
+      - name: 🚀 Executar comandos no servidor
+        run: |
+          ssh root@72.60.52.231 << 'EOF'
+            cd ~/licitacao360
+            echo "📦 Atualizando repositório..."
+            git pull origin main
+
+            echo "🏗️ Build do Licitação 360..."
+            cd frontend-licitacao
+            npm install --legacy-peer-deps
+            npm run build:prod
+
+            echo "🔁 Reiniciando containers Docker..."
+            cd ..
+            docker compose restart backend nginx
+
+            echo "✅ Deploy concluído com sucesso!"
+          EOF

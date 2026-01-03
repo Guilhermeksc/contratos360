@@ -1,0 +1,10 @@
+<mat-card class="feature-card" (click)="navigate()">
+  <div class="card-content">
+    <div class="icon-container">
+      <img [src]="iconPath" [alt]="title" class="feature-icon" *ngIf="iconPath">
+      <mat-icon class="feature-icon-fallback" *ngIf="!iconPath">apps</mat-icon>
+    </div>
+    <h3 class="card-title">{{ title }}</h3>
+  </div>
+</mat-card>
+

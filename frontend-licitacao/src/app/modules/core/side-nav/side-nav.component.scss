@@ -12,6 +12,8 @@
   z-index: $z-fixed;
   overflow-y: auto;
   @include scrollbar;
+  display: flex;
+  flex-direction: column;
   
   @include respond-to(md) {
     transform: translateX(-100%);
@@ -23,6 +25,61 @@
   }
 }
 
+.logout-container {
+  padding: $spacing-lg;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: $border-width solid $border-color;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-base;
+  border-radius: $border-radius-md;
+  
+  &:hover {
+    background-color: $bg-hover;
+    
+    .logout-icon {
+      color: $red;
+    }
+  }
+  
+  &:active {
+    background-color: $bg-tertiary;
+  }
+}
+
+.logout-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: $text-secondary;
+  transition: color $transition-base;
+}
+
+.brazil-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: $border-width solid $border-color;
+}
+
+.brazil-image {
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+}
+
 .nav-list {
   list-style: none;
   padding: $spacing-lg 0;
@@ -30,6 +87,28 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
+  flex: 1;
+}
+
+.nav-item.module-nav {
+  margin-top: $spacing-xs;
+}
+
+.nav-item.first-module-nav {
+  margin-top: $spacing-lg;
+  border-top: 1px solid $border-color;
+  padding-top: $spacing-sm;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 1px;
+    background-color: $border-color;
+    opacity: 0.3;
+  }
 }
 
 .nav-item {

@@ -9,14 +9,20 @@ export const routes: Routes = [
     canActivate: [loginGuard]
   },
   {
+    path: 'home',
+    loadComponent: () => import('./pages/home-landing/home-landing.component').then((m) => m.HomeLandingComponent),
+    canActivate: [authGuard],
+    data: { breadcrumb: 'Home' }
+  },
+  {
     path: '',
     loadComponent: () => import('./modules/core/shell-layout/shell-layout.component').then((m) => m.ShellLayoutComponent),
     canActivate: [authGuard],
     children: [
       {
-        path: '',
-        loadComponent: () => import('./modules/core/home/home.component').then((m) => m.HomeComponent),
-        data: { breadcrumb: 'Home' }
+        path: 'planejamento',
+        loadComponent: () => import('./pages/planejamento/planejamento.component').then((m) => m.PlanejamentoComponent),
+        data: { breadcrumb: 'Planejamento' }
       },
       {
         path: 'contratos',
@@ -49,6 +55,26 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'gerata',
+        loadComponent: () => import('./pages/gerata/gerata.component').then((m) => m.GerataComponent),
+        data: { breadcrumb: 'GerAta' }
+      },
+      {
+        path: 'empresas-sancionadas',
+        loadComponent: () => import('./pages/empresas-sancionadas/empresas-sancionadas.component').then((m) => m.EmpresasSancionadasComponent),
+        data: { breadcrumb: 'Empresas Sancionadas' }
+      },
+      {
+        path: 'processo-sancionatorio',
+        loadComponent: () => import('./pages/processo-sancionatorio/processo-sancionatorio.component').then((m) => m.ProcessoSancionatorioComponent),
+        data: { breadcrumb: 'Processo Sancionatório' }
+      },
+      {
+        path: 'controle-interno',
+        loadComponent: () => import('./pages/controle-interno/controle-interno.component').then((m) => m.ControleInternoComponent),
+        data: { breadcrumb: 'Controle Interno' }
+      },
+      {
         path: 'dashboard',
         loadComponent: () => import('./modules/features/contratos/pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
         data: { breadcrumb: 'Dashboard' }
@@ -59,8 +85,7 @@ export const routes: Routes = [
         loadComponent: () => import('./modules/core/home/home.component').then((m) => m.HomeComponent),
         data: { breadcrumb: 'Atas' }
       }
-      // Rotas antigas removidas - módulos não existem mais
     ]
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '/home' }
 ];
