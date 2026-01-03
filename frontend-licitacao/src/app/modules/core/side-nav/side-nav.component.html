@@ -1,0 +1,12 @@
+<nav class="side-nav">
+  <ul class="nav-list">
+    <li *ngFor="let item of navItems" 
+        class="nav-item" 
+        [class.active]="isActive(item.route)"
+        (click)="navigate(item.route)"
+        [title]="item.tooltip">
+      <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+    </li>
+  </ul>
+</nav>
+

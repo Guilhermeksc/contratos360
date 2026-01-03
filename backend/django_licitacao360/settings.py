@@ -46,13 +46,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'django_filters',
     'import_export',
     # Core
     'django_licitacao360.apps.core.auth',
     'django_licitacao360.apps.core.users',
-    # Módulos
-    'django_licitacao360.apps.perguntas',
-    'django_licitacao360.apps.informacoes',
+    # Gestão de Contratos
+    'django_licitacao360.apps.gestao_contratos',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +67,18 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",         # Ambiente Angular local
@@ -119,6 +131,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
         # Para produção, usar: 'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100

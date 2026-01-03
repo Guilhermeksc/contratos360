@@ -1,0 +1,287 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.preview-table-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #000000; // Preto para o fundo do conteúdo interno
+}
+
+.table-wrapper {
+  width: 100%;
+  height: 100%;
+  max-height: 600px; // Altura máxima para forçar scroll
+  overflow-y: auto;
+  overflow-x: auto;
+  @include scrollbar;
+  background-color: #000000; // Preto para o fundo do conteúdo interno
+  
+  // Garante que a tabela tenha largura mínima
+  min-width: 100%;
+}
+
+.preview-table {
+  @include table;
+  width: 100%;
+  min-width: fit-content; // Permite que a tabela se ajuste ao conteúdo
+  font-size: $font-size-sm;
+  background-color: #000000; // Preto para o fundo do conteúdo interno
+  table-layout: auto; // Permite redimensionamento automático das colunas
+  
+  th {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: $bg-tertiary;
+    color: $text-primary;
+    font-weight: $font-weight-semibold;
+    vertical-align: middle;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid $border-color-hover;
+    text-align: center; // Centraliza o conteúdo do header
+  }
+  
+  td {
+    padding: $spacing-sm $spacing-md;
+    vertical-align: middle;
+    background-color: #000000; // Preto para o fundo das células
+    text-align: center; // Centraliza o conteúdo das células
+  }
+  
+  tbody {
+    background-color: #000000; // Preto para o fundo do tbody
+  }
+  
+  thead {
+    background-color: $bg-tertiary;
+  }
+}
+
+.status-cell {
+  text-align: center;
+  vertical-align: middle;
+  line-height: normal;
+  
+  ::ng-deep app-status-badge {
+    display: inline-block;
+    vertical-align: middle;
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0;
+    }
+  }
+}
+
+.cell-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  justify-content: center;
+  align-items: center; // Centraliza horizontalmente
+  text-align: center; // Centraliza o texto
+  
+  .cell-main {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    line-height: 1.3;
+    text-align: center;
+  }
+  
+  .objeto-text {
+    font-size: $font-size-xs; // Fonte menor
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; // Permite apenas uma quebra de linha (máximo 2 linhas)
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  
+  .cell-subtitle {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    line-height: 1.2;
+    text-align: center;
+  }
+  
+  .cell-subtitle-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center; // Centraliza horizontalmente
+    gap: $spacing-xs;
+    width: 100%;
+    
+    .cell-subtitle {
+      flex: 1;
+      min-width: 0; // Permite truncamento
+      text-align: center;
+    }
+  }
+}
+
+.clickable-text {
+  cursor: pointer;
+  transition: color $transition-base;
+  user-select: none;
+  
+  &:hover {
+    color: $blue;
+    text-decoration: underline;
+  }
+  
+  &:active {
+    color: $blue;
+  }
+}
+
+.preview-row {
+  cursor: pointer;
+  transition: background-color $transition-base;
+  
+  &:hover {
+    background-color: $bg-hover;
+  }
+  
+  &:active {
+    background-color: $bg-tertiary;
+  }
+}
+
+// Cores vibrantes para a coluna Dias
+td.dias-blue {
+  color: #00BFFF !important; // Azul vibrante (DodgerBlue)
+  
+  span {
+    color: #00BFFF !important;
+  }
+}
+
+td.dias-green {
+  color: #00FF7F !important; // Verde vibrante (SpringGreen)
+  
+  span {
+    color: #00FF7F !important;
+  }
+}
+
+td.dias-yellow {
+  color: #FFD700 !important; // Amarelo vibrante (Gold)
+  
+  span {
+    color: #FFD700 !important;
+  }
+}
+
+td.dias-orange {
+  color: #FF8C00 !important; // Laranja vibrante (DarkOrange)
+  
+  span {
+    color: #FF8C00 !important;
+  }
+}
+
+td.dias-red {
+  color: #FF4500 !important; // Vermelho vibrante (OrangeRed)
+  
+  span {
+    color: #FF4500 !important;
+  }
+}
+
+td.dias-gray {
+  color: #808080 !important; // Cinza vibrante
+  
+  span {
+    color: #808080 !important;
+  }
+}
+
+.dias-cell {
+  text-align: center;
+  white-space: nowrap;
+  
+  span {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+// Todos os headers já estão centralizados via th { text-align: center; }
+
+// Estilos para a coluna Alerta
+.alerta-cell {
+  text-align: center;
+  vertical-align: middle;
+  
+  .alerta-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+  }
+  
+  .alerta-icon-warning {
+    color: #FFD700; // Amarelo vibrante
+  }
+  
+  .alerta-icon-error {
+    color: #FF4500; // Vermelho vibrante
+  }
+  
+  .alerta-icon-info {
+    color: #00BFFF; // Azul vibrante
+  }
+  
+  .alerta-icon-default {
+    color: $text-muted;
+  }
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.empty-message {
+  text-align: center;
+  color: $text-muted;
+  padding: $spacing-lg;
+  font-style: italic;
+}
+
+// Estilos customizados para o tooltip de cópia
+::ng-deep .mat-mdc-tooltip {
+  &.copy-tooltip {
+    background-color: $bg-secondary !important;
+    color: $text-primary !important;
+    border: 1px solid $border-color !important;
+    border-radius: $border-radius-sm !important;
+    padding: $spacing-xs $spacing-sm !important;
+    font-size: $font-size-xs !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    max-width: 300px !important;
+    
+    .mdc-tooltip__surface {
+      background-color: $bg-secondary !important;
+      color: $text-primary !important;
+    }
+  }
+}
+

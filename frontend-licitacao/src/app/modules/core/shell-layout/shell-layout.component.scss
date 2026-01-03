@@ -1,0 +1,24 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.shell-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: $bg-primary;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 70px; // Largura do side-nav
+  background-color: $bg-primary;
+  
+  @include respond-to(md) {
+    margin-left: 0;
+  }
+}
+

@@ -1,0 +1,352 @@
+@use '../../styles/variables' as *;
+
+.janela-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: $spacing-lg;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(2px);
+
+  &.loading {
+    pointer-events: none;
+    
+    .janela-content {
+      pointer-events: auto;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.janela-content {
+  background: $bg-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-md;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: $shadow-lg;
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.janela-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: $border-width solid $border-color;
+  flex-shrink: 0;
+
+  .janela-titulo {
+    margin: 0;
+    color: $text-primary;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    flex: 1;
+  }
+
+  .janela-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: $spacing-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $border-radius-md;
+    transition: $transition-base;
+    color: $text-secondary;
+    margin-left: $spacing-md;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover:not(:disabled) {
+      background: $bg-hover;
+      color: $red;
+      transform: rotate(90deg);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.janela-body {
+  padding: $spacing-lg;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+
+  .janela-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($bg-primary, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: $border-radius-md;
+    opacity: 1;
+    animation: none;
+
+    .janela-spinner-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $spacing-lg;
+
+      .janela-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid $border-color;
+        border-top: 3px solid $blue;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .janela-spinner-message {
+        margin: 0;
+        color: $text-primary;
+        font-size: $font-size-md;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  .loading-content {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // Estilos para conteúdo comum
+  p {
+    margin: 0 0 $spacing-lg 0;
+    color: $text-primary;
+    line-height: 1.5;
+    font-size: $font-size-md;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  h3, h4 {
+    margin: $spacing-lg 0 $spacing-md 0;
+    color: $text-primary;
+    font-weight: $font-weight-semibold;
+  }
+
+  h3 {
+    font-size: $font-size-lg;
+  }
+
+  h4 {
+    font-size: $font-size-md;
+  }
+
+  ul, ol {
+    margin: $spacing-md 0;
+    padding-left: $spacing-xxl;
+    color: $text-primary;
+
+    li {
+      margin-bottom: $spacing-sm;
+      line-height: 1.5;
+    }
+  }
+
+  strong {
+    color: $text-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.janela-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  border-top: $border-width solid $border-color;
+  flex-shrink: 0;
+  background: $bg-secondary;
+}
+
+.janela-botao {
+  padding: $spacing-md $spacing-lg;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  // Botão Primary (padrão)
+  &.primary {
+    background: $blue;
+    color: $bg-primary;
+    border-color: $blue;
+
+    &:hover:not(:disabled) {
+      background: $blue-dark;
+      border-color: $blue-dark;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  // Botão Secondary
+  &.secondary {
+    background: transparent;
+    color: $text-primary;
+    border-color: $border-color;
+
+    &:hover:not(:disabled) {
+      background: $bg-hover;
+      border-color: $blue;
+      color: $blue;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  // Botão Danger
+  &.danger {
+    background: $red;
+    color: $text-primary;
+    border-color: $red;
+
+    &:hover:not(:disabled) {
+      background: $red-dark;
+      border-color: $red-dark;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  // Botão Success
+  &.success {
+    background: $green;
+    color: $bg-primary;
+    border-color: $green;
+
+    &:hover:not(:disabled) {
+      background: $green-dark;
+      border-color: $green-dark;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .janela-overlay {
+    padding: 0.5rem;
+  }
+
+  .janela-content {
+    max-height: 95vh;
+  }
+
+  .janela-header {
+    padding: 1rem;
+
+    .janela-titulo {
+      font-size: 1.25rem;
+    }
+  }
+
+  .janela-body {
+    padding: 1rem;
+  }
+
+  .janela-footer {
+    padding: 1rem;
+    flex-direction: column-reverse;
+
+    .janela-botao {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .janela-header {
+    padding: 0.75rem;
+
+    .janela-titulo {
+      font-size: 1.1rem;
+    }
+  }
+
+  .janela-body {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .janela-footer {
+    padding: 0.75rem;
+  }
+}

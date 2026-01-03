@@ -9,6 +9,7 @@ django-environ
 # API REST
 djangorestframework
 django-cors-headers
+requests
 
 # Autenticação JWT
 djangorestframework-simplejwt

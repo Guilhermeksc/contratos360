@@ -1,0 +1,145 @@
+// ============================================
+// Base Styles - Dracula Dark Theme
+// ============================================
+
+@use './variables' as *;
+@use './mixins' as *;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-family;
+  font-size: $font-size-base;
+  line-height: 1.5;
+  color: $text-primary;
+  background-color: $bg-primary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @include scrollbar;
+}
+
+// Typography
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+h1 { font-size: $font-size-xxl; }
+h2 { font-size: $font-size-xl; }
+h3 { font-size: $font-size-lg; }
+h4 { font-size: $font-size-md; }
+h5 { font-size: $font-size-base; }
+h6 { font-size: $font-size-sm; }
+
+p {
+  margin: 0;
+  color: $text-secondary;
+}
+
+a {
+  color: $blue;
+  text-decoration: none;
+  transition: color $transition-base;
+  
+  &:hover {
+    color: $blue-dark;
+  }
+}
+
+// Form elements
+input, textarea, select {
+  @include input-base;
+}
+
+button {
+  @include button-base;
+  background-color: transparent;
+  color: $text-primary;
+  border: $border-width solid $border-color;
+  
+  &:hover:not(:disabled) {
+    background-color: $bg-hover;
+    border-color: $border-color-hover;
+  }
+  
+  &:active:not(:disabled) {
+    background-color: $bg-tertiary;
+  }
+}
+
+// Scrollbar global
+* {
+  @include scrollbar;
+}
+
+// Selection
+::selection {
+  background-color: rgba($blue, 0.3);
+  color: $text-primary;
+}
+
+::-moz-selection {
+  background-color: rgba($blue, 0.3);
+  color: $text-primary;
+}
+
+// Focus outline
+:focus-visible {
+  outline: 2px solid $blue;
+  outline-offset: 2px;
+}
+
+// Disabled state
+:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+// Utility classes
+.text-primary { color: $text-primary; }
+.text-secondary { color: $text-secondary; }
+.text-muted { color: $text-muted; }
+.text-blue { color: $blue; }
+.text-green { color: $green; }
+.text-yellow { color: $yellow; }
+.text-red { color: $red; }
+.text-purple { color: $purple; }
+
+.bg-primary { background-color: $bg-primary; }
+.bg-secondary { background-color: $bg-secondary; }
+.bg-tertiary { background-color: $bg-tertiary; }
+
+.flex { display: flex; }
+.flex-center { @include flex-center; }
+.flex-between { @include flex-between; }
+.flex-column { @include flex-column; }
+
+.text-truncate { @include text-truncate; }
+
+.mt-xs { margin-top: $spacing-xs; }
+.mt-sm { margin-top: $spacing-sm; }
+.mt-md { margin-top: $spacing-md; }
+.mt-lg { margin-top: $spacing-lg; }
+
+.mb-xs { margin-bottom: $spacing-xs; }
+.mb-sm { margin-bottom: $spacing-sm; }
+.mb-md { margin-bottom: $spacing-md; }
+.mb-lg { margin-bottom: $spacing-lg; }
+
+.p-xs { padding: $spacing-xs; }
+.p-sm { padding: $spacing-sm; }
+.p-md { padding: $spacing-md; }
+.p-lg { padding: $spacing-lg; }
+

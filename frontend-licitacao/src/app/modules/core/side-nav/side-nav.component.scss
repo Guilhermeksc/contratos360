@@ -1,0 +1,70 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.side-nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 70px;
+  height: 100vh;
+  background-color: $bg-secondary;
+  border-right: $border-width solid $border-color;
+  z-index: $z-fixed;
+  overflow-y: auto;
+  @include scrollbar;
+  
+  @include respond-to(md) {
+    transform: translateX(-100%);
+    transition: transform $transition-base;
+    
+    &.open {
+      transform: translateX(0);
+    }
+  }
+}
+
+.nav-list {
+  list-style: none;
+  padding: $spacing-lg 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  cursor: pointer;
+  transition: all $transition-base;
+  position: relative;
+  
+  &:hover {
+    background-color: $bg-hover;
+  }
+  
+  &.active {
+    background-color: $bg-tertiary;
+    border-left: 3px solid $blue;
+    
+    .nav-icon {
+      color: $blue;
+    }
+  }
+}
+
+.nav-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: $text-secondary;
+  transition: color $transition-base;
+  
+  .nav-item:hover & {
+    color: $text-primary;
+  }
+}
+

@@ -8,7 +8,7 @@ admin.site.site_title = "Administração do Sistema de apoio ao Cemos"
 admin.site.index_title = "Painel de Administração"
 
 def health_check(request):
-    return JsonResponse({"status": "healthy", "service": "cemos2028_backend"})
+    return JsonResponse({"status": "healthy", "service": "licitacao360_backend"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # Usa admin.site padrão com configurações customizadas
@@ -19,10 +19,6 @@ urlpatterns = [
     # Autenticação JWT
     path('api/auth/', include('django_licitacao360.apps.core.auth.urls')),
 
-    # App de Perguntas
-    path('api/perguntas/', include('django_licitacao360.apps.perguntas.urls')),
-
-    # App de Informações
-    path('api/informacoes/', include('django_licitacao360.apps.informacoes.urls')),
-
+    # Gestão de Contratos
+    path('api/', include('django_licitacao360.apps.gestao_contratos.urls')),
 ]

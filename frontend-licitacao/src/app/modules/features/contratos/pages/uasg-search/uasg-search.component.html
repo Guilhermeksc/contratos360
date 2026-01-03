@@ -1,0 +1,58 @@
+<div class="uasg-search-container">
+  <!-- Cabeçalho - Primeira Linha -->
+  <div class="header-row">
+    <h2 class="page-title">Controle de Contratos</h2>
+    
+    <div class="header-right">
+      <label class="input-label-inline">Digite o número do UASG:</label>
+      <input 
+        type="text" 
+        class="uasg-input-inline"
+        [(ngModel)]="uasgCode" 
+        placeholder="Ex: 787010"
+        (keyup.enter)="syncUasg()"
+      />
+      
+      <button class="icon-button-inline primary" (click)="syncUasg()" [disabled]="syncing() || !uasgCode.trim()" title="Criação ou atualização da tabela">
+        <mat-icon>sync</mat-icon>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Cabeçalho - Segunda Linha -->
+  <div class="header-row-second">
+    <select 
+      class="uasg-select"
+      [(ngModel)]="selectedUasgFilter"
+      (ngModelChange)="onUasgFilterChange()">
+      <option [ngValue]="null">Todas as UASGs</option>
+      <option *ngFor="let uasg of uasgs()" [ngValue]="uasg.uasg_code">
+        {{ uasg.uasg_code }} - {{ uasg.nome_resumido }}
+      </option>
+    </select>
+    
+    <input 
+      type="text" 
+      class="uasg-input-inline search-input"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="onSearchChange($event)"
+      placeholder="Processo, fornecedor, CNPJ, objeto, número, ID, UASG..."
+    />
+  </div>
+  
+  <!-- Tabela -->
+  <div class="table-container">
+    <app-preview-table 
+      [data]="filteredPreviewData()"
+      (rowClick)="showRecordPopupHandler($event)"
+    ></app-preview-table>
+  </div>
+
+  <!-- Popup de Registros -->
+  <app-record-popup
+    [contratoId]="selectedContratoId()"
+    [mostrar]="showRecordPopup()"
+    (fechar)="closeRecordPopup()">
+  </app-record-popup>
+</div>
+

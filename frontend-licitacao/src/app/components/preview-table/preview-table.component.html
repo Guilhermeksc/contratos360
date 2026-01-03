@@ -1,0 +1,143 @@
+<div class="preview-table-container">
+  <div class="table-wrapper">
+    <table class="preview-table">
+    <thead>
+      <tr>
+        <th>UASG</th>
+        <th>Alerta</th>
+        <th>Status</th>
+        <th>Dias</th>
+        <th>Contrato / ID</th>
+        <th>Número / Nup</th>
+        <th>Fornecedor</th>
+        <th>Objeto</th>
+        <th>Valor Global</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let contrato of data" 
+          (click)="onRowClick(contrato)"
+          class="preview-row">
+        <!-- UASG -->
+        <td>
+          <div class="cell-content">
+            <div class="cell-main">{{ contrato.uasg_nome || 'N/A' }}</div>
+            <div class="cell-subtitle-wrapper">
+              <span 
+                *ngIf="contrato.uasg"
+                class="cell-subtitle clickable-text"
+                [matTooltip]="getTooltipMessage(contrato.uasg, 'uasg-' + contrato.id)"
+                [matTooltipClass]="'copy-tooltip'"
+                [matTooltipDisabled]="!copiedTooltips.get('uasg-' + contrato.id)"
+                [matTooltipShowDelay]="0"
+                [matTooltipHideDelay]="0"
+                (click)="copiarValor(contrato.uasg, $event, 'uasg-' + contrato.id)">
+                {{ contrato.uasg }}
+              </span>
+              <span *ngIf="!contrato.uasg" class="cell-subtitle">N/A</span>
+            </div>
+          </div>
+        </td>
+        
+        <!-- Alerta -->
+        <td class="alerta-cell">
+          <div class="alerta-content">
+            <!-- Placeholder para ícones de alerta - lógica será implementada posteriormente -->
+            <mat-icon *ngIf="getAlertaIcon(contrato)" [class]="'alerta-icon-' + getAlertaType(contrato)">
+              {{ getAlertaIcon(contrato) }}
+            </mat-icon>
+          </div>
+        </td>
+        
+        <!-- Status -->
+        <td class="status-cell">
+          <app-status-badge [status]="contrato.status_atual || 'SEÇÃO CONTRATOS'"></app-status-badge>
+        </td>
+        
+        <!-- Dias -->
+        <td [class]="'dias-' + getDiasRestantesStyle(calcularDiasRestantes(contrato.vigencia_fim))" class="dias-cell">
+          <span>{{ calcularDiasRestantes(contrato.vigencia_fim) ?? 'Sem Data' }}</span>
+        </td>
+        <!-- Contrato / ID -->
+        <td>
+          <div class="cell-content">
+            <div class="cell-main">{{ contrato.numero || 'N/A' }}</div>
+            <div class="cell-subtitle-wrapper">
+              <span 
+                class="cell-subtitle clickable-text"
+                [matTooltip]="getTooltipMessage(contrato.id, 'id-' + contrato.id)"
+                [matTooltipClass]="'copy-tooltip'"
+                [matTooltipDisabled]="!copiedTooltips.get('id-' + contrato.id)"
+                [matTooltipShowDelay]="0"
+                [matTooltipHideDelay]="0"
+                (click)="copiarValor(contrato.id, $event, 'id-' + contrato.id)">
+                ID: {{ contrato.id }}
+              </span>
+            </div>
+          </div>
+        </td>
+        
+        <!-- Número / Nup -->
+        <td>
+          <div class="cell-content">
+            <div class="cell-main">{{ contrato.licitacao_numero || 'N/A' }}</div>
+            <div class="cell-subtitle-wrapper">
+              <span 
+                *ngIf="contrato.processo"
+                class="cell-subtitle clickable-text"
+                [matTooltip]="getTooltipMessage(contrato.processo, 'processo-' + contrato.id)"
+                [matTooltipClass]="'copy-tooltip'"
+                [matTooltipDisabled]="!copiedTooltips.get('processo-' + contrato.id)"
+                [matTooltipShowDelay]="0"
+                [matTooltipHideDelay]="0"
+                (click)="copiarValor(contrato.processo, $event, 'processo-' + contrato.id)">
+                {{ contrato.processo }}
+              </span>
+              <span *ngIf="!contrato.processo" class="cell-subtitle">N/A</span>
+            </div>
+          </div>
+        </td>
+        
+        <!-- Fornecedor -->
+        <td>
+          <div class="cell-content">
+            <div class="cell-main text-truncate">{{ truncateText(contrato.fornecedor_nome, 50) }}</div>
+            <div class="cell-subtitle-wrapper">
+              <span 
+                *ngIf="contrato.fornecedor_cnpj"
+                class="cell-subtitle clickable-text text-truncate"
+                [matTooltip]="getTooltipMessage(contrato.fornecedor_cnpj, 'cnpj-' + contrato.id)"
+                [matTooltipClass]="'copy-tooltip'"
+                [matTooltipDisabled]="!copiedTooltips.get('cnpj-' + contrato.id)"
+                [matTooltipShowDelay]="0"
+                [matTooltipHideDelay]="0"
+                (click)="copiarValor(contrato.fornecedor_cnpj, $event, 'cnpj-' + contrato.id)">
+                {{ contrato.fornecedor_cnpj }}
+              </span>
+              <span *ngIf="!contrato.fornecedor_cnpj" class="cell-subtitle">N/A</span>
+            </div>
+          </div>
+        </td>
+        
+        <!-- Objeto -->
+        <td>
+          <div class="cell-content">
+            <span class="cell-main objeto-text">{{ truncateText(contrato.objeto, 200) }}</span>
+          </div>
+        </td>
+        
+        <!-- Valor Global -->
+        <td>
+          <div class="cell-content">
+            <span class="cell-main">{{ formatCurrency(contrato.valor_global) }}</span>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="data.length === 0">
+        <td colspan="9" class="empty-message">Nenhum contrato encontrado</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+

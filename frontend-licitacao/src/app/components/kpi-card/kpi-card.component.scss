@@ -1,0 +1,75 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.kpi-card {
+  @include card;
+  @include flex-column;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+}
+
+.kpi-header {
+  @include flex-between;
+  align-items: center;
+}
+
+.kpi-title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-value {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+  
+  &.color-blue {
+    color: $blue;
+  }
+  
+  &.color-green {
+    color: $green;
+  }
+  
+  &.color-yellow {
+    color: $yellow;
+  }
+  
+  &.color-red {
+    color: $red;
+  }
+  
+  &.color-purple {
+    color: $purple;
+  }
+}
+
+mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  
+  &.color-blue {
+    color: $blue;
+  }
+  
+  &.color-green {
+    color: $green;
+  }
+  
+  &.color-yellow {
+    color: $yellow;
+  }
+  
+  &.color-red {
+    color: $red;
+  }
+  
+  &.color-purple {
+    color: $purple;
+  }
+}
+

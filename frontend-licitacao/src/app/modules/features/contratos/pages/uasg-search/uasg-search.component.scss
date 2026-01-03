@@ -1,0 +1,204 @@
+@use '../../../../../styles/variables' as *;
+@use '../../../../../styles/mixins' as *;
+
+.uasg-search-container {
+  @include flex-column;
+  height: 100%;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  overflow: hidden;
+}
+
+.header-row {
+  @include flex-between;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background-color: $bg-secondary;
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-md;
+  flex-wrap: wrap;
+  
+  @include respond-to(md) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.page-title {
+  font-size: 20px; // Fonte um pouco maior que o padrão
+  margin: 0;
+  white-space: nowrap;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  
+  @include respond-to(md) {
+    width: 100%;
+  }
+}
+
+.header-row-second {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background-color: $bg-secondary;
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-md;
+  flex-wrap: wrap;
+  
+  @include respond-to(md) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.input-label-inline {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.uasg-input-inline {
+  @include input-base;
+  width: 150px;
+  min-width: 120px;
+  
+  &.search-input {
+    min-width: 250px;
+    max-width: 350px;
+    flex: 1;
+  }
+}
+
+.uasg-select {
+  @include input-base;
+  min-width: 200px;
+  max-width: 300px;
+  cursor: pointer;
+  
+  option {
+    background-color: $bg-secondary;
+    color: $text-primary;
+  }
+}
+
+.action-button-inline {
+  @include button-base;
+  white-space: nowrap;
+  
+  &.primary {
+    @include button-primary;
+  }
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  span {
+    margin-left: $spacing-xs;
+  }
+}
+
+.icon-button-inline {
+  @include button-base;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &.primary {
+    @include button-primary;
+  }
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.table-container {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.settings-button {
+  @include button-secondary;
+  align-self: flex-end;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  min-height: 40px;
+  
+  mat-icon {
+    font-size: 20px;
+  }
+}
+
+.input-label {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-xs;
+}
+
+.uasg-input {
+  @include input-base;
+  width: 100%;
+}
+
+.action-button {
+  @include button-base;
+  width: 100%;
+  justify-content: flex-start;
+  
+  &.primary {
+    @include button-primary;
+  }
+  
+  &.secondary {
+    @include button-secondary;
+  }
+  
+  &.danger {
+    @include button-danger;
+  }
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  span {
+    margin-left: $spacing-sm;
+  }
+}
+
+.icon-button {
+  @include button-secondary;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  min-height: 32px;
+  
+  mat-icon {
+    font-size: 18px;
+  }
+}
+

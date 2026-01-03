@@ -1,0 +1,212 @@
+// Dracula Theme - Dark Mode Compact (must be first)
+@use './app/styles/variables' as *;
+@use './app/styles/mixins' as *;
+@use './app/styles/base';
+@use './app/styles/material-overrides';
+
+@use '@angular/material' as mat;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+// Global styles
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Sobrescrever estilos do Angular Material para o side-menu
+mat-sidenav {
+  background-color: #f7f8fa !important;
+  border-right: 1px solid #e1e1e1 !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
+  width: 280px !important;
+  max-width: 280px !important;
+  min-width: 280px !important;
+  overflow-x: hidden !important;
+}
+
+app-side-menu {
+  background-color: #f7f8fa !important;
+  display: block;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden !important;
+}
+
+.mat-drawer-inner-container {
+  background-color: #f7f8fa !important;
+  border-right: 1px solid #e1e1e1 !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
+  width: 280px !important;
+  overflow-x: hidden !important;
+}
+
+.mat-sidenav {
+  background-color: #f7f8fa !important;
+  border-right: 1px solid #e1e1e1 !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
+  width: 280px !important;
+  overflow-x: hidden !important;
+}
+
+// Estilos globais para garantir que o fullscreen fique acima do sidenav
+body.flashcards-fullscreen-active {
+  // Sidenav do Angular Material - todas as variações possíveis
+  .mat-sidenav,
+  .mat-drawer,
+  mat-sidenav,
+  mat-drawer,
+  .mat-sidenav-container,
+  .mat-drawer-container,
+  .mat-drawer-backdrop,
+  .mat-drawer-side,
+  [class*="mat-sidenav"],
+  [class*="mat-drawer"] {
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  // Menu mobile no topo
+  .top-menu-container,
+  .menu-overlay {
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  // Header mobile
+  .top-header {
+    z-index: 1 !important;
+  }
+
+  // Overlay de fullscreen deve estar acima de tudo
+  .fullscreen-overlay {
+    z-index: 2147483647 !important;
+    pointer-events: auto !important;
+    position: fixed !important;
+  }
+
+  // Garantir que qualquer elemento com z-index alto fique abaixo do overlay
+  * {
+    &[style*="z-index"] {
+      &:not(.fullscreen-overlay):not(.fullscreen-container):not(.fullscreen-header):not(.fullscreen-grid):not(.fullscreen-actions) {
+        z-index: 1 !important;
+      }
+    }
+  }
+}
+
+
+// Estilo dos botões de navegação em tons de preto e branco
+.navigation-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 24px 0 8px 0;
+
+  /* Apply to Material stroked buttons and also to local .btn/.btn-stroked or plain buttons
+    so both `capa-bibliografia` (uses mat-stroked-button) and `conceitos` (uses .btn) get the same theme */
+  button[mat-stroked-button], .btn, .btn-stroked, button {
+    background: var(--pure-white, #fff);
+    color: var(--primary-black, #000);
+    border: 2px solid var(--primary-black, #000);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 120px;
+    min-height: 40px;
+
+    mat-icon {
+      color: var(--primary-black, #000);
+      font-size: 20px;
+      transition: color 0.2s;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    span, .mat-button-wrapper {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    &:hover, &:focus {
+      background: var(--primary-black, #000);
+      color: var(--pure-white, #fff);
+      border-color: var(--primary-black, #000);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      mat-icon {
+        color: var(--pure-white, #fff);
+      }
+    }
+    &:active {
+      background: #222;
+      color: #fff;
+      border-color: #222;
+      mat-icon {
+        color: #fff;
+      }
+    }
+  }
+}
+
+
+.header-generic-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem 1.25rem;
+	border-bottom: 1px solid rgba(0,0,0,0.06);
+	background: #fff;
+}
+
+.header-left {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.breadcrumb a {
+	color: #444;
+	text-decoration: none;
+	font-size: 0.95rem;
+	opacity: 0.9;
+}
+
+.page-title h2 {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #222;
+}
+
+/* Responsive: collapse buttons into a smaller stack on narrow screens */
+@media (max-width: 720px) {
+	.header-generic-content {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.75rem;
+	}
+
+	.navigation-buttons {
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+}
+

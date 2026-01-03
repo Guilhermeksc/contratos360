@@ -1,0 +1,56 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.home-container {
+  @include flex-center;
+  height: 100%;
+  width: 100%;
+  padding: $spacing-xxl;
+}
+
+.home-content {
+  @include flex-column;
+  align-items: center;
+  gap: $spacing-xxl;
+  max-width: 600px;
+  width: 100%;
+}
+
+h1 {
+  font-size: $font-size-xxl;
+  color: $text-primary;
+  text-align: center;
+  margin-bottom: $spacing-lg;
+}
+
+.home-buttons {
+  @include flex-column;
+  gap: $spacing-lg;
+  width: 100%;
+}
+
+.home-button {
+  @include button-secondary;
+  width: 100%;
+  min-height: $button-height-lg;
+  padding: $spacing-lg $spacing-xxl;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+  
+  span {
+    margin-left: $spacing-md;
+  }
+  
+  &:hover {
+    background-color: $bg-hover;
+    border-color: $blue;
+    color: $blue;
+  }
+}
+
