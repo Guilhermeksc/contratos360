@@ -29,17 +29,11 @@ export class SideNavComponent implements OnInit {
   // Home sempre visível
   homeNavItem: NavItem = { icon: 'dashboard', label: 'Home', route: '/home', tooltip: 'Home' };
 
-  // Contratos e Atas (visíveis apenas no módulo de Contratos)
-  contratosNavItems: NavItem[] = [
-    { icon: 'description', label: 'Contratos', route: '/contratos', tooltip: 'Contratos' },
-    { icon: 'folder', label: 'Atas', route: '/atas', tooltip: 'Atas' }
-  ];
-
   // Configuração de navegação para cada módulo
   moduleNavConfig: ModuleNavConfig = {
     // Opções específicas para Contratos
     contratos: [
-      { icon: 'search', label: 'Buscar UASG', route: '/contratos', tooltip: 'Buscar UASG' },
+      { icon: 'description', label: 'Contratos', route: '/contratos', tooltip: 'Contratos' },
       { icon: 'table_chart', label: 'Lista', route: '/contratos/lista', tooltip: 'Visualizar Tabelas' },
       { icon: 'message', label: 'Mensagens', route: '/contratos/mensagens', tooltip: 'Mensagens' },
       { icon: 'settings', label: 'Configurações', route: '/contratos/configuracoes', tooltip: 'Configurações' }
@@ -91,11 +85,6 @@ export class SideNavComponent implements OnInit {
     // Detecta o módulo atual
     const module = this.getCurrentModule(route);
     
-    // Se está no módulo de Contratos, adiciona Contratos e Atas
-    if (module === 'contratos') {
-      items.push(...this.contratosNavItems);
-    }
-    
     // Adiciona opções específicas do módulo se existirem
     if (module && this.moduleNavConfig[module]) {
       items.push(...this.moduleNavConfig[module]);
@@ -113,10 +102,6 @@ export class SideNavComponent implements OnInit {
     
     const module = this.getCurrentModule(route);
     
-    // Se é módulo de contratos, começa após Home + Contratos + Atas
-    if (module === 'contratos') {
-      return 1 + this.contratosNavItems.length;
-    }
     
     // Para outros módulos, começa após Home
     return 1;
