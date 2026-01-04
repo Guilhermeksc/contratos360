@@ -42,6 +42,7 @@ class ContratoDetailSerializer(serializers.ModelSerializer):
     from .links import LinksContratoSerializer
     from .fiscalizacao import FiscalizacaoContratoSerializer
     
+    uasg_nome = serializers.CharField(source='uasg.nome_resumido', read_only=True)
     status = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
     fiscalizacao = serializers.SerializerMethodField()
@@ -58,6 +59,7 @@ class ContratoDetailSerializer(serializers.ModelSerializer):
             'id',
             'numero',
             'uasg',
+            'uasg_nome',
             'licitacao_numero',
             'processo',
             'fornecedor_nome',

@@ -52,7 +52,8 @@
   <app-record-popup
     [contratoId]="selectedContratoId()"
     [mostrar]="showRecordPopup()"
-    (fechar)="closeRecordPopup()">
+    (fechar)="closeRecordPopup()"
+    (saved)="onRecordSaved()">
   </app-record-popup>
 </div>
 

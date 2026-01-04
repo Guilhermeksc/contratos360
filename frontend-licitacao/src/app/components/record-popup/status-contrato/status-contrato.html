@@ -1,0 +1,74 @@
+<div class="status-contrato-container">
+  <!-- Loading -->
+  <div *ngIf="!statusLoaded()" class="loading-message">
+    <mat-icon>hourglass_empty</mat-icon>
+    <span>Carregando status...</span>
+  </div>
+
+  <!-- Formulário -->
+  <form [formGroup]="statusForm" class="status-form" *ngIf="statusLoaded()">
+    <!-- Objeto Resumido -->
+    <div class="objeto-resumido-container">
+      <label class="objeto-resumido-label">Objeto Resumido:</label>
+      <textarea 
+        formControlName="objeto_editado"
+        rows="1"
+        class="objeto-resumido-textarea"
+        placeholder="(*apenas para melhorar a visualização)">
+      </textarea>
+    </div>
+
+    <!-- Radio Buttons (discretos) -->
+    <div class="radio-group-discrete">
+      <!-- Pode Renovar? -->
+      <div class="radio-field-discrete">
+        <label class="radio-label-discrete">Pode Renovar?</label>
+        <mat-radio-group formControlName="pode_renovar" class="radio-options-discrete">
+          <mat-radio-button value="true">Sim</mat-radio-button>
+          <mat-radio-button value="false">Não</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <!-- Custeio? -->
+      <div class="radio-field-discrete">
+        <label class="radio-label-discrete">Custeio?</label>
+        <mat-radio-group formControlName="custeio" class="radio-options-discrete">
+          <mat-radio-button value="true">Sim</mat-radio-button>
+          <mat-radio-button value="false">Não</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <!-- Natureza Continuada? -->
+      <div class="radio-field-discrete">
+        <label class="radio-label-discrete">Natureza Continuada?</label>
+        <mat-radio-group formControlName="natureza_continuada" class="radio-options-discrete">
+          <mat-radio-button value="true">Sim</mat-radio-button>
+          <mat-radio-button value="false">Não</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <!-- Material ou Serviço? -->
+      <div class="radio-field-discrete">
+        <label class="radio-label-discrete">Material ou Serviço?</label>
+        <mat-radio-group formControlName="tipo_contrato" class="radio-options-discrete">
+          <mat-radio-button value="material">Material</mat-radio-button>
+          <mat-radio-button value="servico">Serviço</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+
+    <!-- Botão Salvar -->
+    <div class="form-actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="button"
+        (click)="saveStatus()"
+        [disabled]="savingStatus() || !hasUnsavedChanges()">
+        <mat-icon *ngIf="!savingStatus()">save</mat-icon>
+        <mat-icon *ngIf="savingStatus()" class="spinning">refresh</mat-icon>
+        <span>{{ savingStatus() ? 'Salvando...' : 'Salvar Alterações' }}</span>
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,138 @@
+@use '../../../styles/variables' as *;
+
+.empenhos-contrato-container {
+  width: 100%;
+}
+
+.empenhos-header {
+  margin-bottom: $spacing-lg;
+}
+
+.loading-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xxl * 2;
+  gap: $spacing-md;
+  color: $text-secondary;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: $text-secondary;
+  }
+
+  span {
+    font-size: $font-size-md;
+  }
+}
+
+.empenhos-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.empenho-card {
+  background: $bg-secondary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-md;
+  padding: $spacing-lg;
+  transition: $transition-base;
+  
+  &:hover {
+    border-color: $blue;
+    background: rgba($blue, 0.05);
+  }
+  
+  .empenho-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $border-color;
+    
+    .empenho-number {
+      font-weight: $font-weight-bold;
+      color: $blue;
+      flex-shrink: 0;
+    }
+    
+    .empenho-title {
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      flex: 1;
+    }
+    
+    .empenho-date {
+      color: $text-secondary;
+      font-size: $font-size-sm;
+    }
+  }
+  
+  .empenho-details {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    
+    .empenho-row {
+      display: flex;
+      gap: $spacing-md;
+      
+      label {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        min-width: 140px;
+        flex-shrink: 0;
+      }
+      
+      span {
+        font-size: $font-size-base;
+        color: $text-primary;
+        word-break: break-word;
+      }
+    }
+    
+    .empenho-values {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: $spacing-md;
+      margin-top: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid $border-color;
+      
+      .value-item {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xs;
+        
+        label {
+          font-size: $font-size-sm;
+          color: $text-secondary;
+        }
+        
+        .value {
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: $green;
+        }
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: $spacing-xxl * 2;
+  color: $text-muted;
+  
+  p {
+    margin: 0;
+    font-size: $font-size-md;
+    font-style: italic;
+  }
+}
+

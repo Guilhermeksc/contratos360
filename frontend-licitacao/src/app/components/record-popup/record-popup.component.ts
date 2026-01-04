@@ -1,21 +1,24 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, signal, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, signal, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormsModule } from '@angular/forms';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { StatusService } from '../../services/status.service';
 import { ContractsService } from '../../services/contracts.service';
-import { EmpenhosService } from '../../services/empenhos.service';
-import { ItensService } from '../../services/itens.service';
-import { RegistroStatus, RegistroMensagem } from '../../interfaces/status.interface';
+import { RegistroStatus, RegistroMensagem, StatusContrato } from '../../interfaces/status.interface';
 import { ContratoDetail } from '../../interfaces/contrato.interface';
-import { Empenho, ItemContrato } from '../../interfaces/offline.interface';
 import { JanelaGenerica, BotaoJanela } from '../janela-generica/janela-generica';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { formatCurrency } from '../../utils/currency.utils';
 import { formatDate } from '../../utils/date.utils';
+import { StatusContratoComponent } from './status-contrato/status-contrato';
+import { FiscalizacaoContratoComponent } from './fiscalizacao-contrato/fiscalizacao-contrato';
+import { EmpenhosContratoComponent } from './empenhos-contrato/empenhos-contrato';
+import { ItensContratoComponent } from './itens-contrato/itens-contrato';
+import { HistoricoContratoComponent } from './historico-contrato/historico-contrato';
+import { StatusContratoViewComponent } from './status-contrato-view/status-contrato-view';
 
 @Component({
   selector: 'app-record-popup',
@@ -25,10 +28,15 @@ import { formatDate } from '../../utils/date.utils';
     MatTabsModule,
     MatIconModule,
     MatButtonModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    FormsModule,
-    JanelaGenerica
+    MatSnackBarModule,
+    MatDialogModule,
+    JanelaGenerica,
+    StatusContratoComponent,
+    FiscalizacaoContratoComponent,
+    EmpenhosContratoComponent,
+    ItensContratoComponent,
+    HistoricoContratoComponent,
+    StatusContratoViewComponent
   ],
   templateUrl: './record-popup.component.html',
   styleUrl: './record-popup.component.scss'
@@ -37,19 +45,19 @@ export class RecordPopupComponent implements OnInit, OnChanges {
   @Input() contratoId: string = '';
   @Input() mostrar: boolean = false;
   @Output() fechar = new EventEmitter<void>();
+  @Output() saved = new EventEmitter<void>();
+
+  @ViewChild(StatusContratoViewComponent) statusViewComponent?: StatusContratoViewComponent;
 
   contract = signal<ContratoDetail | null>(null);
   registrosStatus: RegistroStatus[] = [];
   registrosMensagem: RegistroMensagem[] = [];
   loading = signal(false);
-  loadingEmpenhos = signal(false);
-  loadingItens = signal(false);
   botoes: BotaoJanela[] = [];
-
-  empenhos = signal<Empenho[]>([]);
-  itens = signal<ItemContrato[]>([]);
-  selectedYear: string = 'Todos';
-  availableYears: string[] = [];
+  hasUnsavedChanges = signal(false);
+  hasUnsavedStatusChanges = signal(false);
+  headerButton: BotaoJanela | null = null;
+  private dialogOpen = false;
 
   formatCurrency = formatCurrency;
   formatDate = formatDate;
@@ -57,9 +65,107 @@ export class RecordPopupComponent implements OnInit, OnChanges {
   constructor(
     private statusService: StatusService,
     private contractsService: ContractsService,
-    private empenhosService: EmpenhosService,
-    private itensService: ItensService
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
+
+  get popupTitle(): string {
+    const c = this.contract();
+    if (!c) return `Registros do Contrato ${this.contratoId}`;
+    
+    const numero = c.numero || this.contratoId;
+    // Tenta pegar uasg_nome do contrato, se não tiver, pega do status
+    const uasgNome = c.uasg_nome || c.status?.uasg_nome || '';
+    const uasg = c.uasg || '';
+    const modalidade = c.modalidade || '';
+    
+    // Formato: Registro do contrato {numero} - {uasg nome}({uasg}) - {modalidade}
+    let title = `Registro do contrato ${numero}`;
+    if (uasgNome && uasg) {
+      title += ` - ${uasgNome} (${uasg})`;
+    } else if (uasgNome) {
+      title += ` - ${uasgNome}`;
+    } else if (uasg) {
+      title += ` - (${uasg})`;
+    }
+    if (modalidade) {
+      title += ` - ${modalidade}`;
+    }
+    
+    return title;
+  }
+
+  onStatusUnsavedChanges(hasChanges: boolean): void {
+    this.hasUnsavedChanges.set(hasChanges);
+  }
+
+  onStatusTabUnsavedChanges(hasChanges: boolean): void {
+    this.hasUnsavedStatusChanges.set(hasChanges);
+    this.updateHeaderButton();
+  }
+
+  updateHeaderButton(): void {
+    if (this.hasUnsavedStatusChanges()) {
+      this.headerButton = {
+        texto: 'Salvar Status',
+        tipo: 'primary',
+        disabled: false,
+        acao: () => this.saveStatusTab()
+      };
+    } else {
+      this.headerButton = null;
+    }
+  }
+
+  saveStatusTab(): void {
+    if (this.statusViewComponent) {
+      this.statusViewComponent.saveStatus();
+    }
+  }
+
+  onStatusSaved(status: StatusContrato): void {
+    // Atualiza o status no contrato local
+    const currentContract = this.contract();
+    if (currentContract) {
+      currentContract.status = status;
+      this.contract.set({ ...currentContract });
+    }
+    // Emite evento para atualizar a tabela
+    this.saved.emit();
+  }
+
+  onStatusUpdated(status: StatusContrato): void {
+    // Atualiza o status no contrato local quando atualizado na tab Status
+    const currentContract = this.contract();
+    if (currentContract) {
+      currentContract.status = status;
+      this.contract.set({ ...currentContract });
+    }
+    // Reseta o estado de alterações não salvas
+    this.hasUnsavedStatusChanges.set(false);
+    this.updateHeaderButton();
+    // Emite evento para atualizar a tabela
+    this.saved.emit();
+    
+    // Recarrega o contrato completo para garantir que todos os dados estão atualizados
+    if (this.contratoId) {
+      this.contractsService.getDetails(this.contratoId).subscribe({
+        next: (updatedContract: ContratoDetail) => {
+          this.contract.set(updatedContract);
+        },
+        error: (err: any) => {
+          console.error('Erro ao recarregar contrato após atualizar status:', err);
+        }
+      });
+    }
+  }
+
+  onRegistrosUpdated(): void {
+    // Recarrega os registros de status e mensagens
+    this.loadRegistros();
+    // Emite evento para atualizar a tabela (registros podem afetar o status exibido)
+    this.saved.emit();
+  }
 
   ngOnInit(): void {
     // Carrega se já estiver visível na inicialização
@@ -82,9 +188,11 @@ export class RecordPopupComponent implements OnInit, OnChanges {
       this.contract.set(null);
       this.registrosStatus = [];
       this.registrosMensagem = [];
-      this.empenhos.set([]);
-      this.itens.set([]);
       this.loading.set(false);
+      this.hasUnsavedChanges.set(false);
+      this.hasUnsavedStatusChanges.set(false);
+      this.headerButton = null;
+      this.dialogOpen = false; // Reseta a flag ao fechar o popup
     }
   }
 
@@ -115,6 +223,7 @@ export class RecordPopupComponent implements OnInit, OnChanges {
       }
     });
   }
+
 
   private loadRegistros(): void {
     if (!this.contratoId) return;
@@ -159,57 +268,6 @@ export class RecordPopupComponent implements OnInit, OnChanges {
     });
   }
 
-  loadEmpenhos(): void {
-    if (!this.contratoId || this.empenhos().length > 0) return;
-    
-    this.loadingEmpenhos.set(true);
-    this.empenhosService.list(this.contratoId).subscribe({
-      next: (empenhos: Empenho[]) => {
-        this.empenhos.set(Array.isArray(empenhos) ? empenhos : []);
-        // Extrai anos únicos das datas de emissão
-        const years = new Set<string>();
-        empenhos.forEach(e => {
-          if (e.data_emissao) {
-            const year = e.data_emissao.substring(0, 4);
-            if (year) years.add(year);
-          }
-        });
-        this.availableYears = Array.from(years).sort().reverse();
-        this.loadingEmpenhos.set(false);
-      },
-      error: (err: any) => {
-        console.error('RecordPopupComponent: Erro ao carregar empenhos:', err);
-        this.empenhos.set([]);
-        this.loadingEmpenhos.set(false);
-      }
-    });
-  }
-
-  loadItens(): void {
-    if (!this.contratoId || this.itens().length > 0) return;
-    
-    this.loadingItens.set(true);
-    this.itensService.list(this.contratoId).subscribe({
-      next: (itens: ItemContrato[]) => {
-        this.itens.set(Array.isArray(itens) ? itens : []);
-        this.loadingItens.set(false);
-      },
-      error: (err: any) => {
-        console.error('RecordPopupComponent: Erro ao carregar itens:', err);
-        this.itens.set([]);
-        this.loadingItens.set(false);
-      }
-    });
-  }
-
-  getFilteredEmpenhos(): Empenho[] {
-    if (this.selectedYear === 'Todos') {
-      return this.empenhos();
-    }
-    return this.empenhos().filter(e => 
-      e.data_emissao && e.data_emissao.startsWith(this.selectedYear)
-    );
-  }
 
   private setupBotoes(): void {
     // Não há botões no footer, apenas o botão X superior direito
@@ -218,31 +276,58 @@ export class RecordPopupComponent implements OnInit, OnChanges {
 
   @HostListener('document:keydown.escape', ['$event'])
   handleEscapeKey(event: Event): void {
+    // Se há um diálogo aberto, não processa o ESC aqui (deixa o diálogo processar)
+    if (this.dialogOpen) {
+      return;
+    }
+    
     if (this.mostrar) {
       const keyboardEvent = event as KeyboardEvent;
       keyboardEvent.preventDefault();
+      this.tentarFecharPopup();
+    }
+  }
+
+  tentarFecharPopup(): void {
+    // Evita abrir múltiplos diálogos
+    if (this.dialogOpen) {
+      return;
+    }
+    
+    // Verifica se há alterações não salvas (formulário de informações gerais ou status tab)
+    if (this.hasUnsavedChanges() || this.hasUnsavedStatusChanges()) {
+      // Marca que o diálogo está aberto
+      this.dialogOpen = true;
+      
+      // Mostra diálogo de confirmação
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '450px',
+        data: {
+          title: 'Alterações não salvas',
+          message: 'Você tem alterações não salvas. Deseja realmente fechar sem salvar?',
+          confirmText: 'Fechar sem salvar',
+          cancelText: 'Cancelar'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        // Marca que o diálogo foi fechado
+        this.dialogOpen = false;
+        
+        if (result === true) {
+          this.fecharPopup();
+        }
+      });
+    } else {
       this.fecharPopup();
     }
   }
 
   fecharPopup(): void {
     this.mostrar = false;
+    this.dialogOpen = false; // Reseta a flag ao fechar
     this.fechar.emit();
   }
 
-  copiarRegistro(texto: string): void {
-    navigator.clipboard.writeText(texto).then(() => {
-      // TODO: Mostrar notificação de sucesso
-      console.log('Registro copiado:', texto);
-    });
-  }
-
-  trackByRegistroId(index: number, registro: RegistroStatus): any {
-    return registro.id || index;
-  }
-
-  trackByMensagemId(index: number, mensagem: RegistroMensagem): any {
-    return mensagem.id || index;
-  }
 }
 

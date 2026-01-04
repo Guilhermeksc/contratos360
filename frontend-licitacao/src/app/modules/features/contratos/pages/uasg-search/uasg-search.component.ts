@@ -130,6 +130,11 @@ export class UasgSearchComponent implements OnInit {
     this.selectedContratoId.set('');
   }
 
+  onRecordSaved(): void {
+    // Recarrega os dados da tabela quando houver salvamento no popup
+    this.loadPreviewData();
+  }
+
   private loadPreviewData(): void {
     // Buscar contratos ativos e próximos a vencer
     this.contractsService.getAtivos().subscribe({

@@ -11,9 +11,16 @@ export class StatusService {
   constructor(private http: HttpClient) {}
 
   // StatusContrato
-  getStatus(contratoId: string): Observable<StatusContrato | null> {
+  getStatus(contratoId: string, forceRefresh: boolean = false): Observable<StatusContrato | null> {
+    let params = new HttpParams().set('contrato', contratoId);
+    
+    // Adiciona timestamp para evitar cache se forceRefresh for true
+    if (forceRefresh) {
+      params = params.set('_t', Date.now().toString());
+    }
+    
     return this.http.get<StatusContrato[]>(`${this.apiUrl}/status/`, {
-      params: new HttpParams().set('contrato', contratoId)
+      params: params
     }).pipe(
       map(results => results.length > 0 ? results[0] : null)
     );

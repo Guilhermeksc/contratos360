@@ -1,0 +1,66 @@
+<div class="empenhos-contrato-container">
+  <div class="empenhos-header">
+    <mat-form-field appearance="outline" *ngIf="availableYears.length > 0">
+      <mat-label>Filtrar por Ano</mat-label>
+      <mat-select [(ngModel)]="selectedYear">
+        <mat-option value="Todos">Todos</mat-option>
+        <mat-option *ngFor="let year of availableYears" [value]="year">{{ year }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="loading()" class="loading-message">
+    <mat-icon>hourglass_empty</mat-icon>
+    <span>Carregando empenhos...</span>
+  </div>
+
+  <div *ngIf="!loading() && getFilteredEmpenhos().length > 0" class="empenhos-list">
+    <div *ngFor="let empenho of getFilteredEmpenhos(); let i = index" class="empenho-card">
+      <div class="empenho-header">
+        <span class="empenho-number">{{ i + 1 }}.</span>
+        <span class="empenho-title">Nº do Empenho: {{ empenho.numero || 'N/A' }}</span>
+        <span class="empenho-date">Data de Emissão: {{ formatDate(empenho.data_emissao ?? null) }}</span>
+      </div>
+      <div class="empenho-details">
+        <div class="empenho-row">
+          <label>Unidade Gestora:</label>
+          <span>{{ empenho.unidade_gestora || 'N/A' }}</span>
+        </div>
+        <div class="empenho-row">
+          <label>Gestão:</label>
+          <span>{{ empenho.gestao || 'N/A' }}</span>
+        </div>
+        <div class="empenho-row">
+          <label>Credor:</label>
+          <span>{{ empenho.credor_nome || 'N/A' }}</span>
+        </div>
+        <div class="empenho-row" *ngIf="empenho.credor_cnpj">
+          <label>CNPJ Credor:</label>
+          <span>{{ empenho.credor_cnpj }}</span>
+        </div>
+        <div class="empenho-values">
+          <div class="value-item">
+            <label>Empenhado:</label>
+            <span class="value">{{ formatCurrency(empenho.empenhado ?? null) }}</span>
+          </div>
+          <div class="value-item">
+            <label>Liquidado:</label>
+            <span class="value">{{ formatCurrency(empenho.liquidado ?? null) }}</span>
+          </div>
+          <div class="value-item">
+            <label>Pago:</label>
+            <span class="value">{{ formatCurrency(empenho.pago ?? null) }}</span>
+          </div>
+        </div>
+        <div class="empenho-row" *ngIf="empenho.informacao_complementar">
+          <label>Informação Complementar:</label>
+          <span>{{ empenho.informacao_complementar }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && getFilteredEmpenhos().length === 0" class="empty-state">
+    <p>Nenhum empenho encontrado{{ selectedYear !== 'Todos' ? ' para o ano selecionado' : '' }}.</p>
+  </div>
+</div>

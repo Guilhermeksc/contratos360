@@ -1,0 +1,50 @@
+@use '../../../styles/variables' as *;
+
+.fiscalizacao-contrato-container {
+  width: 100%;
+}
+
+.fiscalizacao-section {
+  margin-bottom: $spacing-xxl;
+  
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      
+      label {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $text-secondary;
+      }
+      
+      span {
+        font-size: $font-size-base;
+        color: $text-primary;
+        word-break: break-word;
+      }
+      
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: $spacing-xxl * 2;
+  color: $text-muted;
+  
+  p {
+    margin: 0;
+    font-size: $font-size-md;
+    font-style: italic;
+  }
+}
+

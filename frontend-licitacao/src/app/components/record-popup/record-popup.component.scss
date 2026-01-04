@@ -43,6 +43,62 @@
 
 .tab-content {
   padding: $spacing-lg;
+  
+  &.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-xxl;
+    align-items: start;
+    
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm 0;
+      border-bottom: 1px solid rgba($border-color, 0.3);
+      
+      label {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $text-secondary;
+        min-width: 140px;
+        flex-shrink: 0;
+      }
+      
+      span {
+        font-size: $font-size-base;
+        color: $text-primary;
+        word-break: break-word;
+        flex: 1;
+      }
+      
+      &.full-width {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $spacing-xs;
+        
+        label {
+          min-width: auto;
+        }
+      }
+    }
+  }
+  
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
 }
 
 .details-grid {
@@ -422,6 +478,224 @@
   }
 }
 
+// Alerta de alterações não salvas no header
+.unsaved-changes-alert-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-md;
+  background: rgba($yellow, 0.15);
+  border: 1px solid rgba($yellow, 0.4);
+  border-radius: $border-radius-md;
+  color: $yellow;
+  font-size: $font-size-sm;
+  animation: pulse 2s ease-in-out infinite;
+  white-space: nowrap;
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+// Estilos para o formulário de status (discreto)
+.status-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  .objeto-resumido-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: $spacing-md;
+    width: 100%;
+    
+    .objeto-resumido-label {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $text-secondary;
+      flex-shrink: 0;
+      padding-top: $spacing-md;
+      white-space: nowrap;
+    }
+    
+    .objeto-resumido-textarea {
+      flex: 1;
+      min-height: auto;
+      height: auto;
+      padding: $spacing-md;
+      background: $bg-secondary;
+      border: 1px solid $border-color;
+      border-radius: $border-radius-md;
+      color: $text-primary;
+      font-size: $font-size-sm;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: vertical;
+      transition: $transition-base;
+      box-sizing: border-box;
+      overflow-y: auto;
+      
+      &::placeholder {
+        color: $text-muted;
+        font-style: italic;
+        opacity: 1;
+      }
+      
+      &:focus {
+        outline: none;
+        border-color: $blue;
+        background: $bg-primary;
+        box-shadow: 0 0 0 2px rgba($blue, 0.2);
+      }
+      
+      &:hover:not(:focus) {
+        border-color: rgba($blue, 0.5);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+  
+  .radio-group-discrete {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-top: $spacing-sm;
+    
+    .radio-field-discrete {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-xs 0;
+      
+      .radio-label-discrete {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        min-width: 160px;
+        flex-shrink: 0;
+      }
+      
+      .radio-options-discrete {
+        display: flex;
+        gap: $spacing-md;
+        flex-wrap: wrap;
+        
+        ::ng-deep .mat-mdc-radio-button {
+          .mdc-form-field {
+            color: #ffffff;
+            font-size: $font-size-sm;
+          }
+          
+          .mdc-radio {
+            padding: 4px;
+          }
+          
+          &.mat-mdc-radio-checked {
+            .mdc-form-field {
+              color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba($border-color, 0.3);
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      min-width: 180px;
+      justify-content: center;
+      
+      &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      mat-icon.spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Snackbar styles
+::ng-deep .success-snackbar {
+  .mdc-snackbar__surface {
+    background-color: rgba(76, 175, 80, 0.9) !important;
+    color: #ffffff !important;
+    box-shadow: $shadow-md !important;
+  }
+  
+  .mdc-snackbar__label {
+    color: #ffffff !important;
+    font-weight: $font-weight-medium;
+  }
+  
+  .mat-mdc-snack-bar-action {
+    color: #ffffff !important;
+    font-weight: $font-weight-semibold;
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+::ng-deep .error-snackbar {
+  .mdc-snackbar__surface {
+    background-color: rgba(244, 67, 54, 0.9) !important;
+    color: #ffffff !important;
+    box-shadow: $shadow-md !important;
+  }
+  
+  .mdc-snackbar__label {
+    color: #ffffff !important;
+    font-weight: $font-weight-medium;
+  }
+  
+  .mat-mdc-snack-bar-action {
+    color: #ffffff !important;
+    font-weight: $font-weight-semibold;
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
 ::ng-deep .mat-mdc-tab-group {
   .mat-mdc-tab-header {
     background-color: $bg-secondary;
@@ -440,3 +714,4 @@
     padding: 0;
   }
 }
+

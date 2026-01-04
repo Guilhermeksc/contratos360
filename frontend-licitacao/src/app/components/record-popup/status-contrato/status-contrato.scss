@@ -1,0 +1,166 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.status-contrato-container {
+  width: 100%;
+}
+
+.loading-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xxl * 2;
+  gap: $spacing-md;
+  color: $text-secondary;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: $text-secondary;
+  }
+
+  span {
+    font-size: $font-size-md;
+  }
+}
+
+.status-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  .objeto-resumido-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: $spacing-md;
+    width: 100%;
+    
+    .objeto-resumido-label {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $text-secondary;
+      flex-shrink: 0;
+      padding-top: $spacing-md;
+      white-space: nowrap;
+    }
+    
+    .objeto-resumido-textarea {
+      flex: 1;
+      min-height: auto;
+      height: auto;
+      padding: $spacing-md;
+      background: $bg-secondary;
+      border: 1px solid $border-color;
+      border-radius: $border-radius-md;
+      color: $text-primary;
+      font-size: $font-size-sm;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: vertical;
+      transition: $transition-base;
+      box-sizing: border-box;
+      overflow-y: auto;
+      
+      &::placeholder {
+        color: $text-muted;
+        font-style: italic;
+        opacity: 1;
+      }
+      
+      &:focus {
+        outline: none;
+        border-color: $blue;
+        background: $bg-primary;
+        box-shadow: 0 0 0 2px rgba($blue, 0.2);
+      }
+      
+      &:hover:not(:focus) {
+        border-color: rgba($blue, 0.5);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+  
+  .radio-group-discrete {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-top: $spacing-sm;
+    
+    .radio-field-discrete {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-xs 0;
+      
+      .radio-label-discrete {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        min-width: 160px;
+        flex-shrink: 0;
+      }
+      
+      .radio-options-discrete {
+        display: flex;
+        gap: $spacing-md;
+        flex-wrap: wrap;
+        
+        ::ng-deep .mat-mdc-radio-button {
+          .mdc-form-field {
+            color: #ffffff;
+            font-size: $font-size-sm;
+          }
+          
+          .mdc-radio {
+            padding: 4px;
+          }
+          
+          &.mat-mdc-radio-checked {
+            .mdc-form-field {
+              color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba($border-color, 0.3);
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      min-width: 180px;
+      justify-content: center;
+      
+      &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      mat-icon.spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

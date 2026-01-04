@@ -1,19 +1,16 @@
 export interface StatusContrato {
   contrato: string;  // FK para Contrato.id
   uasg_code: string | null;
+  uasg_nome?: string | null;  // Nome da UASG
   status: string | null;  // Ex: "ALERTA PRAZO", "PORTARIA", etc.
   objeto_editado: string | null;
   portaria_edit: string | null;
   termo_aditivo_edit: string | null;
-  radio_options_json: RadioOptions | null;  // JSONField parseado
+  pode_renovar: boolean;  // Indica se o contrato pode ser renovado
+  custeio: boolean;  // Indica se é contrato de custeio
+  natureza_continuada: boolean;  // Indica se o contrato tem natureza continuada
+  tipo_contrato: 'material' | 'servico' | null;  // Tipo do contrato: Material ou Serviço
   data_registro: string | null;  // Formato: "DD/MM/AAAA HH:MM:SS"
-}
-
-export interface RadioOptions {
-  "Pode Renovar?": string;
-  "Custeio?": string;
-  "Natureza Continuada?": string;
-  "Material/Serviço:": string;
 }
 
 export interface RegistroStatus {

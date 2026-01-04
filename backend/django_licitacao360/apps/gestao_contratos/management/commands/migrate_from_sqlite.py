@@ -178,10 +178,41 @@ class Command(BaseCommand):
              portaria_edit, termo_aditivo_edit, radio_options_json, data_registro) = row
             
             if not dry_run:
-                try:
-                    radio_options = json.loads(radio_options_json) if radio_options_json else None
-                except (json.JSONDecodeError, TypeError):
-                    radio_options = None
+                # Extrai valores do JSON para os novos campos
+                pode_renovar = False
+                custeio = False
+                natureza_continuada = False
+                tipo_contrato = None
+                
+                if radio_options_json:
+                    try:
+                        radio_options = json.loads(radio_options_json) if isinstance(radio_options_json, str) else radio_options_json
+                        
+                        # Mapeia valores do JSON para os novos campos booleanos
+                        # Aceita diferentes formatos de chave e valores
+                        pode_renovar_val = radio_options.get('Pode Renovar?') or radio_options.get('pode_renovar') or radio_options.get('Pode Renovar')
+                        if pode_renovar_val:
+                            pode_renovar = str(pode_renovar_val).lower() in ['sim', 'yes', 'true', '1', 's']
+                        
+                        custeio_val = radio_options.get('Custeio?') or radio_options.get('custeio') or radio_options.get('Custeio')
+                        if custeio_val:
+                            custeio = str(custeio_val).lower() in ['sim', 'yes', 'true', '1', 's']
+                        
+                        natureza_continuada_val = radio_options.get('Natureza Continuada?') or radio_options.get('natureza_continuada') or radio_options.get('Natureza Continuada')
+                        if natureza_continuada_val:
+                            natureza_continuada = str(natureza_continuada_val).lower() in ['sim', 'yes', 'true', '1', 's']
+                        
+                        # Extrai tipo_contrato se existir no JSON
+                        tipo_contrato_val = radio_options.get('Tipo Contrato') or radio_options.get('tipo_contrato') or radio_options.get('Tipo')
+                        if tipo_contrato_val:
+                            tipo_contrato_str = str(tipo_contrato_val).lower()
+                            if tipo_contrato_str in ['material', 'm']:
+                                tipo_contrato = 'material'
+                            elif tipo_contrato_str in ['servico', 'serviço', 's']:
+                                tipo_contrato = 'servico'
+                    except (json.JSONDecodeError, TypeError, AttributeError):
+                        # Se houver erro ao processar JSON, mantém valores padrão
+                        pass
                 
                 StatusContrato.objects.update_or_create(
                     contrato_id=str(contrato_id),
@@ -191,7 +222,10 @@ class Command(BaseCommand):
                         'objeto_editado': objeto_editado,
                         'portaria_edit': portaria_edit,
                         'termo_aditivo_edit': termo_aditivo_edit,
-                        'radio_options_json': radio_options,
+                        'pode_renovar': pode_renovar,
+                        'custeio': custeio,
+                        'natureza_continuada': natureza_continuada,
+                        'tipo_contrato': tipo_contrato,
                         'data_registro': data_registro,
                     }
                 )

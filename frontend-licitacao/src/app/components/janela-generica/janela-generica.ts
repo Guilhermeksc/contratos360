@@ -25,6 +25,8 @@ export class JanelaGenerica {
   @Input() botoes: BotaoJanela[] = [];
   @Input() mostrarFooter: boolean = true;
   @Input() isLoading: boolean = false;
+  @Input() headerAlertText: string | null = null;
+  @Input() headerButton: BotaoJanela | null = null;
 
   @Output() fechar = new EventEmitter<void>();
 

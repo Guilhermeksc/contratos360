@@ -1,0 +1,59 @@
+<div class="historico-contrato-container">
+  <div *ngIf="loading()" class="loading-message">
+    <mat-icon>hourglass_empty</mat-icon>
+    <span>Carregando histórico...</span>
+  </div>
+
+  <div *ngIf="!loading() && historicosSignal().length > 0" class="historicos-list">
+    <div *ngFor="let historico of historicosSignal(); let i = index" class="historico-card">
+      <div class="historico-header">
+        <span class="historico-number">{{ i + 1 }}.</span>
+        <span class="historico-title">Histórico {{ historico.numero || 'N/A' }}</span>
+      </div>
+      <div class="historico-details">
+        <div class="historico-row" *ngIf="historico.receita_despesa">
+          <label>Receita/Despesa:</label>
+          <span>{{ historico.receita_despesa }}</span>
+        </div>
+        <div class="historico-row" *ngIf="historico.fornecedor_nome">
+          <label>Fornecedor:</label>
+          <span>{{ historico.fornecedor_nome }}</span>
+        </div>
+        <div class="historico-row" *ngIf="historico.fornecedor_cnpj">
+          <label>CNPJ:</label>
+          <span>{{ historico.fornecedor_cnpj }}</span>
+        </div>
+        <div class="historico-row" *ngIf="historico.objeto">
+          <label>Objeto:</label>
+          <span>{{ historico.objeto }}</span>
+        </div>
+        <div class="historico-row" *ngIf="historico.modalidade">
+          <label>Modalidade:</label>
+          <span>{{ historico.modalidade }}</span>
+        </div>
+        <div class="historico-row" *ngIf="historico.processo">
+          <label>Processo:</label>
+          <span>{{ historico.processo }}</span>
+        </div>
+        <div class="historico-values">
+          <div class="value-item" *ngIf="historico.valor_global">
+            <label>Valor Global:</label>
+            <span class="value">{{ formatCurrency(historico.valor_global) }}</span>
+          </div>
+          <div class="value-item" *ngIf="historico.vigencia_inicio || historico.vigencia_fim">
+            <label>Vigência:</label>
+            <span class="value">{{ formatDate(historico.vigencia_inicio ?? null) }} até {{ formatDate(historico.vigencia_fim ?? null) }}</span>
+          </div>
+        </div>
+        <div class="historico-row" *ngIf="historico.observacao">
+          <label>Observação:</label>
+          <span>{{ historico.observacao }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && historicosSignal().length === 0" class="empty-state">
+    <p>Nenhum histórico encontrado para este contrato.</p>
+  </div>
+</div>

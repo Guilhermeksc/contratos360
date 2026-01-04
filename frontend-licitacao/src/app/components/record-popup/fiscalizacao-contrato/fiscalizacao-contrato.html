@@ -1,0 +1,37 @@
+<div class="fiscalizacao-contrato-container">
+  <div *ngIf="fiscalizacao" class="fiscalizacao-section">
+    <div class="details-grid">
+      <div class="detail-item">
+        <label>Gestor:</label>
+        <span>{{ fiscalizacao.gestor || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Gestor Substituto:</label>
+        <span>{{ fiscalizacao.gestor_substituto || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Fiscal Técnico:</label>
+        <span>{{ fiscalizacao.fiscal_tecnico || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Fiscal Técnico Substituto:</label>
+        <span>{{ fiscalizacao.fiscal_tec_substituto || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Fiscal Administrativo:</label>
+        <span>{{ fiscalizacao.fiscal_administrativo || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Fiscal Administrativo Substituto:</label>
+        <span>{{ fiscalizacao.fiscal_admin_substituto || 'N/A' }}</span>
+      </div>
+      <div class="detail-item full-width">
+        <label>Observações:</label>
+        <span>{{ fiscalizacao.observacoes || 'N/A' }}</span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!fiscalizacao" class="empty-state">
+    <p>Nenhuma informação de fiscalização registrada para este contrato.</p>
+  </div>
+</div>

@@ -1,0 +1,129 @@
+<div class="status-contrato-view-container">
+  <!-- Seção de Status -->
+  <div class="status-section">
+    <div class="status-header">
+      <h3>Status do Contrato</h3>
+    </div>
+    
+    <div class="status-control">
+      <mat-form-field appearance="outline" class="status-select">
+        <mat-label>Status Atual</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange()">
+          <mat-option *ngFor="let option of statusOptions" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="detail-item" *ngIf="status?.objeto_editado">
+      <label>Objeto Editado:</label>
+      <span>{{ status?.objeto_editado }}</span>
+    </div>
+    <div class="detail-item" *ngIf="status?.portaria_edit">
+      <label>Portaria:</label>
+      <span>{{ status?.portaria_edit }}</span>
+    </div>
+    <div class="detail-item" *ngIf="status?.termo_aditivo_edit">
+      <label>Termo Aditivo:</label>
+      <span>{{ status?.termo_aditivo_edit }}</span>
+    </div>
+    <div class="detail-item" *ngIf="status?.data_registro">
+      <label>Data do Registro:</label>
+      <span>{{ status?.data_registro }}</span>
+    </div>
+  </div>
+
+  <!-- Seção de Registros de Status -->
+  <div class="registros-section">
+    <div class="registros-header">
+      <h3>Registros de Status</h3>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="toggleAddRegistroForm()"
+        [disabled]="savingRegistro">
+        <mat-icon>add</mat-icon>
+        <span>Adicionar Registro</span>
+      </button>
+    </div>
+
+    <!-- Formulário para adicionar registro -->
+    <div *ngIf="showAddRegistroForm" class="add-registro-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Texto do Registro</mat-label>
+        <textarea 
+          matInput 
+          [(ngModel)]="novoRegistroTexto"
+          rows="3"
+          placeholder="Digite o texto do registro...">
+        </textarea>
+      </mat-form-field>
+      <div class="form-actions">
+        <button 
+          mat-button 
+          (click)="toggleAddRegistroForm()"
+          [disabled]="savingRegistro">
+          Cancelar
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="adicionarRegistro()"
+          [disabled]="savingRegistro || !novoRegistroTexto.trim()">
+          <mat-icon *ngIf="!savingRegistro">save</mat-icon>
+          <mat-icon *ngIf="savingRegistro" class="spinning">refresh</mat-icon>
+          <span>{{ savingRegistro ? 'Salvando...' : 'Salvar' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de Registros -->
+    <ul class="registros-list" *ngIf="registrosStatusSignal().length > 0">
+      <li *ngFor="let registro of registrosStatusSignal(); let i = index; trackBy: trackByRegistroId">
+        <span class="registro-index">{{ i + 1 }}.</span>
+        <span class="registro-texto">{{ registro.texto }}</span>
+        <div class="registro-actions">
+          <button 
+            class="icon-button-small" 
+            (click)="copiarRegistro(registro.texto)" 
+            title="Copiar" 
+            type="button">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+          <button 
+            class="icon-button-small danger" 
+            (click)="excluirRegistro(registro)" 
+            title="Excluir" 
+            type="button"
+            [disabled]="deletingRegistro() === registro.id">
+            <mat-icon *ngIf="deletingRegistro() !== registro.id">delete</mat-icon>
+            <mat-icon *ngIf="deletingRegistro() === registro.id" class="spinning">refresh</mat-icon>
+          </button>
+        </div>
+      </li>
+    </ul>
+    <div *ngIf="registrosStatusSignal().length === 0 && !showAddRegistroForm" class="empty-state">
+      <p>Nenhum registro de status encontrado.</p>
+    </div>
+  </div>
+
+  <!-- Seção de Mensagens -->
+  <div *ngIf="registrosMensagemSignal().length > 0" class="registros-section">
+    <h3>Mensagens</h3>
+    <ul class="registros-list">
+      <li *ngFor="let mensagem of registrosMensagemSignal(); let i = index; trackBy: trackByMensagemId">
+        <span class="registro-index">{{ i + 1 }}.</span>
+        <span class="registro-texto">{{ mensagem.texto }}</span>
+        <button class="icon-button-small" (click)="copiarRegistro(mensagem.texto)" title="Copiar" type="button">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Estado vazio -->
+  <div *ngIf="!status && registrosStatusSignal().length === 0 && registrosMensagemSignal().length === 0" class="empty-state">
+    <p>Nenhum status registrado para este contrato.</p>
+  </div>
+</div>

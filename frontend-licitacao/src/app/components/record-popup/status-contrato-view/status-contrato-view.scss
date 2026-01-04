@@ -1,0 +1,203 @@
+@use '../../../styles/variables' as *;
+
+.status-contrato-view-container {
+  width: 100%;
+}
+
+.status-section {
+  margin-bottom: $spacing-xxl;
+  
+  .status-header {
+    margin-bottom: $spacing-md;
+    
+    h3 {
+      color: $text-primary;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      margin: 0;
+      padding-bottom: $spacing-sm;
+      border-bottom: $border-width solid $border-color;
+    }
+  }
+  
+  .status-control {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+    
+    .status-select {
+      flex: 1;
+      max-width: 300px;
+    }
+    
+    mat-icon.spinning {
+      animation: spin 1s linear infinite;
+    }
+  }
+  
+  .detail-item {
+    margin-bottom: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    
+    label {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $text-secondary;
+    }
+    
+    span {
+      font-size: $font-size-base;
+      color: $text-primary;
+      word-break: break-word;
+    }
+  }
+}
+
+.registros-section {
+  margin-top: $spacing-xxl;
+  
+  .registros-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+    border-bottom: $border-width solid $border-color;
+    
+    h3 {
+      color: $text-primary;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      margin: 0;
+    }
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+    }
+  }
+  
+  .add-registro-form {
+    background: $bg-secondary;
+    border: $border-width solid $border-color;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-md;
+    
+    .full-width {
+      width: 100%;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-md;
+      margin-top: $spacing-md;
+    }
+  }
+  
+  .registros-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    
+    li {
+      display: flex;
+      gap: $spacing-sm;
+      align-items: flex-start;
+      padding: $spacing-md;
+      background: $bg-secondary;
+      border: $border-width solid $border-color;
+      border-radius: $border-radius-md;
+      color: $text-primary;
+      font-size: $font-size-sm;
+      transition: $transition-base;
+      
+      &:hover {
+        border-color: $blue;
+        background: rgba($blue, 0.1);
+      }
+      
+      .registro-index {
+        font-weight: $font-weight-bold;
+        color: $blue;
+        flex-shrink: 0;
+      }
+      
+      .registro-texto {
+        flex: 1;
+        word-break: break-word;
+      }
+      
+      .registro-actions {
+        display: flex;
+        gap: $spacing-xs;
+        flex-shrink: 0;
+      }
+      
+      .icon-button-small {
+        background: transparent;
+        border: none;
+        color: $text-secondary;
+        cursor: pointer;
+        padding: $spacing-xs;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $border-radius-md;
+        transition: $transition-base;
+        min-width: 32px;
+        height: 32px;
+        
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+        
+        &:hover:not(:disabled) {
+          background: $bg-hover;
+          color: $blue;
+        }
+        
+        &.danger:hover:not(:disabled) {
+          background: rgba($red, 0.2);
+          color: $red;
+        }
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        mat-icon.spinning {
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: $spacing-xxl * 2;
+  color: $text-muted;
+  
+  p {
+    margin: 0;
+    font-size: $font-size-md;
+    font-style: italic;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

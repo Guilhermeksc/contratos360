@@ -1,12 +1,14 @@
 <app-janela-generica
-  [titulo]="'Registros do Contrato ' + (contract()?.numero || contratoId)"
+  [titulo]="popupTitle"
   [mostrar]="mostrar"
   [mostrarBotaoFechar]="true"
   [maxWidth]="'95vw'"
   [botoes]="botoes"
   [mostrarFooter]="false"
   [isLoading]="loading()"
-  (fechar)="fecharPopup()">
+  [headerAlertText]="(hasUnsavedChanges() || hasUnsavedStatusChanges()) ? 'Alterações não salvas' : null"
+  [headerButton]="headerButton"
+  (fechar)="tentarFecharPopup()">
   
   <div class="record-popup-content">
     <!-- Loading -->
@@ -20,106 +22,51 @@
       <mat-tab-group>
         <!-- Tab Informações Gerais -->
         <mat-tab label="Informações Gerais">
-          <div class="tab-content">
-            <div class="details-grid">
-              <div class="detail-item">
+          <div class="tab-content two-columns">
+            <!-- Coluna Esquerda: Informações do Contrato (somente leitura) -->
+            <div class="left-column">
+              <div class="info-item">
                 <label>Número:</label>
                 <span>{{ contract()?.numero || 'N/A' }}</span>
               </div>
-              <div class="detail-item">
+              <div class="info-item">
                 <label>Número Licitação:</label>
                 <span>{{ contract()?.licitacao_numero || 'N/A' }}</span>
               </div>
-              <div class="detail-item">
+              <div class="info-item">
                 <label>Processo (NUP):</label>
                 <span>{{ contract()?.processo || 'N/A' }}</span>
               </div>
-              <div class="detail-item">
-                <label>UASG:</label>
-                <span>{{ contract()?.uasg || 'N/A' }}</span>
-              </div>
-              <div class="detail-item">
+              <div class="info-item">
                 <label>Fornecedor:</label>
                 <span>{{ contract()?.fornecedor_nome || 'N/A' }}</span>
               </div>
-              <div class="detail-item">
+              <div class="info-item">
                 <label>CNPJ:</label>
                 <span>{{ contract()?.fornecedor_cnpj || 'N/A' }}</span>
               </div>
-              <div class="detail-item">
-                <label>Valor Global:</label>
+              <div class="info-item">
+                <label>Valor:</label>
                 <span>{{ formatCurrency(contract()?.valor_global ?? null) }}</span>
               </div>
-              <div class="detail-item">
-                <label>Vigência Início:</label>
-                <span>{{ formatDate(contract()?.vigencia_inicio ?? null) }}</span>
+              <div class="info-item">
+                <label>Vigência:</label>
+                <span>{{ formatDate(contract()?.vigencia_inicio ?? null) }} até {{ formatDate(contract()?.vigencia_fim ?? null) }}</span>
               </div>
-              <div class="detail-item">
-                <label>Vigência Fim:</label>
-                <span>{{ formatDate(contract()?.vigencia_fim ?? null) }}</span>
-              </div>
-              <div class="detail-item full-width">
+              <div class="info-item full-width">
                 <label>Objeto:</label>
                 <span>{{ contract()?.objeto || 'N/A' }}</span>
               </div>
-              <div class="detail-item">
-                <label>Tipo:</label>
-                <span>{{ contract()?.tipo || 'N/A' }}</span>
-              </div>
-              <div class="detail-item">
-                <label>Modalidade:</label>
-                <span>{{ contract()?.modalidade || 'N/A' }}</span>
-              </div>
-              <div class="detail-item">
-                <label>Manual:</label>
-                <span>{{ contract()?.manual ? 'Sim' : 'Não' }}</span>
-              </div>
             </div>
-          </div>
-        </mat-tab>
 
-        <!-- Tab Links do Contrato -->
-        <mat-tab label="Links do Contrato">
-          <div class="tab-content">
-            <div *ngIf="contract()?.links" class="links-section">
-              <div class="detail-item" *ngIf="contract()?.links?.link_contrato">
-                <label>Link do Contrato:</label>
-                <a [href]="contract()!.links!.link_contrato" target="_blank" class="link-item">
-                  {{ contract()!.links!.link_contrato }}
-                  <mat-icon>open_in_new</mat-icon>
-                </a>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.links?.link_ta">
-                <label>Link do Termo Aditivo:</label>
-                <a [href]="contract()!.links!.link_ta" target="_blank" class="link-item">
-                  {{ contract()!.links!.link_ta }}
-                  <mat-icon>open_in_new</mat-icon>
-                </a>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.links?.link_portaria">
-                <label>Link da Portaria:</label>
-                <a [href]="contract()!.links!.link_portaria" target="_blank" class="link-item">
-                  {{ contract()!.links!.link_portaria }}
-                  <mat-icon>open_in_new</mat-icon>
-                </a>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.links?.link_pncp_espc">
-                <label>Link PNCP/ESPC:</label>
-                <a [href]="contract()!.links!.link_pncp_espc" target="_blank" class="link-item">
-                  {{ contract()!.links!.link_pncp_espc }}
-                  <mat-icon>open_in_new</mat-icon>
-                </a>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.links?.link_portal_marinha">
-                <label>Link Portal da Marinha:</label>
-                <a [href]="contract()!.links!.link_portal_marinha" target="_blank" class="link-item">
-                  {{ contract()!.links!.link_portal_marinha }}
-                  <mat-icon>open_in_new</mat-icon>
-                </a>
-              </div>
-            </div>
-            <div *ngIf="!contract()?.links || (!contract()?.links?.link_contrato && !contract()?.links?.link_ta && !contract()?.links?.link_portaria)" class="empty-state">
-              <p>Nenhum link registrado para este contrato.</p>
+            <!-- Coluna Direita: Formulário Editável -->
+            <div class="right-column">
+              <app-status-contrato
+                [contratoId]="contratoId"
+                [contract]="contract()"
+                (statusSaved)="onStatusSaved($event)"
+                (unsavedChanges)="onStatusUnsavedChanges($event)">
+              </app-status-contrato>
             </div>
           </div>
         </mat-tab>
@@ -127,225 +74,53 @@
         <!-- Tab Fiscalização -->
         <mat-tab label="Fiscalização">
           <div class="tab-content">
-            <div *ngIf="contract()?.fiscalizacao" class="fiscalizacao-section">
-              <div class="details-grid">
-                <div class="detail-item">
-                  <label>Gestor:</label>
-                  <span>{{ contract()?.fiscalizacao?.gestor || 'N/A' }}</span>
-                </div>
-                <div class="detail-item">
-                  <label>Gestor Substituto:</label>
-                  <span>{{ contract()?.fiscalizacao?.gestor_substituto || 'N/A' }}</span>
-                </div>
-                <div class="detail-item">
-                  <label>Fiscal Técnico:</label>
-                  <span>{{ contract()?.fiscalizacao?.fiscal_tecnico || 'N/A' }}</span>
-                </div>
-                <div class="detail-item">
-                  <label>Fiscal Técnico Substituto:</label>
-                  <span>{{ contract()?.fiscalizacao?.fiscal_tec_substituto || 'N/A' }}</span>
-                </div>
-                <div class="detail-item">
-                  <label>Fiscal Administrativo:</label>
-                  <span>{{ contract()?.fiscalizacao?.fiscal_administrativo || 'N/A' }}</span>
-                </div>
-                <div class="detail-item">
-                  <label>Fiscal Administrativo Substituto:</label>
-                  <span>{{ contract()?.fiscalizacao?.fiscal_admin_substituto || 'N/A' }}</span>
-                </div>
-                <div class="detail-item full-width">
-                  <label>Observações:</label>
-                  <span>{{ contract()?.fiscalizacao?.observacoes || 'N/A' }}</span>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="!contract()?.fiscalizacao" class="empty-state">
-              <p>Nenhuma informação de fiscalização registrada para este contrato.</p>
-            </div>
+            <app-fiscalizacao-contrato
+              [fiscalizacao]="contract()?.fiscalizacao ?? null">
+            </app-fiscalizacao-contrato>
           </div>
         </mat-tab>
 
         <!-- Tab Status -->
         <mat-tab label="Status">
           <div class="tab-content">
-            <div *ngIf="contract()?.status" class="status-section">
-              <div class="detail-item">
-                <label>Status Atual:</label>
-                <span>{{ contract()?.status?.status || 'SEÇÃO CONTRATOS' }}</span>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.status?.objeto_editado">
-                <label>Objeto Editado:</label>
-                <span>{{ contract()?.status?.objeto_editado }}</span>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.status?.portaria_edit">
-                <label>Portaria:</label>
-                <span>{{ contract()?.status?.portaria_edit }}</span>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.status?.termo_aditivo_edit">
-                <label>Termo Aditivo:</label>
-                <span>{{ contract()?.status?.termo_aditivo_edit }}</span>
-              </div>
-              <div class="detail-item" *ngIf="contract()?.status?.data_registro">
-                <label>Data do Registro:</label>
-                <span>{{ contract()?.status?.data_registro }}</span>
-              </div>
-            </div>
-            <div *ngIf="registrosStatus && registrosStatus.length > 0" class="registros-section">
-              <h3>Registros de Status</h3>
-              <ul class="registros-list">
-                <li *ngFor="let registro of registrosStatus; let i = index; trackBy: trackByRegistroId">
-                  <span class="registro-index">{{ i + 1 }}.</span>
-                  <span class="registro-texto">{{ registro.texto }}</span>
-                  <button class="icon-button-small" (click)="copiarRegistro(registro.texto)" title="Copiar" type="button">
-                    <mat-icon>content_copy</mat-icon>
-                  </button>
-                </li>
-              </ul>
-            </div>
-            <div *ngIf="registrosMensagem && registrosMensagem.length > 0" class="registros-section">
-              <h3>Mensagens</h3>
-              <ul class="registros-list">
-                <li *ngFor="let mensagem of registrosMensagem; let i = index; trackBy: trackByMensagemId">
-                  <span class="registro-index">{{ i + 1 }}.</span>
-                  <span class="registro-texto">{{ mensagem.texto }}</span>
-                  <button class="icon-button-small" (click)="copiarRegistro(mensagem.texto)" title="Copiar" type="button">
-                    <mat-icon>content_copy</mat-icon>
-                  </button>
-                </li>
-              </ul>
-            </div>
-            <div *ngIf="!contract()?.status && (!registrosStatus || registrosStatus.length === 0) && (!registrosMensagem || registrosMensagem.length === 0)" class="empty-state">
-              <p>Nenhum status registrado para este contrato.</p>
-            </div>
+            <app-status-contrato-view
+              [status]="contract()?.status ?? null"
+              [registrosStatus]="registrosStatus"
+              [registrosMensagem]="registrosMensagem"
+              [contratoId]="contratoId"
+              [uasgCode]="contract()?.uasg ?? ''"
+              (statusUpdated)="onStatusUpdated($event)"
+              (registrosUpdated)="onRegistrosUpdated()"
+              (unsavedChanges)="onStatusTabUnsavedChanges($event)">
+            </app-status-contrato-view>
           </div>
         </mat-tab>
 
         <!-- Tab Empenhos -->
-        <mat-tab label="Empenhos" (activated)="loadEmpenhos()">
+        <mat-tab label="Empenhos">
           <div class="tab-content">
-            <div class="empenhos-header">
-              <mat-form-field appearance="outline" *ngIf="availableYears.length > 0">
-                <mat-label>Filtrar por Ano</mat-label>
-                <mat-select [(ngModel)]="selectedYear">
-                  <mat-option value="Todos">Todos</mat-option>
-                  <mat-option *ngFor="let year of availableYears" [value]="year">{{ year }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div *ngIf="loadingEmpenhos()" class="loading-message">
-              <mat-icon>hourglass_empty</mat-icon>
-              <span>Carregando empenhos...</span>
-            </div>
-
-            <div *ngIf="!loadingEmpenhos() && getFilteredEmpenhos().length > 0" class="empenhos-list">
-              <div *ngFor="let empenho of getFilteredEmpenhos(); let i = index" class="empenho-card">
-                <div class="empenho-header">
-                  <span class="empenho-number">{{ i + 1 }}.</span>
-                  <span class="empenho-title">Nº do Empenho: {{ empenho.numero || 'N/A' }}</span>
-                  <span class="empenho-date">Data de Emissão: {{ formatDate(empenho.data_emissao ?? null) }}</span>
-                </div>
-                <div class="empenho-details">
-                  <div class="empenho-row">
-                    <label>Unidade Gestora:</label>
-                    <span>{{ empenho.unidade_gestora || 'N/A' }}</span>
-                  </div>
-                  <div class="empenho-row">
-                    <label>Gestão:</label>
-                    <span>{{ empenho.gestao || 'N/A' }}</span>
-                  </div>
-                  <div class="empenho-row">
-                    <label>Credor:</label>
-                    <span>{{ empenho.credor_nome || 'N/A' }}</span>
-                  </div>
-                  <div class="empenho-row" *ngIf="empenho.credor_cnpj">
-                    <label>CNPJ Credor:</label>
-                    <span>{{ empenho.credor_cnpj }}</span>
-                  </div>
-                  <div class="empenho-values">
-                    <div class="value-item">
-                      <label>Empenhado:</label>
-                      <span class="value">{{ formatCurrency(empenho.empenhado ?? null) }}</span>
-                    </div>
-                    <div class="value-item">
-                      <label>Liquidado:</label>
-                      <span class="value">{{ formatCurrency(empenho.liquidado ?? null) }}</span>
-                    </div>
-                    <div class="value-item">
-                      <label>Pago:</label>
-                      <span class="value">{{ formatCurrency(empenho.pago ?? null) }}</span>
-                    </div>
-                  </div>
-                  <div class="empenho-row" *ngIf="empenho.informacao_complementar">
-                    <label>Informação Complementar:</label>
-                    <span>{{ empenho.informacao_complementar }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="!loadingEmpenhos() && getFilteredEmpenhos().length === 0" class="empty-state">
-              <p>Nenhum empenho encontrado{{ selectedYear !== 'Todos' ? ' para o ano selecionado' : '' }}.</p>
-            </div>
+            <app-empenhos-contrato
+              [contratoId]="contratoId">
+            </app-empenhos-contrato>
           </div>
         </mat-tab>
 
         <!-- Tab Itens -->
-        <mat-tab label="Itens" (activated)="loadItens()">
+        <mat-tab label="Itens">
           <div class="tab-content">
-            <div *ngIf="loadingItens()" class="loading-message">
-              <mat-icon>hourglass_empty</mat-icon>
-              <span>Carregando itens...</span>
-            </div>
+            <app-itens-contrato
+              [contratoId]="contratoId">
+            </app-itens-contrato>
+          </div>
+        </mat-tab>
 
-            <div *ngIf="!loadingItens() && itens().length > 0" class="itens-list">
-              <div *ngFor="let item of itens(); let i = index" class="item-card">
-                <div class="item-header">
-                  <span class="item-number">{{ i + 1 }}.</span>
-                  <span class="item-title">Item {{ item.numero_item_compra || 'N/A' }}</span>
-                </div>
-                <div class="item-details">
-                  <div class="item-row">
-                    <label>Tipo de Material:</label>
-                    <span>{{ item.tipo_material || 'N/A' }}</span>
-                  </div>
-                  <div class="item-row" *ngIf="item.descricao_complementar">
-                    <label>Descrição Complementar:</label>
-                    <span>{{ item.descricao_complementar }}</span>
-                  </div>
-                  <div class="item-row">
-                    <label>Tipo ID:</label>
-                    <span>{{ item.tipo_id || 'N/A' }}</span>
-                  </div>
-                  <div class="item-row">
-                    <label>Grupo ID:</label>
-                    <span>{{ item.grupo_id || 'N/A' }}</span>
-                  </div>
-                  <div class="item-row">
-                    <label>CatMatSerItem ID:</label>
-                    <span>{{ item.catmatseritem_id || 'N/A' }}</span>
-                  </div>
-                  <div class="item-values">
-                    <div class="value-item">
-                      <label>Quantidade:</label>
-                      <span class="value">{{ item.quantidade || '0' }}</span>
-                    </div>
-                    <div class="value-item">
-                      <label>Valor Unitário:</label>
-                      <span class="value">{{ formatCurrency(item.valorunitario ?? null) }}</span>
-                    </div>
-                    <div class="value-item">
-                      <label>Valor Total:</label>
-                      <span class="value">{{ formatCurrency(item.valortotal ?? null) }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="!loadingItens() && itens().length === 0" class="empty-state">
-              <p>Nenhum item encontrado para este contrato.</p>
-            </div>
+        <!-- Tab Histórico -->
+        <mat-tab label="Histórico">
+          <div class="tab-content">
+            <app-historico-contrato
+              [contratoId]="contratoId"
+              [historicos]="[]">
+            </app-historico-contrato>
           </div>
         </mat-tab>
 

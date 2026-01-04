@@ -14,6 +14,18 @@
   padding: $spacing-lg;
   animation: fadeIn 0.3s ease;
   backdrop-filter: blur(2px);
+  transition: filter 0.3s ease, opacity 0.3s ease;
+  
+  // Quando há um diálogo aberto acima, aplica blur
+  &.blurred {
+    filter: blur(6px);
+    opacity: 0.5;
+    pointer-events: none;
+    
+    .janela-content {
+      pointer-events: auto;
+    }
+  }
 
   &.loading {
     pointer-events: none;
@@ -64,6 +76,92 @@
   padding: $spacing-lg;
   border-bottom: $border-width solid $border-color;
   flex-shrink: 0;
+  gap: $spacing-md;
+
+  .janela-header-left {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .janela-header-right {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex-shrink: 0;
+  }
+
+  .janela-header-button {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    border: $border-width solid transparent;
+    border-radius: $border-radius-md;
+    font-family: $font-family;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all $transition-base;
+    white-space: nowrap;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+    
+    &.primary {
+      background-color: $blue;
+      color: $bg-primary;
+      border-color: $blue;
+      
+      &:hover:not(:disabled) {
+        background-color: $blue-dark;
+        border-color: $blue-dark;
+      }
+    }
+    
+    &.secondary {
+      background-color: transparent;
+      color: $text-primary;
+      border-color: $border-color;
+      
+      &:hover:not(:disabled) {
+        background-color: $bg-hover;
+        border-color: $border-color-hover;
+      }
+    }
+    
+    &.danger {
+      background-color: $red;
+      color: $text-primary;
+      border-color: $red;
+      
+      &:hover:not(:disabled) {
+        background-color: $red-dark;
+        border-color: $red-dark;
+      }
+    }
+    
+    &.success {
+      background-color: $green;
+      color: $bg-primary;
+      border-color: $green;
+      
+      &:hover:not(:disabled) {
+        background-color: $green-dark;
+        border-color: $green-dark;
+      }
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
 
   .janela-titulo {
     margin: 0;
@@ -71,6 +169,37 @@
     font-size: $font-size-xl;
     font-weight: $font-weight-semibold;
     flex: 1;
+    min-width: 0;
+  }
+
+  .unsaved-changes-alert-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-xs $spacing-md;
+    background: rgba($yellow, 0.15);
+    border: 1px solid rgba($yellow, 0.4);
+    border-radius: $border-radius-md;
+    color: $yellow;
+    font-size: $font-size-sm;
+    animation: pulse 2s ease-in-out infinite;
+    white-space: nowrap;
+    flex-shrink: 0;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
   }
 
   .janela-close {

@@ -11,15 +11,35 @@
     
     <!-- Header -->
     <div class="janela-header">
-      <h2 class="janela-titulo">{{ titulo }}</h2>
-      <button 
-        *ngIf="mostrarBotaoFechar"
-        class="janela-close"
-        (click)="fecharJanela()"
-        [disabled]="isLoading"
-        aria-label="Fechar">
-        <mat-icon>close</mat-icon>
-      </button>
+      <div class="janela-header-left">
+        <h2 class="janela-titulo">{{ titulo }}</h2>
+        <div *ngIf="headerAlertText" class="unsaved-changes-alert-header">
+          <mat-icon>info</mat-icon>
+          <span>{{ headerAlertText }}</span>
+        </div>
+      </div>
+      <div class="janela-header-right">
+        <button
+          *ngIf="headerButton"
+          class="janela-header-button"
+          [class.primary]="headerButton.tipo === 'primary' || !headerButton.tipo"
+          [class.secondary]="headerButton.tipo === 'secondary'"
+          [class.danger]="headerButton.tipo === 'danger'"
+          [class.success]="headerButton.tipo === 'success'"
+          [disabled]="headerButton.disabled || isLoading"
+          (click)="executarAcao(headerButton)">
+          <mat-icon *ngIf="headerButton.tipo === 'primary' || !headerButton.tipo">save</mat-icon>
+          {{ headerButton.texto }}
+        </button>
+        <button 
+          *ngIf="mostrarBotaoFechar"
+          class="janela-close"
+          (click)="fecharJanela()"
+          [disabled]="isLoading"
+          aria-label="Fechar">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
     </div>
     
     <!-- Body -->

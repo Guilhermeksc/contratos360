@@ -53,11 +53,32 @@ class StatusContrato(models.Model):
         help_text="Termo aditivo editado (presente no ORM mas ausente no SQLite)",
         verbose_name="Termo Aditivo Editado"
     )
-    radio_options_json = models.JSONField(
+    pode_renovar = models.BooleanField(
+        default=False,
+        help_text="Indica se o contrato pode ser renovado",
+        verbose_name="Pode Renovar"
+    )
+    custeio = models.BooleanField(
+        default=False,
+        help_text="Indica se é contrato de custeio",
+        verbose_name="Custeio"
+    )
+    natureza_continuada = models.BooleanField(
+        default=False,
+        help_text="Indica se o contrato tem natureza continuada",
+        verbose_name="Natureza Continuada"
+    )
+    TIPO_CONTRATO_CHOICES = [
+        ('material', 'Material'),
+        ('servico', 'Serviço'),
+    ]
+    tipo_contrato = models.CharField(
+        max_length=10,
+        choices=TIPO_CONTRATO_CHOICES,
         blank=True,
         null=True,
-        help_text="JSON com flags: Pode Renovar?, Custeio?, Natureza Continuada?, etc.",
-        verbose_name="Opções de Radio (JSON)"
+        help_text="Tipo do contrato: Material ou Serviço",
+        verbose_name="Tipo do Contrato"
     )
     data_registro = models.CharField(
         max_length=50,

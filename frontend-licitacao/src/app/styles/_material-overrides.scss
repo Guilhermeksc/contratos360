@@ -125,17 +125,110 @@
 }
 
 // Mat Dialog
+::ng-deep .cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  z-index: 10001 !important; // Acima do popup de registro (z-index: 10000)
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+::ng-deep .cdk-overlay-container {
+  z-index: 10001 !important;
+}
+
+::ng-deep .cdk-overlay-pane {
+  z-index: 10002 !important;
+}
+
+// Quando o diálogo estiver aberto, desfoca o popup de registro
+// O backdrop tem z-index maior, então aplicamos blur diretamente no popup
+::ng-deep body:has(.cdk-overlay-backdrop.cdk-overlay-backdrop-showing) .janela-overlay {
+  filter: blur(6px) !important;
+  opacity: 0.5 !important;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+  pointer-events: none !important;
+  
+  .janela-content {
+    pointer-events: auto;
+  }
+}
+
+// Fallback para navegadores que não suportam :has()
+::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing ~ * .janela-overlay {
+  filter: blur(6px) !important;
+  opacity: 0.5 !important;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+  pointer-events: none !important;
+  
+  .janela-content {
+    pointer-events: auto;
+  }
+}
+
 ::ng-deep .mat-mdc-dialog-container {
-  background-color: $bg-secondary;
+  background-color: $bg-primary !important;
   color: $text-primary;
-  border: $border-width solid $border-color;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: $border-radius-md;
+  padding-top: $spacing-xxl * 3;
+  padding-bottom: $spacing-xxl;
+  padding-left: $spacing-xxl;
+  padding-right: $spacing-xxl;
+  margin-top: $spacing-xxl * 2;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 10002 !important;
+  
+  .mdc-dialog__surface {
+    background-color: $bg-primary !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: $border-radius-md;
+  }
+}
+
+::ng-deep .mdc-dialog__surface {
+  background-color: $bg-primary !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: $border-radius-md;
 }
 
 ::ng-deep .mat-mdc-dialog-title {
   color: $text-primary;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  margin-bottom: 0;
+  
+  // Permite que o título seja parte do header customizado
+  &.dialog-header-title {
+    margin: 0;
+  }
 }
 
 ::ng-deep .mat-mdc-dialog-content {
   color: $text-secondary;
+  font-size: $font-size-base;
+  line-height: 1.5;
+  padding: 0;
+  margin: 0;
+}
+
+::ng-deep .mat-mdc-dialog-actions {
+  margin-top: $spacing-xxl;
+  padding: 0;
+  min-height: auto;
+  
+  button {
+    margin-left: $spacing-md;
+    
+    &:first-child {
+      margin-left: 0;
+    }
+  }
 }
 

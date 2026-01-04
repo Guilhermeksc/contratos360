@@ -370,6 +370,8 @@ class ContratoDetalhesView(viewsets.ReadOnlyModelViewSet):
     queryset = Contrato.objects.select_related(
         'uasg',
         'status',
+        'status__contrato',
+        'status__contrato__uasg',
         'links',
         'fiscalizacao',
         'dados_manuais'
