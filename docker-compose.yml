@@ -56,6 +56,7 @@ services:
         python manage.py makemigrations --noinput &&
         python manage.py migrate --noinput &&
         python manage.py collectstatic --noinput &&
+        chmod -R 755 /app/staticfiles &&
         exec gunicorn django_licitacao360.wsgi:application --bind 0.0.0.0:8000 --timeout 600 --workers ${GUNICORN_WORKERS:-2} --threads ${GUNICORN_THREADS:-4} --access-logfile - --error-logfile - --log-level info
       "
     volumes:
