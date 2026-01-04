@@ -1,4 +1,10 @@
 <div class="login-container">
+  <div class="login-video-wrapper" aria-hidden="true">
+    <video class="login-video" autoplay muted loop playsinline>
+      <source src="assets/video/backlogin.mp4" type="video/mp4" />
+    </video>
+    <div class="login-video__blur"></div>
+  </div>
   <!-- Gradient overlays -->
   <div class="gradient-overlay gradient-overlay--top-left"></div>
   <div class="gradient-overlay gradient-overlay--bottom-right"></div>
@@ -8,9 +14,12 @@
       <mat-card-content>
         <!-- Header -->
         <div class="login-header">
-          <span class="login-title">Licitação 360</span>
+          <img 
+            src="assets/img/svg/licitacao360.svg" 
+            alt="Marca Licitação 360" 
+            class="login-logo" />
+          <span class="login-title" data-text="Licitação 360">Licitação 360</span>
         </div>
-        <p class="login-description">Sistema de Gestão de Licitações</p>
         
         <!-- Login Form -->
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
@@ -81,7 +90,13 @@
       </mat-card-content>
       
       <mat-card-actions>
-        <p class="developer-credit">Desenvolvido por CC (IM) Siqueira Campos</p>
+        <p class="developer-credit">
+          Desenvolvido por CC (IM) Siqueira Campos
+          <img 
+            src="assets/img/svg/brazil.png" 
+            alt="Bandeira do Brasil" 
+            class="developer-flag" />
+        </p>
       </mat-card-actions>
     </mat-card>
   </div>

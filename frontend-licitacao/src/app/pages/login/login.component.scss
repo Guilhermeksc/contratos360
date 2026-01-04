@@ -5,10 +5,41 @@
   @include flex-center;
   min-height: 100vh;
   position: relative;
-  padding: 2rem;
+  padding: 1rem;
   box-sizing: border-box;
   background: linear-gradient(135deg, $bg-primary 0%, $bg-secondary 50%, $bg-tertiary 100%);
   font-family: $font-family;
+  overflow: hidden;
+}
+
+.login-video-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 2rem;
+}
+
+.login-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(6px) brightness(0.85);
+  transform: scale(1.05);
+}
+
+.login-video__blur {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba($blue, 0.25), transparent 45%),
+              radial-gradient(circle at 80% 80%, rgba($purple, 0.25), transparent 45%),
+              linear-gradient(135deg, rgba($bg-primary, 0.4), rgba($bg-secondary, 0.4));
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.gradient-overlay {
+  z-index: 2;
 }
 
 .gradient-overlay {
@@ -34,56 +65,115 @@
 
 .login-wrapper {
   width: 100%;
-  max-width: 56rem;
+  max-width: 32rem;
   position: relative;
-  z-index: 10;
+  z-index: 3;
 }
 
 .login-card {
-  padding: 2rem 4rem;
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  padding: 1rem 2rem;
   border-radius: 1.5rem;
-  background-color: rgba($bg-secondary, 0.95);
-  backdrop-filter: blur(20px);
-  border: $border-width solid $border-color;
-  box-shadow: $shadow-lg;
+  background-color: rgba(8, 12, 18, 0.78);
+  backdrop-filter: blur(26px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.55);
+  position: relative;
   transition: all $transition-slow;
 
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+    mix-blend-mode: screen;
+  }
 }
 
 .login-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+
+  .login-logo {
+    width: clamp(3.75rem, 10vw, 5rem);
+    display: block;
+    margin-bottom: 0.15rem;
+    filter:
+      drop-shadow(0 0 4px rgba(#73ddff, 0.5))
+      drop-shadow(0 0 14px rgba(#00b6ff, 0.45))
+      drop-shadow(0 0 28px rgba(#0df6ff, 0.25));
+    mix-blend-mode: screen;
+    opacity: 0.95;
+    transition: filter $transition-base;
+
+    &:hover {
+      filter:
+        drop-shadow(0 0 6px rgba(#b9f6ff, 0.75))
+        drop-shadow(0 0 18px rgba(#00d1ff, 0.55))
+        drop-shadow(0 0 32px rgba(#24f3ff, 0.45));
+    }
+  }
   
   .login-title {
     font-size: clamp(2rem, 5vw, 2.75rem);
     font-weight: $font-weight-bold;
     letter-spacing: -0.02em;
-    color: $text-primary;
     margin-bottom: 0;
-    background: linear-gradient(135deg, $blue 0%, $purple 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: block;
+    display: inline-block;
+    position: relative;
+    padding: 0;
+    color: rgba(#ffffff, 1);
+    line-height: 1.1;
+    text-shadow:
+      0 0 6px rgba(#dff8ff, 0.2),
+      0 0 14px rgba($blue, 0.18),
+      0 0 28px rgba(#00c2ff, 0.2);
+
+    &::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      color: transparent;
+      pointer-events: none;
+      background-image: radial-gradient(circle at 0% 50%, rgba($blue, 0.15) 0%, rgba(#5fd8ff, 0.65) 40%, rgba(#9ef0ff, 0.9) 55%, rgba(#5fd8ff, 0.6) 70%, transparent 100%);
+      background-size: 220% 220%;
+      background-position: -160% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer-text 2.4s linear infinite;
+    }
   }
 }
 
-.login-description {
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  color: $text-secondary;
-  text-align: center;
-  font-weight: $font-weight-normal;
-  line-height: 1.5;
+@keyframes shimmer-text {
+  0% {
+    background-position: -160% 50%;
+  }
+  100% {
+    background-position: 160% 50%;
+  }
 }
 
 .login-form {
   @include flex-column;
-  gap: 1.25rem;
+  gap: 0.25rem;
+  width: 100%;
+  max-width: 20rem;
+  margin: 0 auto;
 }
 
 .form-field {
   width: 100%;
+  max-width: 20rem;
+  margin: 0 auto;
   
   .mat-mdc-form-field {
     font-family: $font-family;
@@ -110,11 +200,26 @@
   .mat-mdc-form-field-label {
     color: $text-secondary;
     font-weight: $font-weight-medium;
+    font-size: 1rem;
   }
   
   input {
-    color: $text-primary;
+    color: rgba(#ffffff, 0.92);
     font-weight: $font-weight-normal;
+    font-size: 1.05rem;
+    background-color: transparent;
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+      -webkit-text-fill-color: rgba(#ffffff, 0.95);
+      caret-color: rgba(#ffffff, 0.95);
+      transition: background-color 9999s ease-in-out 0s;
+      box-shadow: 0 0 0 1000px transparent inset;
+      -webkit-box-shadow: 0 0 0 1000px transparent inset;
+      background-color: transparent !important;
+    }
   }
 }
 
@@ -131,7 +236,8 @@
 .login-button {
   @include button-primary;
   width: 100%;
-  margin-top: 1.5rem;
+  max-width: 24rem;
+  margin: 0.5rem auto 0 auto;
   height: 48px;
   font-size: 0.95rem;
   font-weight: $font-weight-semibold;
@@ -227,6 +333,10 @@
 // Developer credit - discrete footer
 .developer-credit {
   width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   text-align: center;
   font-size: 0.75rem;
   color: $text-muted;
@@ -234,8 +344,15 @@
   padding: 1rem 0 0 0;
   font-weight: $font-weight-normal;
   letter-spacing: 0.02em;
-  opacity: 0.7;
+  opacity: 0.75;
   font-family: $font-family;
+
+  .developer-flag {
+    width: 1.2rem;
+    height: auto;
+    filter: drop-shadow(0 0 6px rgba(#00d9ff, 0.45));
+    border-radius: 0.25rem;
+  }
 }
 
 mat-card-actions {
@@ -258,6 +375,10 @@ mat-card-actions {
     padding-left: calc(1rem + env(safe-area-inset-left));
     padding-right: calc(1rem + env(safe-area-inset-right));
     padding: 1rem;
+  }
+
+  .login-video-wrapper {
+    border-radius: 0;
   }
 
   .gradient-overlay {
@@ -290,15 +411,18 @@ mat-card-actions {
 
   .login-form {
     gap: 1rem;
+    max-width: 100%;
   }
 
   .form-field {
+    max-width: 100%;
     .mat-mdc-text-field-wrapper {
       border-radius: 10px;
     }
   }
 
   .login-button {
+    max-width: 100%;
     margin-top: 1rem;
     height: 48px;
     font-size: 0.95rem;

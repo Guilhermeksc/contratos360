@@ -11,18 +11,68 @@
 }
 
 .landing-header {
-  text-align: center;
+  width: 100%;
+  text-align: right;
   margin-bottom: $spacing-xxl * 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $spacing-sm;
+  position: relative;
+  z-index: 2;
+  padding-right: clamp($spacing-md, 4vw, $spacing-xxl);
+  box-sizing: border-box;
+
+  .landing-title-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .landing-logo {
+    width: clamp(3.5rem, 9vw, 5.25rem);
+    filter:
+      drop-shadow(0 0 6px rgba(#7ee5ff, 0.55))
+      drop-shadow(0 0 16px rgba(#00bbff, 0.45))
+      drop-shadow(0 0 30px rgba(#20f8ff, 0.35));
+    mix-blend-mode: screen;
+    transition: filter $transition-base;
+
+    &:hover {
+      filter:
+        drop-shadow(0 0 8px rgba(#c0f6ff, 0.75))
+        drop-shadow(0 0 20px rgba(#00d4ff, 0.55))
+        drop-shadow(0 0 36px rgba(#36fbff, 0.45));
+    }
+  }
   
   .landing-title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2.5rem, 5vw, 4.25rem);
     font-weight: $font-weight-bold;
-    color: $text-primary;
-    margin-bottom: $spacing-lg;
-    background: linear-gradient(135deg, $blue 0%, $purple 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    margin: 0;
+    display: inline-block;
+    position: relative;
+    color: rgba(#ffffff, 0.98);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-shadow:
+      0 0 8px rgba(#e5fbff, 0.35),
+      0 0 16px rgba($blue, 0.22),
+      0 0 32px rgba(#00c6ff, 0.2);
+
+    &::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      color: transparent;
+      background-image: radial-gradient(circle at 0% 50%, rgba($blue, 0.18) 0%, rgba(#63e0ff, 0.7) 40%, rgba(#a8f7ff, 0.95) 60%, rgba(#63e0ff, 0.65) 80%, transparent 100%);
+      background-size: 220% 220%;
+      background-position: -160% 50%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: landing-shimmer 2.4s linear infinite;
+    }
   }
   
   .landing-subtitle {
@@ -48,6 +98,15 @@
   @include respond-to(sm) {
     grid-template-columns: 1fr;
     gap: $spacing-lg;
+  }
+}
+
+@keyframes landing-shimmer {
+  0% {
+    background-position: -160% 50%;
+  }
+  100% {
+    background-position: 160% 50%;
   }
 }
 
