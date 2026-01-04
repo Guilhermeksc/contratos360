@@ -56,19 +56,5 @@
         </mat-radio-group>
       </div>
     </div>
-
-    <!-- Botão Salvar -->
-    <div class="form-actions">
-      <button 
-        mat-raised-button 
-        color="primary" 
-        type="button"
-        (click)="saveStatus()"
-        [disabled]="savingStatus() || !hasUnsavedChanges()">
-        <mat-icon *ngIf="!savingStatus()">save</mat-icon>
-        <mat-icon *ngIf="savingStatus()" class="spinning">refresh</mat-icon>
-        <span>{{ savingStatus() ? 'Salvando...' : 'Salvar Alterações' }}</span>
-      </button>
-    </div>
   </form>
 </div>

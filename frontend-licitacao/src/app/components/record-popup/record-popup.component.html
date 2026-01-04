@@ -62,6 +62,7 @@
             <!-- Coluna Direita: Formulário Editável -->
             <div class="right-column">
               <app-status-contrato
+                #statusFormComponent
                 [contratoId]="contratoId"
                 [contract]="contract()"
                 (statusSaved)="onStatusSaved($event)"
@@ -84,6 +85,7 @@
         <mat-tab label="Status">
           <div class="tab-content">
             <app-status-contrato-view
+              #statusViewComponent
               [status]="contract()?.status ?? null"
               [registrosStatus]="registrosStatus"
               [registrosMensagem]="registrosMensagem"

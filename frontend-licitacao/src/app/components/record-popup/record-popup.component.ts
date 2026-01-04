@@ -47,7 +47,8 @@ export class RecordPopupComponent implements OnInit, OnChanges {
   @Output() fechar = new EventEmitter<void>();
   @Output() saved = new EventEmitter<void>();
 
-  @ViewChild(StatusContratoViewComponent) statusViewComponent?: StatusContratoViewComponent;
+  @ViewChild('statusViewComponent') statusViewComponent?: StatusContratoViewComponent;
+  @ViewChild('statusFormComponent') statusFormComponent?: StatusContratoComponent;
 
   contract = signal<ContratoDetail | null>(null);
   registrosStatus: RegistroStatus[] = [];
@@ -97,6 +98,7 @@ export class RecordPopupComponent implements OnInit, OnChanges {
 
   onStatusUnsavedChanges(hasChanges: boolean): void {
     this.hasUnsavedChanges.set(hasChanges);
+    this.updateHeaderButton();
   }
 
   onStatusTabUnsavedChanges(hasChanges: boolean): void {
@@ -105,33 +107,105 @@ export class RecordPopupComponent implements OnInit, OnChanges {
   }
 
   updateHeaderButton(): void {
-    if (this.hasUnsavedStatusChanges()) {
+    const hasFormChanges = this.hasUnsavedChanges();
+    const hasStatusTabChanges = this.hasUnsavedStatusChanges();
+    
+    console.log('updateHeaderButton chamado:', { hasFormChanges, hasStatusTabChanges });
+    
+    if (hasFormChanges || hasStatusTabChanges) {
       this.headerButton = {
-        texto: 'Salvar Status',
+        texto: 'Salvar Alterações',
         tipo: 'primary',
         disabled: false,
-        acao: () => this.saveStatusTab()
+        acao: () => {
+          console.log('Ação do botão header executada');
+          this.saveAllChanges();
+        }
       };
+      console.log('Botão header criado:', this.headerButton);
     } else {
       this.headerButton = null;
+      console.log('Botão header removido (sem alterações)');
     }
   }
 
-  saveStatusTab(): void {
-    if (this.statusViewComponent) {
-      this.statusViewComponent.saveStatus();
+  saveAllChanges(): void {
+    console.log('=== saveAllChanges() CHAMADO ===');
+    console.log('hasUnsavedChanges:', this.hasUnsavedChanges());
+    console.log('hasUnsavedStatusChanges:', this.hasUnsavedStatusChanges());
+    console.log('statusFormComponent:', this.statusFormComponent);
+    console.log('statusViewComponent:', this.statusViewComponent);
+    
+    let savingForm = false;
+    let savingStatusTab = false;
+    
+    // Salva alterações do formulário de Informações Gerais (se houver)
+    if (this.hasUnsavedChanges()) {
+      if (this.statusFormComponent) {
+        console.log('Salvando formulário de Informações Gerais');
+        savingForm = true;
+        this.statusFormComponent.saveStatus();
+      } else {
+        console.warn('statusFormComponent não encontrado!');
+      }
+    } else {
+      console.log('Nenhuma alteração no formulário de Informações Gerais');
     }
+    
+    // Salva alterações da aba Status (se houver)
+    if (this.hasUnsavedStatusChanges()) {
+      if (this.statusViewComponent) {
+        console.log('Salvando aba Status');
+        savingStatusTab = true;
+        this.statusViewComponent.saveStatus();
+      } else {
+        console.warn('statusViewComponent não encontrado!');
+      }
+    } else {
+      console.log('Nenhuma alteração na aba Status');
+    }
+    
+    // Se nenhuma alteração foi salva, não faz nada
+    if (!savingForm && !savingStatusTab) {
+      console.warn('Nenhuma alteração para salvar!');
+      // Mostra mensagem informativa mesmo quando não há alterações
+      this.snackBar.open('ℹ️ Nenhuma alteração pendente para salvar', 'Fechar', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['success-snackbar']
+      });
+      return;
+    }
+    
+    console.log('Salvamento iniciado:', { savingForm, savingStatusTab });
+    // A notificação será mostrada pelos handlers onStatusSaved ou onStatusUpdated
   }
 
   onStatusSaved(status: StatusContrato): void {
+    console.log('onStatusSaved() chamado com status:', status);
+    
     // Atualiza o status no contrato local
     const currentContract = this.contract();
     if (currentContract) {
       currentContract.status = status;
       this.contract.set({ ...currentContract });
     }
+    // Reseta o estado de alterações não salvas do formulário
+    this.hasUnsavedChanges.set(false);
+    // Atualiza o botão do header (pode desaparecer se não houver mais alterações)
+    this.updateHeaderButton();
     // Emite evento para atualizar a tabela
     this.saved.emit();
+    
+    // Mostra notificação de sucesso sempre que salvar o formulário
+    console.log('Mostrando snackbar de sucesso para Informações Gerais');
+    this.snackBar.open('✅ Alterações salvas com sucesso!', 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['success-snackbar']
+    });
   }
 
   onStatusUpdated(status: StatusContrato): void {
@@ -141,11 +215,20 @@ export class RecordPopupComponent implements OnInit, OnChanges {
       currentContract.status = status;
       this.contract.set({ ...currentContract });
     }
-    // Reseta o estado de alterações não salvas
+    // Reseta o estado de alterações não salvas da aba Status
     this.hasUnsavedStatusChanges.set(false);
+    // Atualiza o botão do header (pode desaparecer se não houver mais alterações)
     this.updateHeaderButton();
     // Emite evento para atualizar a tabela
     this.saved.emit();
+    
+    // Mostra notificação de sucesso sempre que salvar a aba Status
+    this.snackBar.open('✅ Alterações salvas com sucesso!', 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['success-snackbar']
+    });
     
     // Recarrega o contrato completo para garantir que todos os dados estão atualizados
     if (this.contratoId) {

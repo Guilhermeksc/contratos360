@@ -135,12 +135,7 @@ export class StatusContratoViewComponent implements OnInit, OnChanges {
         this.statusUpdated.emit(updatedStatus);
         this.registrosUpdated.emit();
         
-        this.snackBar.open('✅ Status atualizado com sucesso!', 'Fechar', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['success-snackbar']
-        });
+        // Não mostra snackbar aqui, será mostrado pelo componente pai
       },
       error: (err: any) => {
         console.error('Erro ao atualizar status:', err);

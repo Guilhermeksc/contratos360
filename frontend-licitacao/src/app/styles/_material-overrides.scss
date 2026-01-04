@@ -232,3 +232,31 @@
   }
 }
 
+// Mat Snackbar
+::ng-deep .mat-mdc-snack-bar-container {
+  background-color: $bg-secondary !important;
+  color: $text-primary !important;
+  border: $border-width solid $border-color !important;
+  border-radius: $border-radius-md !important;
+  
+  &.success-snackbar {
+    background-color: rgba($green, 0.2) !important;
+    border-color: $green !important;
+    color: $green !important;
+  }
+  
+  &.error-snackbar {
+    background-color: rgba($red, 0.2) !important;
+    border-color: $red !important;
+    color: $red !important;
+  }
+  
+  .mat-mdc-snack-bar-label {
+    color: inherit !important;
+  }
+  
+  .mat-mdc-button {
+    color: inherit !important;
+  }
+}
+

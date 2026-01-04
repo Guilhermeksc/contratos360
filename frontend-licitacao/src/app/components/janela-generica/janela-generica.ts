@@ -38,7 +38,14 @@ export class JanelaGenerica {
 
   executarAcao(botao: BotaoJanela) {
     if (!botao.disabled && !this.isLoading) {
-      botao.acao();
+      console.log('executarAcao chamado para:', botao.texto);
+      try {
+        botao.acao();
+      } catch (error) {
+        console.error('Erro ao executar ação do botão:', error);
+      }
+    } else {
+      console.log('Botão desabilitado ou carregando:', { disabled: botao.disabled, isLoading: this.isLoading });
     }
   }
 

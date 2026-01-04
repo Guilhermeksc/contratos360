@@ -74,9 +74,25 @@ export class StatusContratoComponent implements OnInit, OnChanges {
   }
 
   private checkForUnsavedChanges(): void {
-    const currentValues = JSON.stringify(this.statusForm.value);
-    const initialValues = JSON.stringify(this.initialFormValues);
-    const hasChanges = currentValues !== initialValues;
+    if (!this.statusLoaded()) {
+      return;
+    }
+    
+    const current = this.statusForm.value;
+    const initial = this.initialFormValues || {};
+    
+    // Aplica trim() consistentemente no objeto_editado para comparação
+    const currentObjeto = (current.objeto_editado || '').trim();
+    const initialObjeto = (initial.objeto_editado || '').trim();
+    
+    // Compara cada campo individualmente para garantir detecção correta
+    const hasChanges = 
+      currentObjeto !== initialObjeto ||
+      (current.pode_renovar || 'false') !== (initial.pode_renovar || 'false') ||
+      (current.custeio || 'false') !== (initial.custeio || 'false') ||
+      (current.natureza_continuada || 'false') !== (initial.natureza_continuada || 'false') ||
+      (current.tipo_contrato || null) !== (initial.tipo_contrato || null);
+    
     this.hasUnsavedChanges.set(hasChanges);
     this.unsavedChanges.emit(hasChanges);
   }
@@ -108,8 +124,9 @@ export class StatusContratoComponent implements OnInit, OnChanges {
     let formValues: any;
     
     if (status) {
+      // Aplica trim() no objeto_editado para garantir consistência
       formValues = {
-        objeto_editado: status.objeto_editado || '',
+        objeto_editado: (status.objeto_editado || '').trim(),
         pode_renovar: status.pode_renovar ? 'true' : 'false',
         custeio: status.custeio ? 'true' : 'false',
         natureza_continuada: status.natureza_continuada ? 'true' : 'false',
@@ -126,62 +143,87 @@ export class StatusContratoComponent implements OnInit, OnChanges {
     }
     
     this.statusForm.patchValue(formValues, { emitEvent: false });
-    this.initialFormValues = JSON.parse(JSON.stringify(formValues));
+    // Salva uma cópia profunda dos valores iniciais (já com trim aplicado)
+    this.initialFormValues = {
+      objeto_editado: formValues.objeto_editado || '',
+      pode_renovar: formValues.pode_renovar || 'false',
+      custeio: formValues.custeio || 'false',
+      natureza_continuada: formValues.natureza_continuada || 'false',
+      tipo_contrato: formValues.tipo_contrato || null
+    };
     this.hasUnsavedChanges.set(false);
+    this.unsavedChanges.emit(false);
   }
 
   saveStatus(): void {
-    if (!this.contratoId || !this.statusForm.valid || this.savingStatus()) {
+    if (!this.contratoId) {
+      console.error('StatusContratoComponent: contratoId não fornecido');
       return;
     }
+    
+    if (this.savingStatus()) {
+      console.warn('StatusContratoComponent: Já está salvando, ignorando chamada');
+      return;
+    }
+    
+    // Não verifica statusForm.valid porque os campos são opcionais
+    // e podem estar vazios/null sem problema
 
     this.savingStatus.set(true);
     const formValue = this.statusForm.value;
     
+    // Converte valores de string para boolean
+    const pode_renovar = formValue.pode_renovar === 'true' || formValue.pode_renovar === true;
+    const custeio = formValue.custeio === 'true' || formValue.custeio === true;
+    const natureza_continuada = formValue.natureza_continuada === 'true' || formValue.natureza_continuada === true;
+    
+    // Processa objeto_editado - sempre envia, mesmo se vazio
+    const objeto_editado = formValue.objeto_editado ? formValue.objeto_editado.trim() : null;
+    
     const statusData: Partial<StatusContrato> = {
       contrato: this.contratoId,
       status: this.contract?.status?.status || 'SEÇÃO CONTRATOS',
-      pode_renovar: formValue.pode_renovar === 'true' || formValue.pode_renovar === true,
-      custeio: formValue.custeio === 'true' || formValue.custeio === true,
-      natureza_continuada: formValue.natureza_continuada === 'true' || formValue.natureza_continuada === true,
+      pode_renovar: pode_renovar,
+      custeio: custeio,
+      natureza_continuada: natureza_continuada,
+      objeto_editado: objeto_editado,
+      tipo_contrato: formValue.tipo_contrato || null,
     };
     
     if (this.contract?.uasg) {
       statusData.uasg_code = this.contract.uasg;
     }
     
-    if (formValue.objeto_editado && formValue.objeto_editado.trim()) {
-      statusData.objeto_editado = formValue.objeto_editado.trim();
-    }
-    
-    if (formValue.tipo_contrato) {
-      statusData.tipo_contrato = formValue.tipo_contrato;
-    }
-    
+    // Preserva campos existentes do status atual
     const currentStatus = this.contract?.status;
     if (currentStatus) {
       if (currentStatus.portaria_edit) statusData.portaria_edit = currentStatus.portaria_edit;
       if (currentStatus.termo_aditivo_edit) statusData.termo_aditivo_edit = currentStatus.termo_aditivo_edit;
       if (currentStatus.data_registro) statusData.data_registro = currentStatus.data_registro;
     }
-
+    
     this.statusService.createOrUpdateStatus(statusData).subscribe({
       next: (savedStatus: StatusContrato) => {
         // Recarrega o status do servidor
         this.statusService.getStatus(this.contratoId, true).subscribe({
           next: (reloadedStatus: StatusContrato | null) => {
+            console.log('Status recarregado após salvar:', reloadedStatus);
+            // Sempre emite o evento, mesmo se reloadedStatus for null (usa savedStatus como fallback)
+            const statusToEmit = reloadedStatus || savedStatus;
+            
             if (reloadedStatus) {
+              // Preenche o formulário com os dados recarregados (isso atualiza os valores iniciais)
               this.fillStatusForm(reloadedStatus);
-              this.statusSaved.emit(reloadedStatus);
+            } else {
+              // Se não conseguiu recarregar, usa o status salvo
+              this.fillStatusForm(savedStatus);
             }
+            
+            // Emite evento para o componente pai
+            console.log('Emitindo evento statusSaved com:', statusToEmit);
+            this.statusSaved.emit(statusToEmit);
             this.savingStatus.set(false);
-            this.hasUnsavedChanges.set(false);
-            this.snackBar.open('✅ Alterações salvas com sucesso!', 'Fechar', {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['success-snackbar']
-            });
+            // fillStatusForm já atualiza hasUnsavedChanges e emite o evento
           },
           error: (err: any) => {
             console.error('Erro ao recarregar status após salvar:', err);

@@ -132,31 +132,6 @@
     }
   }
   
-  .form-actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: $spacing-md;
-    padding-top: $spacing-md;
-    border-top: 1px solid rgba($border-color, 0.3);
-    
-    button {
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
-      min-width: 180px;
-      justify-content: center;
-      
-      &[disabled] {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      
-      mat-icon.spinning {
-        animation: spin 1s linear infinite;
-      }
-    }
-  }
 }
 
 @keyframes spin {
