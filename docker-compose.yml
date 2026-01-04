@@ -213,13 +213,16 @@ services:
   # Nginx (Reverse Proxy + Angular)
   # ============================================
   nginx:
-    image: nginx:alpine
+    image: nginx:latest
     container_name: licitacao_nginx
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
+      # Frontend Angular
+      - ./frontend-licitacao/dist/frontend/browser:/usr/share/nginx/licitacao:ro
+      
       # Nginx Configuration
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       
