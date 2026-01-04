@@ -58,4 +58,7 @@ urlpatterns = [
 
     # Gestão de Contratos
     path('api/', include('django_licitacao360.apps.gestao_contratos.urls')),
+
+    # Imprensa Nacional (INLABS)
+    path('api/inlabs/', include('django_licitacao360.apps.imprensa_nacional.urls')),
 ]

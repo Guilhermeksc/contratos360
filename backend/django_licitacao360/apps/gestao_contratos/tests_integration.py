@@ -198,3 +198,4 @@ class ComprasNetIntegrationTest(TestCase):
             self.assertEqual(resultado, valor_esperado,
                           f"Falha ao parsear {valor_input}: esperado {valor_esperado}, obtido {resultado}")
 
+

@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'django_licitacao360.apps.core.files',
     # Gestão de Contratos
     'django_licitacao360.apps.gestao_contratos',
+    # Monitoramento INLABS
+    'django_licitacao360.apps.imprensa_nacional',
 ]
 
 MIDDLEWARE = [
@@ -286,6 +288,14 @@ CELERY_BEAT_SCHEDULE = {
     "revalidar_certificados": {
         "task": "certificados.tasks.revalidar_certificados",
         "schedule": crontab(day_of_week="sunday", hour=3, minute=30),  # Domingos às 3:30
+    },
+    "coletar_inlabs_08": {
+        "task": "django_licitacao360.apps.imprensa_nacional.tasks.collect_inlabs_articles",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "coletar_inlabs_10": {
+        "task": "django_licitacao360.apps.imprensa_nacional.tasks.collect_inlabs_articles",
+        "schedule": crontab(hour=10, minute=0),
     },
 }
 

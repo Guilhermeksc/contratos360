@@ -42,3 +42,9 @@ boto3==1.42.21
 
 # Logging estruturado
 python-json-logger==4.0.0
+
+python-dotenv==1.0.1
+
+# Web scraping
+selenium==4.27.1
+webdriver-manager==4.0.2

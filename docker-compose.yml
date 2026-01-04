@@ -79,10 +79,14 @@ services:
       # Storage
       - STORAGE_BACKEND=${STORAGE_BACKEND:-local}
       - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-20}
+      - INLABS_EMAIL=${INLABS_EMAIL}
+      - INLABS_PASSWORD=${INLABS_PASSWORD}
       
       # Celery
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - INLABS_EMAIL=${INLABS_EMAIL}
+      - INLABS_PASSWORD=${INLABS_PASSWORD}
       
       # JWT
       - JWT_ACCESS_TOKEN_LIFETIME=${JWT_ACCESS_TOKEN_LIFETIME:-15}
@@ -139,6 +143,8 @@ services:
       # Celery
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - INLABS_EMAIL=${INLABS_EMAIL}
+      - INLABS_PASSWORD=${INLABS_PASSWORD}
     depends_on:
       - backend
       - redis
