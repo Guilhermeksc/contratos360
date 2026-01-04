@@ -1,4 +1,8 @@
 <div class="home-landing-container">
+  <button mat-button class="logout-floating" (click)="logout()" type="button">
+    <mat-icon>logout</mat-icon>
+    <span>Sair</span>
+  </button>
   <div class="landing-header">
     <div class="landing-title-row">
       <img
@@ -8,6 +12,10 @@
       <span class="landing-title" data-text="Licitação 360">Licitação 360</span>
     </div>
     <p class="landing-subtitle">Sistema de Gestão de Licitações</p>
+  </div>
+
+  <div class="landing-toolbar">
+    <div class="landing-divider"></div>
   </div>
 
   <div class="features-grid">

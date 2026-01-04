@@ -4,10 +4,51 @@
 .home-landing-container {
   min-height: 100vh;
   padding: $spacing-xxl * 2;
-  background-color: $bg-primary;
+  background: radial-gradient(circle at top, rgba($bg-primary, 0.85), rgba($bg-primary, 0.95)),
+              url('/assets/img/jpg/fundo.jpg') center/cover no-repeat fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba($bg-primary, 0.25), rgba(1, 10, 32, 0.55));
+    backdrop-filter: blur(4px);
+    z-index: 0;
+  }
+}
+
+.logout-floating {
+  position: absolute;
+  top: $spacing-lg;
+  left: $spacing-lg;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: none;
+  color: rgba(#ffffff, 0.65);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: color $transition-fast;
+  z-index: 3;
+
+  mat-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  &:hover {
+    color: rgba(#8be9ff, 0.95);
+    background: transparent; // Ensure no background effect on hover
+  }
 }
 
 .landing-header {
@@ -83,12 +124,34 @@
   }
 }
 
+.landing-toolbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-lg;
+  margin: -$spacing-xl auto $spacing-xxl auto;
+  padding: 0 clamp($spacing-md, 4vw, $spacing-xxl);
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+
+  .landing-divider {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(#9be9ff, 0.8), transparent);
+    box-shadow: 0 0 12px rgba(#51cffe, 0.4);
+  }
+}
+
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: $spacing-xxl * 2;
   width: 100%;
   max-width: 1400px;
+  position: relative;
+  z-index: 1;
   
   @include respond-to(md) {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

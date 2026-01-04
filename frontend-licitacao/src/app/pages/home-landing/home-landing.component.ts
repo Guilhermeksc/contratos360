@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { FeatureCardComponent } from '../../components/feature-card/feature-card.component';
+import { AuthService } from '../../services/auth.service';
 
 interface FeatureCard {
   title: string;
@@ -12,7 +15,7 @@ interface FeatureCard {
 @Component({
   selector: 'app-home-landing',
   standalone: true,
-  imports: [CommonModule, FeatureCardComponent],
+  imports: [CommonModule, FeatureCardComponent, MatButtonModule, MatIconModule],
   templateUrl: './home-landing.component.html',
   styleUrl: './home-landing.component.scss'
 })
@@ -80,6 +83,14 @@ export class HomeLandingComponent {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly authService: AuthService
+  ) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }
 
