@@ -39,13 +39,13 @@ export class HomeLandingComponent {
       route: '/gerata'
     },
     {
-      title: 'Jurisprudência',
-      iconPath: '/assets/img/svg/juris.svg',
-      route: '/jurisprudencia'
+      title: 'Calendário',
+      iconPath: '/assets/img/svg/calendar.svg',
+      route: '/calendario'
     },    
     {
       title: 'Nota Técnica',
-      iconPath: '/assets/img/svg/nt.svg',
+      iconPath: '/assets/img/svg/juris.svg',
       route: '/nota-tecnica'
     },    
     {

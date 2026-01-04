@@ -10,3 +10,5 @@ DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 
 docker compose restart backend
+
+ng build --configuration production
