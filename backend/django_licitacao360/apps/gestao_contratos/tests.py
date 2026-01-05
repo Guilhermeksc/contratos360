@@ -9,7 +9,9 @@ from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
-from .models import Uasg, Contrato
+from django_licitacao360.apps.uasgs.models import Uasg
+
+from .models import Contrato
 from .services.ingestion import ComprasNetIngestionService
 
 
@@ -19,8 +21,11 @@ class ContratoModelTest(TestCase):
     def setUp(self):
         """Configuração inicial para os testes"""
         self.uasg = Uasg.objects.create(
-            uasg_code='123456',
-            nome_resumido='UASG Teste'
+            id_uasg=123456,
+            uasg=123456,
+            sigla_om='UASG TESTE',
+            nome_om='UASG Teste',
+            classificacao='Nao informado'
         )
     
     def test_create_contrato_with_all_fields(self):
@@ -105,8 +110,11 @@ class ComprasNetIngestionServiceTest(TestCase):
     def setUp(self):
         """Configuração inicial para os testes"""
         self.uasg = Uasg.objects.create(
-            uasg_code='123456',
-            nome_resumido='UASG Teste'
+            id_uasg=123456,
+            uasg=123456,
+            sigla_om='UASG TESTE',
+            nome_om='UASG Teste',
+            classificacao='Nao informado'
         )
         self.service = ComprasNetIngestionService()
     

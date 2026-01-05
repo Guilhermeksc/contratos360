@@ -44,6 +44,11 @@ class Usuario(AbstractUser):
     - Empresas
     - Processo Sancionatório
     - Controle Interno
+
+    Perfis especiais adicionais:
+    - UASG Centralizadora (referência a um registro de UASG)
+    - UASG Centralizada (referência a um registro de UASG)
+    - Controle Interno (flag dedicada)
     """
     username = None  # remove o campo padrão
     username = models.CharField("Username", max_length=20, unique=True)
@@ -90,6 +95,31 @@ class Usuario(AbstractUser):
         "Acesso ao Módulo Controle Interno",
         default=False,
         help_text="Permite acesso ao módulo de Controle Interno"
+    )
+
+    # Perfis especiais
+    uasg_centralizadora = models.ForeignKey(
+        'uasgs.Uasg',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='usuarios_centralizadores',
+        verbose_name="UASG Centralizadora",
+        help_text="Define a qual UASG centralizadora o usuário está vinculado"
+    )
+    uasg_centralizada = models.ForeignKey(
+        'uasgs.Uasg',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='usuarios_centralizados',
+        verbose_name="UASG Centralizada",
+        help_text="Define a qual UASG centralizada o usuário está vinculado"
+    )
+    controle_interno = models.BooleanField(
+        "Perfil Controle Interno",
+        default=False,
+        help_text="Habilita permissões específicas do time de Controle Interno"
     )
 
     USERNAME_FIELD = "username"
@@ -188,6 +218,17 @@ class Usuario(AbstractUser):
     def get_nivel_display_name(self) -> str:
         """Retorna o nome amigável do nível de acesso"""
         return dict(self._meta.get_field('nivel_acesso').choices).get(self.nivel_acesso, 'Desconhecido')
+
+    def get_perfis_especiais(self) -> list:
+        """Retorna lista dos perfis especiais atribuídos ao usuário."""
+        perfis = []
+        if self.uasg_centralizadora_id:
+            perfis.append('uasg_centralizadora')
+        if self.uasg_centralizada_id:
+            perfis.append('uasg_centralizada')
+        if self.controle_interno:
+            perfis.append('controle_interno')
+        return perfis
 
     def __str__(self):
         nivel_nome = self.get_nivel_display_name()

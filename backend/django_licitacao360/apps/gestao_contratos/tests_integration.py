@@ -6,7 +6,9 @@ from decimal import Decimal
 from django.test import TestCase
 from django.db import transaction
 
-from .models import Uasg, Contrato
+from django_licitacao360.apps.uasgs.models import Uasg
+
+from .models import Contrato
 from .services.ingestion import ComprasNetIngestionService
 
 
@@ -34,14 +36,14 @@ class ComprasNetIntegrationTest(TestCase):
         print(f"Contratos processados: {stats.get('contratos_processados', 0)}\n")
         
         # Verifica se pelo menos um contrato foi processado
-        contratos_count = Contrato.objects.filter(uasg__uasg_code=self.uasg_code).count()
+        contratos_count = Contrato.objects.filter(uasg__uasg=self.uasg_code).count()
         self.assertGreater(contratos_count, 0, 
                           f"Nenhum contrato foi encontrado para a UASG {self.uasg_code}")
         
         print(f"Total de contratos salvos: {contratos_count}\n")
         
         # Verifica cada contrato individualmente
-        contratos = Contrato.objects.filter(uasg__uasg_code=self.uasg_code)[:10]  # Limita a 10 para não sobrecarregar
+        contratos = Contrato.objects.filter(uasg__uasg=self.uasg_code)[:10]  # Limita a 10 para não sobrecarregar
         
         campos_verificados = {
             'id': 0,
@@ -170,7 +172,7 @@ class ComprasNetIntegrationTest(TestCase):
         stats = self.service.sync_contratos_por_uasg(self.uasg_code)
         
         if stats.get('contratos_processados', 0) > 0:
-            contrato = Contrato.objects.filter(uasg__uasg_code=self.uasg_code).first()
+            contrato = Contrato.objects.filter(uasg__uasg=self.uasg_code).first()
             
             if contrato and contrato.raw_json:
                 raw_valor = contrato.raw_json.get('valor_global')

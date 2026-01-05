@@ -59,7 +59,7 @@ export class LoginComponent {
           this.authService.setTokens(response.access, response.refresh, response.user);
           
           // Mostra mensagem de sucesso
-          this.snackBar.open('✅ Login realizado com sucesso!', 'Fechar', {
+          const snackRef = this.snackBar.open('✅ Login realizado com sucesso!', 'Fechar', {
             duration: 3000,
             panelClass: ['success-snackbar']
           });
@@ -68,7 +68,9 @@ export class LoginComponent {
           const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
           
           // Navega para a URL de retorno ou home
-          this.router.navigateByUrl(returnUrl);
+          this.router.navigateByUrl(returnUrl).finally(() => {
+            snackRef.dismiss();
+          });
         },
         error: (error) => {
           console.error('Erro no login:', error);

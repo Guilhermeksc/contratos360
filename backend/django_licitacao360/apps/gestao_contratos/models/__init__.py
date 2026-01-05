@@ -1,8 +1,5 @@
-"""
-Models para gestão de contratos e UASGs
-"""
+"""Models para gestão de contratos."""
 
-from .uasg import Uasg
 from .contrato import Contrato
 from .status import StatusContrato, RegistroStatus, RegistroMensagem
 from .links import LinksContrato
@@ -14,7 +11,6 @@ from .arquivo import ArquivoContrato
 from .dados_manuais import DadosManuaisContrato
 
 __all__ = [
-    'Uasg',
     'Contrato',
     'StatusContrato',
     'RegistroStatus',

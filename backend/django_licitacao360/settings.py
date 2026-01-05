@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'django_licitacao360.apps.core.auth',
     'django_licitacao360.apps.core.users',
     'django_licitacao360.apps.core.files',
+    'django_licitacao360.apps.uasgs',
+    'django_licitacao360.apps.agentes_responsaveis',
     # Gestão de Contratos
     'django_licitacao360.apps.gestao_contratos',
     # Monitoramento INLABS

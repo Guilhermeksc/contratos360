@@ -16,6 +16,11 @@ export const routes: Routes = [
   },
   {
     path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
+  },
+  {
+    path: '',
     loadComponent: () => import('./modules/core/shell-layout/shell-layout.component').then((m) => m.ShellLayoutComponent),
     canActivate: [authGuard],
     children: [

@@ -56,6 +56,9 @@ urlpatterns = [
     # Files (servir arquivos protegidos)
     path('api/files/', include('django_licitacao360.apps.core.files.urls')),
 
+    # Cadastro de Agentes Responsáveis
+    path('api/', include('django_licitacao360.apps.agentes_responsaveis.urls')),
+
     # Gestão de Contratos
     path('api/', include('django_licitacao360.apps.gestao_contratos.urls')),
 

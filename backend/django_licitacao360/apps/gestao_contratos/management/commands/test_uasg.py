@@ -42,8 +42,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f'\n✅ Sincronização concluída: {stats}'))
         
         # Verifica contratos salvos
-        contratos = Contrato.objects.filter(uasg__uasg_code=uasg_code)[:limit]
-        total_contratos = Contrato.objects.filter(uasg__uasg_code=uasg_code).count()
+        contratos = Contrato.objects.filter(uasg__uasg=uasg_code)[:limit]
+        total_contratos = Contrato.objects.filter(uasg__uasg=uasg_code).count()
         
         self.stdout.write(f'\nTotal de contratos salvos: {total_contratos}')
         self.stdout.write(f'Verificando primeiros {len(contratos)} contratos...\n')
@@ -137,11 +137,11 @@ class Command(BaseCommand):
         
         # Estatísticas gerais
         total_com_valor = Contrato.objects.filter(
-            uasg__uasg_code=uasg_code
+            uasg__uasg=uasg_code
         ).exclude(valor_global__isnull=True).count()
         
         total_sem_valor = Contrato.objects.filter(
-            uasg__uasg_code=uasg_code,
+            uasg__uasg=uasg_code,
             valor_global__isnull=True
         ).count()
         

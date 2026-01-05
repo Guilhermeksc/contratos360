@@ -2,6 +2,7 @@
 Views para gestão de contratos
 """
 
+from .uasg_views import UasgViewSet
 from .contrato_views import ContratoViewSet, ContratoDetalhesView
 from .status_views import StatusContratoViewSet, RegistroStatusViewSet, RegistroMensagemViewSet
 from .links_views import LinksContratoViewSet
@@ -12,7 +13,6 @@ from .offline_views import (
     ItemContratoViewSet,
     ArquivoContratoViewSet,
 )
-from .uasg_views import UasgViewSet
 
 __all__ = [
     'UasgViewSet',

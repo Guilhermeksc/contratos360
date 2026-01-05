@@ -4,7 +4,6 @@ Admin configuration para gestão de contratos
 
 from django.contrib import admin
 from .models import (
-    Uasg,
     Contrato,
     StatusContrato,
     RegistroStatus,
@@ -17,13 +16,6 @@ from .models import (
     ArquivoContrato,
     DadosManuaisContrato,
 )
-
-
-@admin.register(Uasg)
-class UasgAdmin(admin.ModelAdmin):
-    list_display = ['uasg_code', 'nome_resumido']
-    search_fields = ['uasg_code', 'nome_resumido']
-    ordering = ['uasg_code']
 
 
 class StatusContratoInline(admin.StackedInline):

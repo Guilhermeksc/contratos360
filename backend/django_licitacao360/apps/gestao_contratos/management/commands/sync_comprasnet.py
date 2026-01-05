@@ -60,7 +60,7 @@ class Command(BaseCommand):
         
         elif options['all']:
             # Sincroniza todas as UASGs cadastradas
-            from ...models import Uasg
+            from django_licitacao360.apps.uasgs.models import Uasg
             
             uasgs = Uasg.objects.all()
             if not uasgs.exists():
@@ -77,8 +77,8 @@ class Command(BaseCommand):
             }
             
             for uasg in uasgs:
-                self.stdout.write(f'\nProcessando UASG {uasg.uasg_code}...')
-                stats = service.sync_contratos_por_uasg(uasg.uasg_code)
+                self.stdout.write(f'\nProcessando UASG {uasg.uasg}...')
+                stats = service.sync_contratos_por_uasg(uasg.uasg)
                 
                 for key in total_stats:
                     total_stats[key] += stats.get(key, 0)

@@ -8,7 +8,7 @@ from ..models import Contrato
 
 class ContratoSerializer(serializers.ModelSerializer):
     """Serializer básico para listagem de contratos"""
-    uasg_nome = serializers.CharField(source='uasg.nome_resumido', read_only=True)
+    uasg_nome = serializers.CharField(source='uasg.nome_om', read_only=True)
     status_atual = serializers.CharField(source='status.status', read_only=True)
     
     class Meta:
@@ -42,7 +42,7 @@ class ContratoDetailSerializer(serializers.ModelSerializer):
     from .links import LinksContratoSerializer
     from .fiscalizacao import FiscalizacaoContratoSerializer
     
-    uasg_nome = serializers.CharField(source='uasg.nome_resumido', read_only=True)
+    uasg_nome = serializers.CharField(source='uasg.nome_om', read_only=True)
     status = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
     fiscalizacao = serializers.SerializerMethodField()

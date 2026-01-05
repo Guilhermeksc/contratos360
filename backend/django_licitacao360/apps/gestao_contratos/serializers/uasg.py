@@ -1,16 +1,6 @@
-"""
-Serializers para UASG
-"""
+"""Compatibilidade para importações antigas do serializer de UASG."""
 
-from rest_framework import serializers
-from ..models import Uasg
+from django_licitacao360.apps.uasgs.serializers import UasgSerializer  # noqa: F401
 
-
-class UasgSerializer(serializers.ModelSerializer):
-    """Serializer para UASG"""
-    
-    class Meta:
-        model = Uasg
-        fields = ['uasg_code', 'nome_resumido']
-        read_only_fields = ['uasg_code']
+__all__ = ['UasgSerializer']
 

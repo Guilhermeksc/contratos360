@@ -2,6 +2,7 @@
 Serializers para gestão de contratos
 """
 
+from .uasg import UasgSerializer
 from .contrato import (
     ContratoSerializer,
     ContratoDetailSerializer,
@@ -21,7 +22,6 @@ from .offline import (
     ItemContratoSerializer,
     ArquivoContratoSerializer,
 )
-from .uasg import UasgSerializer
 from .dados_manuais import DadosManuaisContratoSerializer
 
 __all__ = [

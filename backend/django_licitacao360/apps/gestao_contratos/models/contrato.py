@@ -19,11 +19,11 @@ class Contrato(models.Model):
         verbose_name="ID do Contrato"
     )
     uasg = models.ForeignKey(
-        'Uasg',
+        'uasgs.Uasg',
         on_delete=models.CASCADE,
         related_name='contratos',
-        db_column='uasg_code',
-        to_field='uasg_code',
+        db_column='id_uasg',
+        to_field='id_uasg',
         verbose_name="UASG"
     )
     

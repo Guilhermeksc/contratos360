@@ -9,7 +9,7 @@ from ..models import StatusContrato, RegistroStatus, RegistroMensagem, Contrato
 
 class StatusContratoSerializer(serializers.ModelSerializer):
     """Serializer para StatusContrato"""
-    uasg_nome = serializers.CharField(source='contrato.uasg.nome_resumido', read_only=True)
+    uasg_nome = serializers.CharField(source='contrato.uasg.nome_om', read_only=True)
     
     class Meta:
         model = StatusContrato

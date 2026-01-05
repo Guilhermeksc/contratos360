@@ -84,9 +84,21 @@ class Command(BaseCommand):
         for row in rows:
             uasg_code, nome_resumido = row
             if not dry_run:
+                try:
+                    uasg_int = int(str(uasg_code))
+                except (TypeError, ValueError):
+                    self.stdout.write(f"⚠ Código de UASG inválido: {uasg_code}")
+                    continue
+
+                sigla = (nome_resumido or str(uasg_int))[:50]
                 Uasg.objects.update_or_create(
-                    uasg_code=uasg_code,
-                    defaults={'nome_resumido': nome_resumido}
+                    id_uasg=uasg_int,
+                    defaults={
+                        'uasg': uasg_int,
+                        'sigla_om': sigla,
+                        'nome_om': nome_resumido,
+                        'classificacao': 'Nao informado',
+                    }
                 )
             count += 1
         
@@ -121,11 +133,27 @@ class Command(BaseCommand):
                     raw_json_data = json.loads(raw_json) if raw_json else None
                 except (json.JSONDecodeError, TypeError):
                     raw_json_data = None
+
+                try:
+                    uasg_int = int(str(uasg_code))
+                except (TypeError, ValueError):
+                    self.stdout.write(f"⚠ Código de UASG inválido para contrato {id}: {uasg_code}")
+                    continue
+
+                Uasg.objects.get_or_create(
+                    id_uasg=uasg_int,
+                    defaults={
+                        'uasg': uasg_int,
+                        'sigla_om': str(uasg_int),
+                        'nome_om': contratante_orgao_unidade_gestora_nome_resumido,
+                        'classificacao': 'Nao informado',
+                    }
+                )
                 
                 Contrato.objects.update_or_create(
                     id=str(id),
                     defaults={
-                        'uasg_id': uasg_code,
+                        'uasg_id': uasg_int,
                         'numero': numero,
                         'licitacao_numero': licitacao_numero,
                         'processo': processo,

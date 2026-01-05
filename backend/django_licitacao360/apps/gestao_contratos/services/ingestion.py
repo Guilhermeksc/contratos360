@@ -13,8 +13,9 @@ from decimal import Decimal, InvalidOperation
 from django.db import transaction
 from django.utils import timezone
 
+from django_licitacao360.apps.uasgs.models import Uasg
+
 from ..models import (
-    Uasg,
     Contrato,
     HistoricoContrato,
     Empenho,
@@ -150,6 +151,43 @@ class ComprasNetIngestionService:
         
         print(f"Filtro concluído. Serão processados {len(contratos_a_processar)} contratos.")
         return contratos_a_processar
+
+    def _ensure_uasg(self, uasg_code: Optional[str], nome_resumido: Optional[str] = None) -> Optional[Uasg]:
+        """Garante que a UASG exista retornando a instância normalizada."""
+        if not uasg_code:
+            return None
+
+        try:
+            uasg_int = int(str(uasg_code))
+        except (TypeError, ValueError):
+            print(f"⚠ Código de UASG inválido: {uasg_code}")
+            return None
+
+        sigla = (nome_resumido or str(uasg_int))[:50]
+        defaults = {
+            'uasg': uasg_int,
+            'sigla_om': sigla,
+            'nome_om': nome_resumido,
+            'classificacao': 'Nao informado',
+        }
+
+        uasg_obj, created = Uasg.objects.get_or_create(
+            id_uasg=uasg_int,
+            defaults=defaults
+        )
+
+        if not created:
+            updated_fields = []
+            if nome_resumido and uasg_obj.nome_om != nome_resumido:
+                uasg_obj.nome_om = nome_resumido
+                updated_fields.append('nome_om')
+            if nome_resumido and uasg_obj.sigla_om != sigla:
+                uasg_obj.sigla_om = sigla
+                updated_fields.append('sigla_om')
+            if updated_fields:
+                uasg_obj.save(update_fields=updated_fields)
+
+        return uasg_obj
     
     def _save_contrato(self, contrato_data: Dict, uasg_code: str) -> Contrato:
         """
@@ -169,12 +207,16 @@ class ComprasNetIngestionService:
         contratante = contrato_data.get("contratante", {})
         orgao = contratante.get("orgao", {})
         unidade_gestora = orgao.get("unidade_gestora", {})
+
+        uasg_obj = self._ensure_uasg(uasg_code, unidade_gestora.get("nome_resumido"))
+        if not uasg_obj:
+            raise ValueError(f"Não foi possível garantir a existência da UASG {uasg_code}")
         
         # Cria ou atualiza o contrato
         contrato, created = Contrato.objects.update_or_create(
             id=contrato_id,
             defaults={
-                'uasg_id': uasg_code,
+                'uasg_id': uasg_obj.id_uasg,
                 'numero': contrato_data.get("numero"),
                 'licitacao_numero': contrato_data.get("licitacao_numero"),
                 'processo': contrato_data.get("processo"),
@@ -322,13 +364,12 @@ class ComprasNetIngestionService:
             print(f"⚠ Não foi possível obter dados para a UASG {uasg_code}.")
             return {'contratos_processados': 0, 'historicos': 0, 'empenhos': 0, 'itens': 0, 'arquivos': 0}
         
-        # Cria ou atualiza UASG (fora da transação principal)
+        # Garante que a UASG existe (fora da transação principal)
         try:
             nome_resumido = main_data[0].get("contratante", {}).get("orgao", {}).get("unidade_gestora", {}).get("nome_resumido", "")
-            Uasg.objects.update_or_create(
-                uasg_code=uasg_code,
-                defaults={'nome_resumido': nome_resumido}
-            )
+            uasg_obj = self._ensure_uasg(uasg_code, nome_resumido)
+            if not uasg_obj:
+                print(f"⚠ Não foi possível normalizar a UASG {uasg_code}.")
         except Exception as e:
             print(f"⚠ Erro ao criar/atualizar UASG {uasg_code}: {e}")
         

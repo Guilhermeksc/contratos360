@@ -1,25 +1,6 @@
-"""
-Views para UASG
-"""
+"""Compatibilidade para o antigo ViewSet de UASG."""
 
-from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
+from django_licitacao360.apps.uasgs.views import UasgViewSet  # noqa: F401
 
-from ..models import Uasg
-from ..serializers import UasgSerializer
-
-
-class UasgViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet para UASG (somente leitura)
-    """
-    queryset = Uasg.objects.all()
-    serializer_class = UasgSerializer
-    permission_classes = [AllowAny]
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ['uasg_code', 'nome_resumido']
-    ordering_fields = ['uasg_code', 'nome_resumido']
-    ordering = ['uasg_code']
+__all__ = ['UasgViewSet']
 

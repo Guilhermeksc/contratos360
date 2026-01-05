@@ -25,7 +25,7 @@ from ..services.ingestion import ComprasNetIngestionService
 
 class ContratoFilter(filters.FilterSet):
     """Filtros para Contrato"""
-    uasg = filters.CharFilter(field_name='uasg__uasg_code')
+    uasg = filters.CharFilter(field_name='uasg__uasg')
     status = filters.CharFilter(field_name='status__status')
     manual = filters.BooleanFilter()
     vigencia_fim__gte = filters.DateFilter(field_name='vigencia_fim', lookup_expr='gte')
