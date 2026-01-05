@@ -1,3 +1,5 @@
+REadme 
+
 bizu deletar tabelas
 
 docker compose down
