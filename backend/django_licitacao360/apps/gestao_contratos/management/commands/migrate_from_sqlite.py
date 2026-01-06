@@ -92,9 +92,9 @@ class Command(BaseCommand):
 
                 sigla = (nome_resumido or str(uasg_int))[:50]
                 Uasg.objects.update_or_create(
-                    id_uasg=uasg_int,
+                    uasg=uasg_int,  # Usa campo 'uasg' que é único
                     defaults={
-                        'uasg': uasg_int,
+                        'id_uasg': uasg_int,  # Define id_uasg quando criar novo
                         'sigla_om': sigla,
                         'nome_om': nome_resumido,
                         'classificacao': 'Nao informado',
@@ -141,9 +141,9 @@ class Command(BaseCommand):
                     continue
 
                 Uasg.objects.get_or_create(
-                    id_uasg=uasg_int,
+                    uasg=uasg_int,  # Usa campo 'uasg' que é único
                     defaults={
-                        'uasg': uasg_int,
+                        'id_uasg': uasg_int,  # Define id_uasg quando criar novo
                         'sigla_om': str(uasg_int),
                         'nome_om': contratante_orgao_unidade_gestora_nome_resumido,
                         'classificacao': 'Nao informado',

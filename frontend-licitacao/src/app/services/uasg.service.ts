@@ -15,10 +15,12 @@ export class UasgService {
       map((response: any) => {
         // Garante que sempre retorne um array
         if (Array.isArray(response)) {
+          console.log('UasgService: Resposta é array direto, tamanho:', response.length);
           return response;
         }
         // Se for um objeto paginado, extrai os resultados
         if (response && Array.isArray(response.results)) {
+          console.log('UasgService: Resposta paginada, resultados:', response.results.length);
           return response.results;
         }
         console.warn('UasgService.list: Resposta não é um array:', response);

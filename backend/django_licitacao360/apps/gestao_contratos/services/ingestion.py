@@ -165,14 +165,15 @@ class ComprasNetIngestionService:
 
         sigla = (nome_resumido or str(uasg_int))[:50]
         defaults = {
-            'uasg': uasg_int,
+            'id_uasg': uasg_int,  # Define id_uasg quando criar novo
             'sigla_om': sigla,
             'nome_om': nome_resumido,
             'classificacao': 'Nao informado',
         }
 
+        # Usa o campo 'uasg' para buscar porque é único e é o identificador real
         uasg_obj, created = Uasg.objects.get_or_create(
-            id_uasg=uasg_int,
+            uasg=uasg_int,
             defaults=defaults
         )
 

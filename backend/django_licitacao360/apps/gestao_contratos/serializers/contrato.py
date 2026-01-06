@@ -8,7 +8,9 @@ from ..models import Contrato
 
 class ContratoSerializer(serializers.ModelSerializer):
     """Serializer básico para listagem de contratos"""
+    uasg = serializers.CharField(source='uasg.uasg', read_only=True)  # Retorna código UASG ao invés de ID
     uasg_nome = serializers.CharField(source='uasg.nome_om', read_only=True)
+    uasg_sigla = serializers.CharField(source='uasg.sigla_om', read_only=True)
     status_atual = serializers.CharField(source='status.status', read_only=True)
     
     class Meta:
@@ -18,6 +20,7 @@ class ContratoSerializer(serializers.ModelSerializer):
             'numero',
             'uasg',
             'uasg_nome',
+            'uasg_sigla',
             'licitacao_numero',
             'processo',
             'fornecedor_nome',
@@ -33,7 +36,7 @@ class ContratoSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at', 'uasg', 'uasg_sigla']
 
 
 class ContratoDetailSerializer(serializers.ModelSerializer):
@@ -42,7 +45,9 @@ class ContratoDetailSerializer(serializers.ModelSerializer):
     from .links import LinksContratoSerializer
     from .fiscalizacao import FiscalizacaoContratoSerializer
     
+    uasg = serializers.CharField(source='uasg.uasg', read_only=True)  # Retorna código UASG ao invés de ID
     uasg_nome = serializers.CharField(source='uasg.nome_om', read_only=True)
+    uasg_sigla = serializers.CharField(source='uasg.sigla_om', read_only=True)
     status = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
     fiscalizacao = serializers.SerializerMethodField()
@@ -60,6 +65,7 @@ class ContratoDetailSerializer(serializers.ModelSerializer):
             'numero',
             'uasg',
             'uasg_nome',
+            'uasg_sigla',
             'licitacao_numero',
             'processo',
             'fornecedor_nome',
@@ -90,7 +96,7 @@ class ContratoDetailSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at', 'uasg', 'uasg_sigla']
     
     def get_status(self, obj):
         """Retorna status do contrato ou None"""
@@ -167,6 +173,7 @@ class ContratoDetailSerializer(serializers.ModelSerializer):
 
 class ContratoCreateSerializer(serializers.ModelSerializer):
     """Serializer para criação de contratos"""
+    from django_licitacao360.apps.uasgs.models import Uasg
     
     class Meta:
         model = Contrato
@@ -189,6 +196,29 @@ class ContratoCreateSerializer(serializers.ModelSerializer):
             'manual',
             'raw_json',
         ]
+    
+    def validate_uasg(self, value):
+        """Valida e converte código UASG (string) para objeto Uasg"""
+        from django_licitacao360.apps.uasgs.models import Uasg
+        
+        # Se já é um objeto Uasg, retorna como está
+        if isinstance(value, Uasg):
+            return value
+        
+        # Se é um ID (número), busca por id_uasg
+        if isinstance(value, (int, str)) and str(value).isdigit():
+            try:
+                uasg_int = int(value)
+                uasg_obj = Uasg.objects.filter(uasg=uasg_int).first()
+                if not uasg_obj:
+                    # Tenta buscar por id_uasg como fallback
+                    uasg_obj = Uasg.objects.filter(id_uasg=uasg_int).first()
+                if uasg_obj:
+                    return uasg_obj
+            except (ValueError, TypeError):
+                pass
+        
+        raise serializers.ValidationError(f'UASG inválida: {value}')
     
     def validate(self, attrs):
         """Validações customizadas"""

@@ -26,8 +26,8 @@
       [(ngModel)]="selectedUasgFilter"
       (ngModelChange)="onUasgFilterChange()">
       <option [ngValue]="null">Todas as UASGs</option>
-      <option *ngFor="let uasg of uasgs()" [ngValue]="uasg.uasg_code">
-        {{ uasg.uasg_code }} - {{ uasg.nome_resumido }}
+      <option *ngFor="let uasg of uasgs()" [ngValue]="uasg.uasg_code || uasg.uasg">
+        {{ uasg.uasg_code || uasg.uasg }} - {{ uasg.sigla_om || 'Sem sigla' }}
       </option>
     </select>
     

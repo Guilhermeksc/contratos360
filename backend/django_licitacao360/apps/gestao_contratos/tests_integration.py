@@ -201,3 +201,4 @@ class ComprasNetIntegrationTest(TestCase):
                           f"Falha ao parsear {valor_input}: esperado {valor_esperado}, obtido {resultado}")
 
 
+

@@ -7,6 +7,7 @@ export interface Contrato {
   numero: string | null;
   uasg: string;  // FK para Uasg.uasg_code
   uasg_nome?: string;  // Campo calculado do serializer
+  uasg_sigla?: string;  // Sigla da UASG (sigla_om)
   licitacao_numero: string | null;
   processo: string | null;
   fornecedor_nome: string | null;

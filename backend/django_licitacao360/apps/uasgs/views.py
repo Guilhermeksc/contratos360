@@ -28,3 +28,4 @@ class UasgViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['uasg', 'sigla_om', 'nome_om', 'cidade', 'bairro']
     ordering_fields = ['uasg', 'sigla_om', 'nome_om']
     ordering = ['uasg']
+    pagination_class = None  # Desabilita paginação para retornar todas as UASGs

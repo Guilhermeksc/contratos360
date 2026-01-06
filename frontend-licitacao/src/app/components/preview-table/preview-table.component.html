@@ -21,7 +21,7 @@
         <!-- UASG -->
         <td>
           <div class="cell-content">
-            <div class="cell-main">{{ contrato.uasg_nome || 'N/A' }}</div>
+            <div class="cell-main">{{ contrato.uasg_sigla || contrato.uasg_nome || 'N/A' }}</div>
             <div class="cell-subtitle-wrapper">
               <span 
                 *ngIf="contrato.uasg"

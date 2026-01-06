@@ -65,7 +65,11 @@ export class UasgSearchComponent implements OnInit {
     
     // Aplica filtro de UASG primeiro
     if (uasgFilter) {
-      filtered = filtered.filter(contrato => contrato.uasg === uasgFilter);
+      filtered = filtered.filter(contrato => {
+        const contratoUasg = contrato.uasg?.toString() || '';
+        const filterUasg = uasgFilter?.toString() || '';
+        return contratoUasg === filterUasg;
+      });
     }
     
     // Aplica filtro de busca de texto
@@ -91,14 +95,56 @@ export class UasgSearchComponent implements OnInit {
   }
 
   private loadUasgs(): void {
-    this.uasgService.list().subscribe({
-      next: (uasgs: any[] | any) => {
-        const uasgsArray = Array.isArray(uasgs) ? uasgs : [];
-        this.uasgs.set(uasgsArray);
+    // Carrega apenas UASGs que têm contratos associados
+    this.contractsService.getAtivos().subscribe({
+      next: (contratos: Contrato[]) => {
+        // Extrai códigos UASG únicos dos contratos
+        const uasgCodes = new Set<string>();
+        contratos.forEach(contrato => {
+          if (contrato.uasg) {
+            uasgCodes.add(contrato.uasg.toString());
+          }
+        });
+        
+        // Busca informações das UASGs que têm contratos
+        this.uasgService.list().subscribe({
+          next: (todasUasgs: any[] | any) => {
+            const todasUasgsArray = Array.isArray(todasUasgs) ? todasUasgs : [];
+            // Filtra apenas UASGs que têm contratos
+            const uasgsComContratos = todasUasgsArray.filter((uasg: any) => {
+              const uasgCode = uasg.uasg_code || uasg.uasg?.toString();
+              return uasgCode && uasgCodes.has(uasgCode.toString());
+            });
+            
+            // Ordena por código UASG
+            uasgsComContratos.sort((a: any, b: any) => {
+              const codeA = (a.uasg_code || a.uasg || '').toString();
+              const codeB = (b.uasg_code || b.uasg || '').toString();
+              return codeA.localeCompare(codeB);
+            });
+            
+            console.log('UasgSearchComponent: UASGs com contratos:', uasgsComContratos.length, uasgsComContratos);
+            this.uasgs.set(uasgsComContratos);
+          },
+          error: (err: any) => {
+            console.error('Erro ao carregar UASGs:', err);
+            this.uasgs.set([]);
+          }
+        });
       },
       error: (err: any) => {
-        console.error('Erro ao carregar UASGs:', err);
-        this.uasgs.set([]);
+        console.error('Erro ao carregar contratos para filtrar UASGs:', err);
+        // Em caso de erro, tenta carregar todas as UASGs como fallback
+        this.uasgService.list().subscribe({
+          next: (uasgs: any[] | any) => {
+            const uasgsArray = Array.isArray(uasgs) ? uasgs : [];
+            this.uasgs.set(uasgsArray);
+          },
+          error: (err2: any) => {
+            console.error('Erro ao carregar UASGs (fallback):', err2);
+            this.uasgs.set([]);
+          }
+        });
       }
     });
   }
@@ -110,6 +156,7 @@ export class UasgSearchComponent implements OnInit {
     this.contractsService.syncUasg(this.uasgCode).subscribe({
       next: () => {
         this.loadPreviewData();
+        this.loadUasgs(); // Recarrega UASGs após sincronização
         this.syncing.set(false);
       },
       error: (err: any) => {
@@ -133,6 +180,7 @@ export class UasgSearchComponent implements OnInit {
   onRecordSaved(): void {
     // Recarrega os dados da tabela quando houver salvamento no popup
     this.loadPreviewData();
+    this.loadUasgs(); // Recarrega UASGs caso tenha mudado
   }
 
   private loadPreviewData(): void {
