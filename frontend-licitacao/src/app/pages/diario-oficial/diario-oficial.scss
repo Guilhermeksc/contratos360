@@ -523,9 +523,85 @@
     color: $text-primary;
   }
   
-  .mat-mdc-select-value,
+  // Estilos do select "Items per page" - manter estilo padrão (sem fundo branco nem borda)
+  .mat-mdc-select {
+    .mat-mdc-select-trigger {
+      background-color: transparent !important;
+      border: none !important;
+    }
+    
+    .mat-mdc-select-value {
+      color: $text-primary !important;
+    }
+    
+    .mat-mdc-select-arrow {
+      color: $text-primary !important;
+    }
+    
+    .mat-mdc-select-trigger-wrapper {
+      background-color: transparent !important;
+      border: none !important;
+    }
+    
+    .mat-mdc-select-value-text {
+      color: $text-primary !important;
+    }
+  }
+}
+
+// Menu dropdown do select do paginador - estilos globais
+::ng-deep .mat-mdc-select-panel {
+  background-color: #ffffff !important;
+  
+  .mat-mdc-option {
+    color: #212121 !important;
+    
+    &:hover {
+      background-color: #f5f5f5 !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: rgba(25, 118, 210, 0.1) !important;
+      color: #1976d2 !important;
+    }
+  }
+}
+
+// Estilos específicos para o select dentro do paginador - remover borda e fundo branco
+::ng-deep .mat-mdc-paginator .mat-mdc-select {
+  .mat-mdc-select-trigger {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  .mat-mdc-select-value {
+    color: $text-primary !important;
+  }
+  
   .mat-mdc-select-arrow {
-    color: $text-primary;
+    color: $text-primary !important;
+  }
+  
+  .mat-mdc-select-trigger-wrapper {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  .mat-mdc-select-value-text {
+    color: $text-primary !important;
+  }
+  
+  // Remover qualquer borda do wrapper
+  .mat-mdc-select-arrow-wrapper {
+    border: none !important;
+  }
+  
+  // Remover bordas de todos os elementos internos
+  * {
+    border: none !important;
+    box-shadow: none !important;
   }
 }
 

@@ -113,6 +113,53 @@
       color: $text-primary;
     }
   }
+  
+  // Estilos do select "Items per page" - remover borda e fundo branco
+  .mat-mdc-select {
+    .mat-mdc-select-trigger {
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+    .mat-mdc-select-value {
+      color: $text-primary !important;
+    }
+    
+    .mat-mdc-select-arrow {
+      color: $text-primary !important;
+    }
+    
+    .mat-mdc-select-trigger-wrapper {
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+    // Remover bordas de todos os elementos internos
+    * {
+      border: none !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+// Menu dropdown do select do paginador
+::ng-deep .mat-mdc-select-panel {
+  background-color: #ffffff !important;
+  
+  .mat-mdc-option {
+    color: #212121 !important;
+    
+    &:hover {
+      background-color: #f5f5f5 !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: rgba(25, 118, 210, 0.1) !important;
+      color: #1976d2 !important;
+    }
+  }
 }
 
 // Mat Tooltip
