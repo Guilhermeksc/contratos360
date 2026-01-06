@@ -22,32 +22,121 @@
   }
 }
 
-.logout-floating {
+.user-info-container {
   position: absolute;
   top: $spacing-lg;
   left: $spacing-lg;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: transparent;
-  border: none;
-  color: rgba(#ffffff, 0.65);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.5rem;
-  cursor: pointer;
-  transition: color $transition-fast;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
   z-index: 3;
+}
 
-  mat-icon {
-    font-size: 18px;
-    line-height: 1;
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 0;
+  border: none;
+  min-width: 280px;
+  transition: all $transition-base;
+
+  .logout-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: none;
+    color: rgba(#ffffff, 0.65);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: color $transition-fast;
+    margin-bottom: $spacing-xs;
+
+    mat-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    &:hover {
+      color: rgba(#8be9ff, 0.95);
+      background: transparent;
+    }
   }
 
-  &:hover {
-    color: rgba(#8be9ff, 0.95);
-    background: transparent; // Ensure no background effect on hover
+  .user-name {
+    font-size: 0.95rem;
+    font-weight: $font-weight-semibold;
+    color: rgba(#ffffff, 0.95);
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: rgba(#ffffff, 0.75);
+    line-height: 1.4;
+    width: 100%;
+
+    .user-level {
+      font-weight: $font-weight-medium;
+      color: rgba(#ffffff, 0.9);
+      text-align: center;
+    }
+
+    .user-visao-centralizadora,
+    .user-visao-centralizada,
+    .user-visao-sem-vinculo {
+      font-size: 0.75rem;
+      color: rgba(#ffffff, 0.65);
+      word-break: break-word;
+      text-align: center;
+    }
+
+    .user-visao-centralizada {
+      margin-top: 0.25rem;
+    }
+  }
+
+  &.controle-interno {
+    .user-name {
+      color: rgba(#ffffff, 0.95);
+    }
+  }
+
+  .controle-interno-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: $spacing-xs;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font-size: 0.75rem;
+    font-weight: $font-weight-semibold;
+    color: rgba(#ffffff, 0.95);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: fit-content;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      line-height: 1;
+    }
   }
 }
 

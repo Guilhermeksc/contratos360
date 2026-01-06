@@ -3,12 +3,25 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../environments/environment';
 
+export interface UasgInfo {
+  codigo: number;
+  nome: string;
+  sigla: string;
+}
+
 export interface User {
   id: number;
   username: string;
-  perfil: string;
+  perfil?: string;
+  nivel_acesso: number;
+  nivel_acesso_display: string;
+  modulos_acesso: string[];
   is_staff: boolean;
   is_active: boolean;
+  is_superuser?: boolean;
+  uasg_centralizadora?: UasgInfo | null;
+  uasg_centralizada?: UasgInfo | null;
+  controle_interno?: boolean;
 }
 
 export interface LoginRequest {

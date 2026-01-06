@@ -25,7 +25,7 @@ docker compose exec backend bash
 cd django_licitacao360/apps/imprensa_nacional/scripts
 python inlabs.py
 
-docker compose exec backend python manage.py import_inlabs --date 2026-01-02
+docker compose exec backend python manage.py import_inlabs --date 2026-01-05
 """
 
 LOGIN_URL = "https://inlabs.in.gov.br/acessar.php"

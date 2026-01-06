@@ -24,6 +24,23 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         
+        # Preparar dados das UASGs se existirem
+        uasg_centralizadora_data = None
+        if self.user.uasg_centralizadora:
+            uasg_centralizadora_data = {
+                'codigo': self.user.uasg_centralizadora.uasg,
+                'nome': self.user.uasg_centralizadora.nome_om or self.user.uasg_centralizadora.sigla_om,
+                'sigla': self.user.uasg_centralizadora.sigla_om,
+            }
+        
+        uasg_centralizada_data = None
+        if self.user.uasg_centralizada:
+            uasg_centralizada_data = {
+                'codigo': self.user.uasg_centralizada.uasg,
+                'nome': self.user.uasg_centralizada.nome_om or self.user.uasg_centralizada.sigla_om,
+                'sigla': self.user.uasg_centralizada.sigla_om,
+            }
+        
         # Adicionar dados do usuário na resposta
         data['user'] = {
             'id': self.user.id,
@@ -40,6 +57,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'is_staff': self.user.is_staff,
             'is_active': self.user.is_active,
             'is_superuser': self.user.is_superuser,
+            'uasg_centralizadora': uasg_centralizadora_data,
+            'uasg_centralizada': uasg_centralizada_data,
+            'controle_interno': bool(self.user.controle_interno),
         }
         
         return data

@@ -258,8 +258,8 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/1
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "America/Sao_Paulo"
-CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = "America/Sao_Paulo"  # Horário de Brasília (BRT/BRST)
+CELERY_ENABLE_UTC = True  # UTC habilitado, mas agendamentos usam CELERY_TIMEZONE
 
 # Celery Beat Scheduler (persistente)
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
@@ -293,11 +293,11 @@ CELERY_BEAT_SCHEDULE = {
     },
     "coletar_inlabs_08": {
         "task": "django_licitacao360.apps.imprensa_nacional.tasks.collect_inlabs_articles",
-        "schedule": crontab(hour=8, minute=0),
+        "schedule": crontab(hour=8, minute=0),  # Diariamente às 8:00 BRT/BRST (Brasília)
     },
     "coletar_inlabs_10": {
         "task": "django_licitacao360.apps.imprensa_nacional.tasks.collect_inlabs_articles",
-        "schedule": crontab(hour=10, minute=0),
+        "schedule": crontab(hour=10, minute=0),  # Diariamente às 10:00 BRT/BRST (Brasília)
     },
 }
 

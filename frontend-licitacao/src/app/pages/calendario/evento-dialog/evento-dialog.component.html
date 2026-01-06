@@ -1,0 +1,73 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? 'Editar Evento' : 'Novo Evento' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="eventoForm" class="evento-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome do Evento</mat-label>
+      <input matInput formControlName="nome" required>
+      <mat-error *ngIf="eventoForm.get('nome')?.hasError('required')">
+        Nome é obrigatório
+      </mat-error>
+      <mat-error *ngIf="eventoForm.get('nome')?.hasError('maxlength')">
+        Nome deve ter no máximo 255 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Data</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="data" required>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="eventoForm.get('data')?.hasError('required')">
+        Data é obrigatória
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descrição</mat-label>
+      <textarea matInput formControlName="descricao" rows="4"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cor</mat-label>
+      <input matInput formControlName="cor" type="color" required>
+      <mat-hint>Escolha uma cor para o evento</mat-hint>
+    </mat-form-field>
+
+    <div class="cores-preview">
+      <span class="label">Cores rápidas:</span>
+      <div class="cores-list">
+        <button
+          type="button"
+          *ngFor="let cor of coresPadrao"
+          class="cor-button"
+          [style.background-color]="cor.valor"
+          [class.selected]="eventoForm.get('cor')?.value === cor.valor"
+          (click)="eventoForm.patchValue({ cor: cor.valor })"
+          [attr.aria-label]="cor.nome">
+        </button>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button
+    *ngIf="isEditMode"
+    mat-button
+    color="warn"
+    (click)="onDelete()">
+    Excluir
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSave()"
+    [disabled]="!eventoForm.valid">
+    {{ isEditMode ? 'Salvar' : 'Criar' }}
+  </button>
+</mat-dialog-actions>
+

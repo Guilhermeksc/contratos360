@@ -303,32 +303,38 @@ def persist_inlabs_articles(
 ) -> int:
     saved = 0
 
-    with transaction.atomic():
-        for article in articles:
-            attrs: Dict[str, str] = article.get("attributes", {})
-            article_id = attrs.get("id")
-            if not article_id:
-                continue
+    try:
+        with transaction.atomic():
+            for article in articles:
+                attrs: Dict[str, str] = article.get("attributes", {})
+                article_id = attrs.get("id")
+                if not article_id:
+                    logger.warning("Artigo sem ID ignorado: %s", article.get("source_filename", "desconhecido"))
+                    continue
 
-            defaults: Dict[str, object] = {
-                "edition_date": edition_date,
-                "body_html": article.get("body_html", ""),
-                "source_filename": article.get("source_filename", ""),
-                "source_zip": source_zip or "",
-                "raw_payload": attrs,
-            }
+                defaults: Dict[str, object] = {
+                    "edition_date": edition_date,
+                    "body_html": article.get("body_html", ""),
+                    "source_filename": article.get("source_filename", ""),
+                    "source_zip": source_zip or "",
+                    "raw_payload": attrs,
+                }
 
-            for xml_key, model_field in ARTICLE_FIELD_MAP.items():
-                defaults[model_field] = attrs.get(xml_key, "")
+                for xml_key, model_field in ARTICLE_FIELD_MAP.items():
+                    defaults[model_field] = attrs.get(xml_key, "")
 
-            obj, created = InlabsArticle.objects.update_or_create(
-                article_id=article_id,
-                edition_date=edition_date,
-                defaults=defaults,
-            )
-            saved += 1
-            action = "criado" if created else "atualizado"
-            logger.debug("Artigo %s %s", obj.article_id, action)
+                obj, created = InlabsArticle.objects.update_or_create(
+                    article_id=article_id,
+                    edition_date=edition_date,
+                    defaults=defaults,
+                )
+                saved += 1
+                action = "criado" if created else "atualizado"
+                logger.debug("Artigo %s %s", obj.article_id, action)
+            
+    except Exception as exc:
+        logger.error("Erro ao persistir artigos INLABS para %s: %s", edition_date, exc, exc_info=True)
+        raise
 
     logger.info("%s artigos persistidos para %s", saved, edition_date)
     return saved

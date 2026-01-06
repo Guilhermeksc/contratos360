@@ -53,6 +53,10 @@ jsons/
 gifs/
 imgs/
 
+# Artefatos locais gerados por serviços/containers
+backend/tmp/
+postgres_data/
+
 # I don't know about this past -> /config
 *.log
 app.py

@@ -1,8 +1,29 @@
 <div class="home-landing-container">
-  <button mat-button class="logout-floating" (click)="logout()" type="button">
-    <mat-icon>logout</mat-icon>
-    <span>Sair</span>
-  </button>
+  <div class="user-info-container">
+    <div class="user-info" *ngIf="currentUser$ | async as user" [class.controle-interno]="isControleInterno(user)">
+      <button mat-button class="logout-button" (click)="logout()" type="button">
+        <mat-icon>logout</mat-icon>
+        <span>Sair</span>
+      </button>
+      <div class="user-name">{{ user.username }}</div>
+      <div class="user-details">
+        <span class="user-level">Nível: {{ user.nivel_acesso_display }}</span>
+        <span class="user-visao-centralizadora" *ngIf="getUasgCentralizadora(user)">
+          {{ getUasgCentralizadora(user) }}
+        </span>
+        <span class="user-visao-centralizada" *ngIf="getUasgCentralizada(user)">
+          {{ getUasgCentralizada(user) }}
+        </span>
+        <span class="user-visao-sem-vinculo" *ngIf="!getUasgCentralizadora(user) && !getUasgCentralizada(user)">
+          Sem vínculo com UASG
+        </span>
+      </div>
+      <div class="controle-interno-badge" *ngIf="isControleInterno(user)">
+        <mat-icon>verified</mat-icon>
+        <span>Controle Interno</span>
+      </div>
+    </div>
+  </div>
   <div class="landing-header">
     <div class="landing-title-row">
       <img

@@ -85,11 +85,10 @@ export const routes: Routes = [
         data: { breadcrumb: 'Dashboard' }
       },
       {
-        path: 'atas',
-        // Placeholder para módulo de atas
-        loadComponent: () => import('./modules/core/home/home.component').then((m) => m.HomeComponent),
-        data: { breadcrumb: 'Atas' }
-      }
+        path: 'diario-oficial',
+        loadComponent: () => import('./pages/diario-oficial/diario-oficial').then((m) => m.DiarioOficialComponent),
+        data: { breadcrumb: 'Diário Oficial' }
+      },
     ]
   },
   { path: '**', redirectTo: '/home' }

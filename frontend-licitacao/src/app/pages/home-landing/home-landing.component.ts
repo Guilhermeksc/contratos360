@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FeatureCardComponent } from '../../components/feature-card/feature-card.component';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, User } from '../../services/auth.service';
+import { Observable } from 'rxjs';
 
 interface FeatureCard {
   title: string;
@@ -19,7 +20,9 @@ interface FeatureCard {
   templateUrl: './home-landing.component.html',
   styleUrl: './home-landing.component.scss'
 })
-export class HomeLandingComponent {
+export class HomeLandingComponent implements OnInit {
+  currentUser$: Observable<User | null>;
+  
   features: FeatureCard[] = [
     {
       title: 'Planejamento',
@@ -86,11 +89,33 @@ export class HomeLandingComponent {
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService
-  ) {}
+  ) {
+    this.currentUser$ = this.authService.currentUser$;
+  }
+
+  ngOnInit(): void {}
 
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  getUasgCentralizadora(user: User): string | null {
+    if (user.uasg_centralizadora) {
+      return `UASG Centralizadora: ${user.uasg_centralizadora.sigla} (${user.uasg_centralizadora.codigo})`;
+    }
+    return null;
+  }
+
+  getUasgCentralizada(user: User): string | null {
+    if (user.uasg_centralizada) {
+      return `UASG Centralizada: ${user.uasg_centralizada.sigla} (${user.uasg_centralizada.codigo})`;
+    }
+    return null;
+  }
+
+  isControleInterno(user: User): boolean {
+    return !!user.controle_interno;
   }
 }
 
