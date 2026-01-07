@@ -1,0 +1,1 @@
+default_app_config = "django_licitacao360.apps.empresas_sancionadas.apps.EmpresasSancionadasConfig"

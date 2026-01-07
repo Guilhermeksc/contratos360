@@ -6,7 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../services/auth.service';
 
 interface NavItem {
-  icon: string;
+  icon?: string;
+  imagePath?: string;
   label: string;
   route: string;
   tooltip: string;
@@ -27,7 +28,7 @@ export class SideNavComponent implements OnInit {
   activeRoute = signal<string>('');
 
   // Home sempre visível
-  homeNavItem: NavItem = { icon: 'dashboard', label: 'Home', route: '/home', tooltip: 'Home' };
+  homeNavItem: NavItem = { imagePath: 'assets/img/svg/licitacao360.svg', label: 'Home', route: '/home', tooltip: 'Home' };
 
   // Configuração de navegação para cada módulo
   moduleNavConfig: ModuleNavConfig = {

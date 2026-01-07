@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions, EventInput, EventApi, DateSelectArg, EventClickArg } from '@fullcalendar/core';
@@ -28,7 +28,7 @@ import { EventoDialogComponent } from './evento-dialog/evento-dialog.component';
   templateUrl: './calendario.html',
   styleUrl: './calendario.scss',
 })
-export class CalendarioComponent implements OnInit {
+export class CalendarioComponent implements OnInit, AfterViewInit {
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -62,6 +62,15 @@ export class CalendarioComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEvents();
+  }
+
+  ngAfterViewInit(): void {
+    // Atualiza o tamanho do calendário após a view ser inicializada
+    setTimeout(() => {
+      if (this.calendarApi) {
+        this.calendarApi.updateSize();
+      }
+    }, 300);
   }
 
   /**
@@ -230,5 +239,11 @@ export class CalendarioComponent implements OnInit {
    */
   onCalendarReady(calendarApi: any): void {
     this.calendarApi = calendarApi;
+    // Força o calendário a recalcular a altura após ser renderizado
+    setTimeout(() => {
+      if (calendarApi) {
+        calendarApi.updateSize();
+      }
+    }, 100);
   }
 }

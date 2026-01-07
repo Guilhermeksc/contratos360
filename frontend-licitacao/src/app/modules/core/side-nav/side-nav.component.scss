@@ -147,3 +147,40 @@
   }
 }
 
+.nav-item.home-nav {
+  &:hover {
+    background-color: transparent;
+  }
+  
+  &.active {
+    background-color: transparent;
+    border-left: none;
+  }
+}
+
+.nav-logo {
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 6px rgba(#7ee5ff, 0.55))
+    drop-shadow(0 0 16px rgba(#00bbff, 0.45))
+    drop-shadow(0 0 30px rgba(#20f8ff, 0.35));
+  mix-blend-mode: screen;
+  transition: filter $transition-base;
+  
+  .nav-item:hover & {
+    filter:
+      drop-shadow(0 0 8px rgba(#c0f6ff, 0.75))
+      drop-shadow(0 0 20px rgba(#00d4ff, 0.55))
+      drop-shadow(0 0 36px rgba(#36fbff, 0.45));
+  }
+  
+  .nav-item.active & {
+    filter:
+      drop-shadow(0 0 8px rgba(#c0f6ff, 0.75))
+      drop-shadow(0 0 20px rgba(#00d4ff, 0.55))
+      drop-shadow(0 0 36px rgba(#36fbff, 0.45));
+  }
+}
+

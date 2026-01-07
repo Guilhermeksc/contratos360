@@ -1,4 +1,4 @@
-<span class="status-badge" [style.color]="getStatusColor(status)" [style.border-color]="getStatusColor(status)">
+<span class="status-badge" [class.dark-theme]="isDarkTheme" [class.light-theme]="!isDarkTheme" [style.color]="getStatusColor(status)" [style.border-color]="getStatusColor(status)">
   {{ status }}
 </span>
 

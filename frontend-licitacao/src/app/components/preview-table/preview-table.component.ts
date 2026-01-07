@@ -7,16 +7,18 @@ import { getStatusColor } from '../../utils/status.utils';
 import { StatusBadgeComponent } from '../status-badge/status-badge.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { StandardTableComponent } from '../standard-table/standard-table.component';
 
 @Component({
   selector: 'app-preview-table',
   standalone: true,
-  imports: [CommonModule, StatusBadgeComponent, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, StatusBadgeComponent, MatIconModule, MatTooltipModule, StandardTableComponent],
   templateUrl: './preview-table.component.html',
   styleUrl: './preview-table.component.scss'
 })
 export class PreviewTableComponent {
   @Input() data: Contrato[] = [];
+  @Input() isDarkTheme: boolean = false; // Tema claro (branco) por padrão
   @Output() rowClick = new EventEmitter<string>();
 
   calcularDiasRestantes = calcularDiasRestantes;

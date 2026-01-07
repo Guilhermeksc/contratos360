@@ -6,11 +6,6 @@
     </button>
   </div>
 
-  <!-- Brazil Image -->
-  <div class="brazil-image-container">
-    <img src="/assets/img/svg/brazil.png" alt="Brasil" class="brazil-image">
-  </div>
-
   <!-- Navigation Items -->
   <ul class="nav-list">
     <li *ngFor="let item of navItems(); let i = index" 
@@ -18,9 +13,14 @@
         [class.active]="isActive(item.route)"
         [class.module-nav]="moduleNavStartIndex() !== -1 && i >= moduleNavStartIndex()"
         [class.first-module-nav]="moduleNavStartIndex() !== -1 && i === moduleNavStartIndex()"
+        [class.home-nav]="item.imagePath"
         (click)="navigate(item.route)"
         [title]="item.tooltip">
-      <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+      <img *ngIf="item.imagePath" 
+           [src]="item.imagePath" 
+           [alt]="item.label"
+           class="nav-logo" />
+      <mat-icon *ngIf="item.icon" class="nav-icon">{{ item.icon }}</mat-icon>
     </li>
   </ul>
 </nav>

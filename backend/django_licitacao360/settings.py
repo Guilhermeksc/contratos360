@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'django_licitacao360.apps.gestao_contratos',
     # Monitoramento INLABS
     'django_licitacao360.apps.imprensa_nacional',
+    # Empresas Sancionadas (CEIS)
+    'django_licitacao360.apps.empresas_sancionadas',
 ]
 
 MIDDLEWARE = [
@@ -299,6 +301,32 @@ CELERY_BEAT_SCHEDULE = {
         "task": "django_licitacao360.apps.imprensa_nacional.tasks.collect_inlabs_articles",
         "schedule": crontab(hour=10, minute=0),  # Diariamente às 10:00 BRT/BRST (Brasília)
     },
+    # Sincronização de Contratos ComprasNet
+    "sync_contratos_uasg_787010": {
+        "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
+        "schedule": crontab(hour=22, minute=5),  # Diariamente às 22:05 BRT/BRST (Brasília)
+        "args": ("787010",),
+    },
+    "sync_contratos_uasg_787000": {
+        "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
+        "schedule": crontab(hour=22, minute=5),  # Diariamente às 22:05 BRT/BRST (Brasília)
+        "args": ("787000",),
+    },
+    "sync_contratos_uasg_770001": {
+        "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
+        "schedule": crontab(hour=22, minute=5),  # Diariamente às 22:05 BRT/BRST (Brasília)
+        "args": ("770001",),
+    },
+    "sync_contratos_uasg_787400": {
+        "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
+        "schedule": crontab(hour=22, minute=7),  # Diariamente às 22:07 BRT/BRST (Brasília)
+        "args": ("787400",),
+    },
+    "sync_contratos_uasg_787700": {
+        "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
+        "schedule": crontab(hour=22, minute=7),  # Diariamente às 22:07 BRT/BRST (Brasília)
+        "args": ("787700",),
+    },
 }
 
 # ============================================
@@ -347,6 +375,6 @@ LOGGING = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Personalização do Django Admin
-ADMIN_SITE_HEADER = "Administração do Sistema de apoio ao Cemos"
-ADMIN_SITE_TITLE = "Administração do Sistema de apoio ao Cemos"
+ADMIN_SITE_HEADER = "Administração do Licitacação 360"
+ADMIN_SITE_TITLE = "Administração do Licitacação 360"
 ADMIN_SITE_INDEX_TITLE = "Painel de Administração"

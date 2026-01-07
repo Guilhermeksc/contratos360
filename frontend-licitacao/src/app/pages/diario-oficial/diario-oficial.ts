@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -6,13 +6,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ImprensaNacionalService } from '../../services/imprensa-nacional.service';
 import { InlabsArticle } from '../../interfaces/imprensa-nacional.interface';
+import { PageHeaderComponent } from '../../components/page-header/page-header.component';
+import { StandardTableComponent } from '../../components/standard-table/standard-table.component';
 
 @Component({
   selector: 'app-diario-oficial',
@@ -30,11 +32,15 @@ import { InlabsArticle } from '../../interfaces/imprensa-nacional.interface';
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    PageHeaderComponent,
+    StandardTableComponent,
   ],
   templateUrl: './diario-oficial.html',
   styleUrl: './diario-oficial.scss',
 })
 export class DiarioOficialComponent implements OnInit {
+  @ViewChild('picker') picker!: MatDatepicker<Date>;
+  
   displayedColumns: string[] = ['edition_date', 'uasg', 'pub_name', 'art_type', 'objeto', 'pdf_page'];
   dataSource = new MatTableDataSource<InlabsArticle>([]);
   
@@ -42,6 +48,8 @@ export class DiarioOficialComponent implements OnInit {
   loading = signal(false);
   searchTerm = '';
   selectedDate: Date | null = null;
+  dateInputValue = signal<string>('');
+  isDarkTheme = signal<boolean>(false); // Tema claro (branco) por padrão
   
   // Paginação
   pageSize = 10;
@@ -50,6 +58,10 @@ export class DiarioOficialComponent implements OnInit {
   pageSizeOptions = [10, 25, 50, 100];
 
   constructor(private imprensaNacionalService: ImprensaNacionalService) {}
+  
+  onThemeToggle(isDark: boolean): void {
+    this.isDarkTheme.set(isDark);
+  }
 
   ngOnInit(): void {
     this.loadArticles();
@@ -105,7 +117,14 @@ export class DiarioOficialComponent implements OnInit {
     this.loadArticles();
   }
 
-  onDateChange(): void {
+  onDateChange(event?: any): void {
+    if (event && event.value) {
+      this.selectedDate = event.value;
+      this.dateInputValue.set(this.formatDateForInput(event.value));
+    } else {
+      this.selectedDate = null;
+      this.dateInputValue.set('');
+    }
     this.pageIndex = 0;
     this.loadArticles();
   }
@@ -124,6 +143,14 @@ export class DiarioOficialComponent implements OnInit {
     const day = String(date.getDate()).padStart(2, '0');
     
     return `${year}-${month}-${day}`;
+  }
+
+  formatDateForInput(date: Date | null): string {
+    if (!date) return '';
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   formatDisplayDate(dateString: string): string {
@@ -157,6 +184,7 @@ export class DiarioOficialComponent implements OnInit {
   clearFilters(): void {
     this.searchTerm = '';
     this.selectedDate = null;
+    this.dateInputValue.set('');
     this.pageIndex = 0;
     this.loadArticles();
   }

@@ -1,52 +1,72 @@
 <div class="diario-oficial-container">
-  <!-- Cabeçalho - Primeira Linha -->
-  <div class="header-row">
-    <h2 class="page-title">Diário Oficial da União - Imprensa Nacional</h2>
-  </div>
-  
-  <!-- Cabeçalho - Segunda Linha -->
-  <div class="header-row-second">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Buscar</mat-label>
+  <!-- Cabeçalho Padronizado -->
+  <app-page-header
+    title="Diário Oficial da União - Imprensa Nacional"
+    iconPath="assets/img/svg/dou.svg"
+    [showThemeToggle]="true"
+    [isDarkTheme]="isDarkTheme()"
+    (themeToggle)="onThemeToggle($event)">
+    
+    <!-- Controles do header (filtros, etc.) -->
+    <div headerControls>
       <input 
-        matInput 
-        [(ngModel)]="searchTerm" 
+        type="text" 
+        class="uasg-input-inline search-input"
+        [(ngModel)]="searchTerm"
         (ngModelChange)="onSearchChange()"
         placeholder="UASG, tipo, publicação..."
       />
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
 
-    <mat-form-field appearance="outline" class="date-field">
-      <mat-label>Data da Edição</mat-label>
-      <input 
-        matInput 
-        [matDatepicker]="picker" 
-        [(ngModel)]="selectedDate"
-        (dateChange)="onDateChange()"
-      />
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
+      <div class="date-input-wrapper">
+        <input 
+          type="text"
+          class="uasg-input-inline date-input"
+          [value]="dateInputValue()"
+          readonly
+          placeholder="Data da Edição"
+          [matDatepicker]="picker"
+          #dateInput
+          (focus)="picker.open()"
+        />
+        <button 
+          type="button"
+          class="date-picker-button"
+          (click)="dateInput.focus()"
+          [matTooltip]="'Selecionar data'">
+          <mat-icon>calendar_today</mat-icon>
+        </button>
+        <mat-datepicker 
+          #picker 
+          xPosition="start"
+          yPosition="below"
+          (dateChange)="onDateChange($event)">
+        </mat-datepicker>
+        <input 
+          type="hidden"
+          [(ngModel)]="selectedDate"
+        />
+      </div>
 
-    <button 
-      class="action-button-inline secondary"
-      (click)="clearFilters()">
-      <mat-icon>clear</mat-icon>
-      <span>Limpar Filtros</span>
-    </button>
-  </div>
+      <button 
+        class="action-button-inline secondary"
+        (click)="clearFilters()">
+        <mat-icon>clear</mat-icon>
+        <span>Limpar Filtros</span>
+      </button>
+    </div>
+    
+    <!-- Conteúdo abaixo do header (tabela, etc.) -->
+    <div headerContent>
+      <!-- Loading -->
+      <div *ngIf="loading()" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Carregando artigos...</p>
+      </div>
 
-  <!-- Loading -->
-  <div *ngIf="loading()" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Carregando artigos...</p>
-  </div>
-
-  <!-- Tabela -->
-  <div *ngIf="!loading()" class="table-card">
-    <div class="table-wrapper">
-      <table mat-table [dataSource]="dataSource" class="articles-table">
+      <!-- Tabela -->
+      <div *ngIf="!loading()" class="table-card">
+        <app-standard-table [isDarkTheme]="isDarkTheme()" [showBorder]="false">
+          <table mat-table [dataSource]="dataSource" class="articles-table">
         <!-- Data da Edição -->
         <ng-container matColumnDef="edition_date">
           <th mat-header-cell *matHeaderCellDef>Data da Edição</th>
@@ -123,30 +143,32 @@
           </td>
         </tr>
       </table>
-    </div>
+        </app-standard-table>
 
-    <!-- Paginação -->
-    <mat-paginator
-      [length]="totalCount()"
-      [pageSize]="pageSize"
-      [pageIndex]="pageIndex"
-      [pageSizeOptions]="pageSizeOptions"
-      [showFirstLastButtons]="true"
-      (page)="onPageChange($event)">
-    </mat-paginator>
-  </div>
+      <!-- Paginação -->
+      <mat-paginator
+        [length]="totalCount()"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+      </div>
 
-  <!-- Informações -->
-  <div *ngIf="!loading() && articles().length > 0" class="info-card">
-    <div class="info-content">
-      <mat-icon>info</mat-icon>
-      <div>
-        <p><strong>Total de artigos encontrados:</strong> {{ totalCount() }}</p>
-        <p class="info-note">
-          Os artigos são filtrados automaticamente pelo termo "Comando da Marinha" na categoria.
-          Clique no ícone de PDF para visualizar a publicação completa no portal da Imprensa Nacional.
-        </p>
+      <!-- Informações -->
+      <div *ngIf="!loading() && articles().length > 0" class="info-card">
+        <div class="info-content">
+          <mat-icon>info</mat-icon>
+          <div>
+            <p><strong>Total de artigos encontrados:</strong> {{ totalCount() }}</p>
+            <p class="info-note">
+              Os artigos são filtrados automaticamente pelo termo "Comando da Marinha" na categoria.
+              Clique no ícone de PDF para visualizar a publicação completa no portal da Imprensa Nacional.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </app-page-header>
 </div>

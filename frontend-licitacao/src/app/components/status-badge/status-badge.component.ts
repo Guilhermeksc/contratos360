@@ -11,9 +11,10 @@ import { getStatusColor } from '../../utils/status.utils';
 })
 export class StatusBadgeComponent {
   @Input() status: string = 'SEÇÃO CONTRATOS';
+  @Input() isDarkTheme: boolean = false; // Tema claro (branco) por padrão
 
   getStatusColor(status: string): string {
-    return getStatusColor(status);
+    return getStatusColor(status, this.isDarkTheme);
   }
 }
 

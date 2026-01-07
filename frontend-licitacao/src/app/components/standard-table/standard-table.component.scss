@@ -1,0 +1,305 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.standard-table-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff; // Branco por padrão (tema claro)
+  border-radius: 0; // Sem borda arredondada
+  overflow: hidden;
+  
+  &.no-border {
+    border: none;
+    border-radius: 0;
+  }
+  
+  &.dark-theme {
+    background-color: #000000; // Preto para o fundo do conteúdo interno
+  }
+  
+  &.light-theme {
+    background-color: #ffffff; // Branco para o fundo do conteúdo interno
+  }
+}
+
+.table-wrapper {
+  width: 100%;
+  flex: 1;
+  overflow-x: auto;
+  @include scrollbar;
+  background-color: #ffffff; // Branco por padrão (tema claro)
+  border-radius: 0; // Sem borda arredondada
+  min-width: 100%;
+  
+  .dark-theme & {
+    background-color: #000000; // Preto para o fundo do conteúdo interno
+  }
+  
+  .light-theme & {
+    background-color: #ffffff; // Branco para o fundo do conteúdo interno
+  }
+  
+  // Estilos para Material Table
+  ::ng-deep table.mat-mdc-table {
+    width: 100%;
+    background-color: #ffffff;
+    
+    .dark-theme & {
+      background-color: #000000;
+    }
+    
+    .light-theme & {
+      background-color: #ffffff;
+    }
+  }
+  
+  // Headers da tabela Material
+  ::ng-deep .mat-mdc-header-row {
+    background-color: #f5f5f5;
+    
+    .dark-theme & {
+      background-color: $bg-tertiary;
+    }
+    
+    .light-theme & {
+      background-color: #f5f5f5;
+    }
+    
+    th.mat-mdc-header-cell {
+      font-weight: $font-weight-semibold;
+      color: #333333;
+      background-color: #f5f5f5;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 2px solid #cccccc;
+      padding: $spacing-sm $spacing-md;
+      
+      .dark-theme & {
+        background-color: $bg-tertiary !important;
+        color: $text-primary !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      }
+      
+      .light-theme & {
+        background-color: #f5f5f5 !important;
+        color: #333333 !important;
+        border-bottom: 2px solid #cccccc !important;
+      }
+    }
+  }
+  
+  // Linhas da tabela Material
+  ::ng-deep .mat-mdc-row {
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: background-color $transition-base;
+    
+    .dark-theme & {
+      background-color: #000000;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        
+        td.mat-mdc-cell {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+      }
+      
+      &:active {
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        
+        td.mat-mdc-cell {
+          background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+      }
+    }
+    
+    .light-theme & {
+      background-color: #ffffff;
+      
+      &:hover {
+        background-color: #e8e8e8 !important;
+        
+        td.mat-mdc-cell {
+          background-color: #e8e8e8 !important;
+        }
+      }
+      
+      &:active {
+        background-color: #d0d0d0 !important;
+        
+        td.mat-mdc-cell {
+          background-color: #d0d0d0 !important;
+        }
+      }
+    }
+    
+    td.mat-mdc-cell {
+      padding: $spacing-sm $spacing-md;
+      background-color: #ffffff;
+      color: #333333;
+      border-bottom: 1px solid #e0e0e0;
+      
+      .dark-theme & {
+        background-color: #000000 !important;
+        color: $text-primary !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+      }
+      
+      .light-theme & {
+        background-color: #ffffff !important;
+        color: #333333 !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+      }
+    }
+    
+    // Remove borda da última linha
+    &:last-child td.mat-mdc-cell {
+      border-bottom: none !important;
+    }
+  }
+  
+  // Linha sem dados
+  ::ng-deep .mat-row.mat-no-data-row {
+    background-color: transparent !important;
+    
+    td.mat-mdc-cell {
+      background-color: transparent !important;
+      border: none !important;
+    }
+  }
+  
+  // Tabelas HTML simples (não Material)
+  table:not(.mat-mdc-table) {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    
+    .dark-theme & {
+      background-color: #000000;
+    }
+    
+    .light-theme & {
+      background-color: #ffffff;
+    }
+    
+    th {
+      padding: $spacing-sm $spacing-md;
+      font-weight: $font-weight-semibold;
+      color: #333333;
+      background-color: #f5f5f5;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 2px solid #cccccc;
+      
+      .dark-theme & {
+        background-color: $bg-tertiary !important;
+        color: $text-primary !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      }
+      
+      .light-theme & {
+        background-color: #f5f5f5 !important;
+        color: #333333 !important;
+        border-bottom: 2px solid #cccccc !important;
+      }
+    }
+    
+    td {
+      padding: $spacing-sm $spacing-md;
+      background-color: #ffffff;
+      color: #333333;
+      border-bottom: 1px solid #e0e0e0;
+      
+      .dark-theme & {
+        background-color: #000000 !important;
+        color: $text-primary !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+      }
+      
+      .light-theme & {
+        background-color: #ffffff !important;
+        color: #333333 !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+      }
+    }
+    
+    tbody {
+      background-color: #ffffff;
+      
+      .dark-theme & {
+        background-color: #000000;
+      }
+      
+      .light-theme & {
+        background-color: #ffffff;
+      }
+    }
+    
+    thead {
+      background-color: #f5f5f5;
+      
+      .dark-theme & {
+        background-color: $bg-tertiary;
+      }
+      
+      .light-theme & {
+        background-color: #f5f5f5;
+      }
+    }
+    
+    tbody tr {
+      cursor: pointer;
+      transition: background-color $transition-base;
+      background-color: #ffffff;
+      
+      .dark-theme & {
+        background-color: #000000;
+      }
+      
+      .light-theme & {
+        background-color: #ffffff;
+      }
+      
+      &:hover {
+        background-color: #e8e8e8 !important;
+        
+        .dark-theme & {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .light-theme & {
+          background-color: #e8e8e8 !important;
+        }
+        
+        td {
+          background-color: inherit !important;
+        }
+      }
+      
+      &:active {
+        background-color: #d0d0d0 !important;
+        
+        .dark-theme & {
+          background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        .light-theme & {
+          background-color: #d0d0d0 !important;
+        }
+        
+        td {
+          background-color: inherit !important;
+        }
+      }
+      
+      &:last-child td {
+        border-bottom: none !important;
+      }
+    }
+  }
+}
+

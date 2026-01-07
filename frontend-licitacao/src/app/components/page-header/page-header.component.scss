@@ -1,0 +1,280 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  background-color: $bg-secondary;
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  flex-wrap: nowrap; // Mantém tudo na mesma linha
+  
+  @include respond-to(md) {
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.header-content {
+  padding: 0 $spacing-lg $spacing-lg $spacing-lg;
+  border-top: $border-width solid $border-color;
+  margin-top: 0;
+  
+  // Esconde a área se não houver conteúdo projetado
+  &:empty {
+    display: none;
+  }
+  
+  // Estilos para conteúdo dentro do header-content
+  > * {
+    width: 100%;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-shrink: 0;
+  
+  @include respond-to(md) {
+    width: 100%;
+  }
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.header-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  // Se o SVG já tiver cor, não aplicar filtro
+  // Se precisar tornar branco, descomente a linha abaixo:
+  // filter: brightness(0) invert(1);
+}
+
+.page-title {
+  font-size: 20px;
+  margin: 0;
+  white-space: nowrap;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+  flex-shrink: 0;
+  
+  @include respond-to(md) {
+    white-space: normal;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: nowrap;
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 0; // Permite que os elementos encolham se necessário
+  flex-shrink: 1; // Permite encolher se necessário
+  
+  // Wrapper para controles do header - FORÇAR LAYOUT HORIZONTAL
+  [headerControls] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: $spacing-md !important;
+    flex-wrap: nowrap !important;
+    flex: 1;
+    min-width: 0; // Permite que os elementos encolham se necessário
+    flex-shrink: 1; // Permite encolher se necessário
+    width: auto !important; // Evita que ocupe 100% da largura
+    
+    // Estilos para elementos projetados (inputs, selects, etc.)
+    select,
+    input[type="text"],
+    input[type="search"],
+    input[type="number"],
+    input[type="date"] {
+      @include input-base;
+      width: auto;
+      min-width: 150px;
+      flex-shrink: 1;
+      
+      @include respond-to(md) {
+        width: 100%;
+      }
+    }
+    
+    select {
+      cursor: pointer;
+      
+      option {
+        background-color: $bg-secondary;
+        color: $text-primary;
+      }
+    }
+    
+    // Suporte para Material Form Fields
+    mat-form-field {
+      flex: 0 1 auto;
+      
+      @include respond-to(md) {
+        width: 100%;
+      }
+      
+      ::ng-deep .mat-mdc-form-field {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      
+      ::ng-deep .mat-mdc-form-field-wrapper {
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+    }
+    
+    // Classes específicas para elementos customizados
+    .uasg-select {
+      width: 150px;
+      min-width: 150px;
+      max-width: 150px;
+      flex-shrink: 0;
+      
+      @include respond-to(md) {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+    
+    .uasg-input-inline {
+      width: 150px;
+      min-width: 120px;
+      flex-shrink: 1; // Permite encolher se necessário
+      
+      &.search-input {
+        width: 300px;
+        min-width: 250px; // Tamanho mínimo para manter legibilidade
+        max-width: 300px;
+        flex-shrink: 1;
+        
+        @include respond-to(md) {
+          width: 100%;
+          min-width: 100%;
+          max-width: 100%;
+        }
+      }
+      
+      @include respond-to(md) {
+        width: 100%;
+        min-width: 100%;
+      }
+    }
+    
+    // Wrapper para campo de data
+    .date-input-wrapper {
+      flex-shrink: 0; // Não encolhe
+    }
+    
+    // Botões inline
+    .action-button-inline {
+      @include button-base;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      
+      &.primary {
+        @include button-primary;
+      }
+      
+      &.secondary {
+        @include button-secondary;
+      }
+      
+      &.danger {
+        @include button-danger;
+      }
+      
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+      
+      span {
+        margin-left: $spacing-xs;
+      }
+      
+      @include respond-to(md) {
+        width: 100%;
+      }
+    }
+    
+    @include respond-to(md) {
+      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+    }
+  }
+  
+  @include respond-to(md) {
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    width: 100%;
+  }
+}
+
+.theme-toggle-button {
+  @include button-base;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $border-radius-md;
+  background-color: $bg-tertiary;
+  border: $border-width solid $border-color;
+  cursor: pointer;
+  transition: all $transition-base;
+  flex-shrink: 0;
+  
+  &:hover {
+    background-color: $bg-hover;
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+  
+  span {
+    font-size: 20px;
+    line-height: 1;
+  }
+  
+  @include respond-to(md) {
+    width: 100%;
+    height: auto;
+    min-height: $button-height-md;
+  }
+}
+

@@ -7,159 +7,166 @@
   gap: $spacing-md;
   padding: $spacing-lg;
   overflow: hidden;
-}
-
-.header-row {
-  @include flex-between;
-  align-items: center;
-  gap: $spacing-md;
-  padding: $spacing-md;
-  background-color: $bg-secondary;
-  border: none;
-  border-radius: $border-radius-md;
-  flex-wrap: wrap;
-  flex-shrink: 0;
   
-  @include respond-to(md) {
-    flex-direction: column;
-    align-items: stretch;
+  // Remove padding quando o conteúdo está dentro do header
+  app-page-header {
+    margin: 0;
   }
 }
 
-.page-title {
-  font-size: 20px;
-  margin: 0;
-  white-space: nowrap;
-  font-weight: $font-weight-bold;
-  color: $text-primary;
-}
+// Estilos do header foram movidos para o componente page-header
+// Estilos específicos para elementos dentro do header
 
-.header-row-second {
-  display: flex;
-  align-items: center;
-  gap: $spacing-md;
-  padding: $spacing-md;
-  background-color: $bg-secondary;
-  border: none;
-  border-radius: $border-radius-md;
-  flex-wrap: wrap;
-  flex-shrink: 0;
+::ng-deep app-page-header {
+  // Consolidar todos os estilos de headerControls em um único bloco
+  [headerControls] {
+    // Layout horizontal obrigatório
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: $spacing-md !important;
+    flex-wrap: nowrap !important;
+    
+    // Campo de busca
+    .search-input {
+      width: 300px !important;
+      min-width: 250px !important;
+      max-width: 300px !important;
+      flex-shrink: 1 !important;
+      
+      @include respond-to(md) {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+    
+    // Wrapper para o campo de data com botão de calendário
+    .date-input-wrapper {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 0 !important;
+      position: relative;
+      flex-shrink: 0 !important;
+      white-space: nowrap !important;
+      
+      .date-input {
+        width: 180px;
+        min-width: 180px;
+        max-width: 180px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        padding-right: $spacing-xs;
+        flex-shrink: 0;
+        
+        @include respond-to(md) {
+          width: 100%;
+          min-width: 100%;
+          max-width: 100%;
+          border-radius: $border-radius-md;
+        }
+      }
+      
+      .date-picker-button {
+        @include button-base;
+        width: 40px;
+        height: 40px;
+        min-height: 40px;
+        padding: 0;
+        border: none;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        background-color: $bg-tertiary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: $text-primary;
+          transition: color $transition-base;
+        }
+        
+        &:hover {
+          background-color: $bg-tertiary;
+          
+          mat-icon {
+            color: $blue;
+          }
+        }
+        
+        @include respond-to(md) {
+          width: 100%;
+          height: auto;
+          min-height: $button-height-md;
+          border-radius: $border-radius-md;
+          border: $border-width solid $border-color;
+          margin-top: $spacing-xs;
+        }
+      }
+      
+      input[type="hidden"] {
+        display: none;
+      }
+      
+      // Posicionamento do datepicker próximo ao botão
+      ::ng-deep .cdk-overlay-pane {
+        &.mat-datepicker-popup {
+          position: absolute !important;
+        }
+      }
+      
+      @include respond-to(md) {
+        flex-direction: column !important;
+        width: 100% !important;
+      }
+    }
+    
+    // Botão de limpar filtros
+    .action-button-inline {
+      flex-shrink: 0 !important;
+      white-space: nowrap !important;
+    }
+    
+    // Responsividade - apenas em mobile
+    @include respond-to(md) {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+  }
   
-  @include respond-to(md) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-field {
-    flex: 0 1 auto;
-    min-width: 200px;
-    max-width: 300px;
-    
-    ::ng-deep .mat-mdc-form-field {
-      width: 100%;
-      margin-bottom: 0;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-wrapper {
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-    
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      background-color: $bg-secondary;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-      padding-bottom: 0;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-outline {
-      border: none !important;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-outline-thick {
-      border: none !important;
-    }
-    
-    ::ng-deep .mdc-notched-outline {
-      border: none !important;
-    }
-    
-    ::ng-deep .mdc-notched-outline__leading,
-    ::ng-deep .mdc-notched-outline__notch,
-    ::ng-deep .mdc-notched-outline__trailing {
-      border: none !important;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-      display: none !important;
-      margin-top: 0;
-      height: 0;
-      min-height: 0;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-hint-wrapper {
-      display: none !important;
+  // Estilos específicos para posicionar o datepicker próximo ao campo de data
+  ::ng-deep .date-input-wrapper {
+    .mat-datepicker-popup {
+      position: absolute !important;
     }
   }
-
-  .date-field {
-    flex: 0 1 auto;
-    min-width: 180px;
-    max-width: 220px;
+  
+  // Garantir que o datepicker seja posicionado corretamente
+  ::ng-deep .cdk-overlay-pane.mat-datepicker-popup-panel {
+    position: absolute !important;
     
-    ::ng-deep .mat-mdc-form-field {
-      width: 100%;
-      margin-bottom: 0;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-wrapper {
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-    
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      background-color: $bg-secondary;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-      padding-bottom: 0;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-outline {
-      border: none !important;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-outline-thick {
-      border: none !important;
-    }
-    
-    ::ng-deep .mdc-notched-outline {
-      border: none !important;
-    }
-    
-    ::ng-deep .mdc-notched-outline__leading,
-    ::ng-deep .mdc-notched-outline__notch,
-    ::ng-deep .mdc-notched-outline__trailing {
-      border: none !important;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-      display: none !important;
-      margin-top: 0;
-      height: 0;
-      min-height: 0;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-hint-wrapper {
-      display: none !important;
+    .mat-datepicker-content {
+      position: relative !important;
     }
   }
   
   .action-button-inline {
     flex: 0 0 auto;
     white-space: nowrap;
-    height: 40px; // Altura compatível com os campos Material
+    height: 40px;
     min-height: 40px;
     display: flex;
     align-items: center;
     margin-bottom: 0;
+    
+    @include respond-to(md) {
+      width: 100%;
+    }
   }
   
   // Corrigir fundo do calendário (datepicker) - fundo branco com máxima especificidade
@@ -343,161 +350,195 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
-  border: none;
-  border-radius: $border-radius-md;
   overflow: hidden;
+  
+  // Estilos específicos para elementos dentro da tabela padronizada
+  ::ng-deep app-standard-table {
+    .date-cell {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      justify-content: center;
 
-  .table-wrapper {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-    @include scrollbar;
-    background-color: #ffffff;
-
-    .articles-table {
-      width: 100%;
-      background-color: #ffffff;
-
-      th {
-        font-weight: $font-weight-semibold;
-        color: #333333;
-        background-color: #f5f5f5;
-        position: sticky;
-        top: 0;
-        z-index: 10;
+      .date-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
       }
-
-      td {
-        padding: $spacing-md;
-        background-color: #ffffff;
-        color: #333333;
+    }
+    
+    // Aplicar cores baseadas no tema do container
+    &.dark-theme {
+      .date-icon {
+        color: $text-secondary;
       }
       
-      tr.mat-row {
-        background-color: #ffffff;
-        
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.02);
-        }
+      .uasg-number {
+        color: $blue !important;
       }
-
-        .date-cell {
-        display: flex;
-        align-items: center;
-        gap: $spacing-xs;
-
-        .date-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-          color: #666666;
-        }
+      
+      .om-name {
+        color: $text-muted !important;
       }
-
-      .uasg-cell {
-        min-width: 150px;
-
-        .uasg-content {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-
-          .uasg-number {
-            font-weight: $font-weight-semibold;
-            color: #1976d2;
-            font-size: $font-size-base;
-          }
-
-          .om-name {
-            font-size: $font-size-xs;
-            color: #666666;
-            font-style: italic;
-            line-height: 1.2;
-          }
-        }
+      
+      .objeto-cell span {
+        color: $text-primary !important;
       }
-
-      .objeto-cell {
-        max-width: 400px;
-
-        span {
-          display: block;
-          color: #333333;
-          white-space: normal;
-          word-wrap: break-word;
-          overflow-wrap: break-word;
-          line-height: 1.5;
-        }
-
-        .no-objeto {
-          color: #999999;
-          font-style: italic;
-          white-space: nowrap;
-        }
+      
+      .no-objeto {
+        color: $text-muted !important;
       }
-
-      .actions-cell {
-        text-align: center;
-        
-        .pdf-icon-button {
-          width: 36px;
-          height: 36px;
-          padding: 0;
-          min-width: 36px;
-          min-height: 36px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          background-color: transparent;
-          border: none;
-          border-radius: 50%;
-          cursor: pointer;
-          transition: background-color $transition-base;
-          
-          mat-icon {
-            color: $red;
-            font-size: 24px;
-            width: 24px;
-            height: 24px;
-          }
-          
-          &:hover {
-            background-color: rgba($red, 0.1);
-          }
-          
-          &:active {
-            background-color: rgba($red, 0.2);
-          }
-        }
-      }
-
+      
       .no-pdf {
-        color: #999999;
-        font-style: italic;
+        color: $text-muted !important;
       }
-
+      
       .no-data {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: $spacing-xxl;
-        gap: $spacing-md;
-        color: #999999;
-
+        color: $text-muted;
+        
         mat-icon {
-          font-size: 48px;
-          width: 48px;
-          height: 48px;
+          color: $text-muted;
+        }
+        
+        p {
+          color: $text-muted;
+        }
+      }
+    }
+    
+    &.light-theme {
+      .date-icon {
+        color: #666666;
+      }
+      
+      .uasg-number {
+        color: #1976d2 !important;
+      }
+      
+      .om-name {
+        color: #666666 !important;
+      }
+      
+      .objeto-cell span {
+        color: #333333 !important;
+      }
+      
+      .no-objeto {
+        color: #999999 !important;
+      }
+      
+      .no-pdf {
+        color: #999999 !important;
+      }
+      
+      .no-data {
+        color: #999999;
+        
+        mat-icon {
           color: #cccccc;
         }
-
+        
         p {
-          margin: 0;
-          font-size: $font-size-base;
           color: #999999;
         }
+      }
+    }
+
+    .uasg-cell {
+      min-width: 150px;
+
+      .uasg-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        align-items: center;
+
+        .uasg-number {
+          font-weight: $font-weight-semibold;
+          font-size: $font-size-base;
+        }
+
+        .om-name {
+          font-size: $font-size-xs;
+          font-style: italic;
+          line-height: 1.2;
+        }
+      }
+    }
+
+    .objeto-cell {
+      max-width: 400px;
+
+      span {
+        display: block;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.5;
+      }
+
+      .no-objeto {
+        font-style: italic;
+        white-space: nowrap;
+      }
+    }
+
+    .actions-cell {
+      text-align: center;
+      
+      .pdf-icon-button {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        min-width: 36px;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color $transition-base;
+        
+        mat-icon {
+          color: $red;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+        
+        &:hover {
+          background-color: rgba($red, 0.1);
+        }
+        
+        &:active {
+          background-color: rgba($red, 0.2);
+        }
+      }
+    }
+
+    .no-pdf {
+      font-style: italic;
+    }
+
+    .no-data {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: $spacing-xxl;
+      gap: $spacing-md;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+      }
+
+      p {
+        margin: 0;
+        font-size: $font-size-base;
       }
     }
   }
@@ -645,20 +686,6 @@
 @include respond-to(md) {
   .diario-oficial-container {
     padding: $spacing-md;
-
-    .header-row-second {
-      flex-direction: column;
-      align-items: stretch;
-
-      .search-field,
-      .date-field {
-        width: 100%;
-      }
-
-      .action-button-inline {
-        width: 100%;
-      }
-    }
 
     .table-card .table-wrapper {
       overflow-x: scroll;

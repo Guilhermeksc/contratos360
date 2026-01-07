@@ -1,5 +1,107 @@
 <div class="empresas-sancionadas-container">
-  <h1>Empresas Sancionadas</h1>
-  <p>Módulo de Empresas Sancionadas em desenvolvimento...</p>
+  <!-- Cabeçalho e Filtros -->
+  <app-page-header
+    title="Empresas Sancionadas (CEIS)"
+    iconPath="assets/img/svg/contratos.svg"
+    [showThemeToggle]="true"
+    [isDarkTheme]="isDarkTheme()"
+    (themeToggle)="onThemeToggle($event)">
+    
+    <!-- Controles do header (filtros, etc.) -->
+    <div headerControls>
+      <select 
+        class="filter-select"
+        [(ngModel)]="selectedTipoPessoa"
+        (ngModelChange)="onTipoPessoaChange()">
+        <option [ngValue]="null">Todos os tipos</option>
+        <option [ngValue]="'F'">Pessoa Física</option>
+        <option [ngValue]="'J'">Pessoa Jurídica</option>
+      </select>
+      
+      <select 
+        class="filter-select"
+        [(ngModel)]="selectedCategoria"
+        (ngModelChange)="onCategoriaChange()">
+        <option [ngValue]="null">Todas as categorias</option>
+        <option *ngFor="let categoria of categorias()" [ngValue]="categoria">
+          {{ categoria }}
+        </option>
+      </select>
+      
+      <select 
+        class="filter-select"
+        [(ngModel)]="selectedEsfera"
+        (ngModelChange)="onEsferaChange()">
+        <option [ngValue]="null">Todas as esferas</option>
+        <option *ngFor="let esfera of esferas()" [ngValue]="esfera">
+          {{ esfera }}
+        </option>
+      </select>
+      
+      <select 
+        class="filter-select"
+        [(ngModel)]="selectedUf"
+        (ngModelChange)="onUfChange()">
+        <option [ngValue]="null">Todos os estados</option>
+        <option *ngFor="let uf of ufs()" [ngValue]="uf">
+          {{ uf }}
+        </option>
+      </select>
+      
+      <input 
+        type="text" 
+        class="search-input"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="Buscar por nome, CPF/CNPJ, processo..."
+      />
+    </div>
+    
+    <!-- Conteúdo abaixo do header (tabela, etc.) -->
+    <div headerContent class="table-container">
+      <app-standard-table [isDarkTheme]="isDarkTheme()" [showBorder]="true">
+        <table class="empresas-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Tipo</th>
+              <th>CPF/CNPJ</th>
+              <th>Nome/Razão Social</th>
+              <th>Categoria</th>
+              <th>Data Início</th>
+              <th>Data Final</th>
+              <th>Órgão Sancionador</th>
+              <th>UF</th>
+              <th>Esfera</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let empresa of filteredData()" class="table-row">
+              <td>{{ empresa.codigo_sancao || 'N/A' }}</td>
+              <td>{{ empresa.tipo_pessoa === 'F' ? 'Física' : empresa.tipo_pessoa === 'J' ? 'Jurídica' : 'N/A' }}</td>
+              <td>{{ formatCpfCnpj(empresa.cpf_cnpj) }}</td>
+              <td>
+                <div class="cell-content">
+                  <div class="cell-main">{{ empresa.nome_sancionado || empresa.razao_social || 'N/A' }}</div>
+                  <div class="cell-subtitle" *ngIf="empresa.nome_fantasia">
+                    {{ empresa.nome_fantasia }}
+                  </div>
+                </div>
+              </td>
+              <td>{{ truncateText(empresa.categoria_sancao, 50) }}</td>
+              <td>{{ formatDate(empresa.data_inicio_sancao) }}</td>
+              <td>{{ formatDate(empresa.data_final_sancao) }}</td>
+              <td>{{ truncateText(empresa.orgao_sancionador, 40) }}</td>
+              <td>{{ empresa.uf_orgao_sancionador || 'N/A' }}</td>
+              <td>{{ empresa.esfera_orgao_sancionador || 'N/A' }}</td>
+            </tr>
+            <tr *ngIf="filteredData().length === 0">
+              <td colspan="10" class="empty-message">Nenhuma empresa sancionada encontrada</td>
+            </tr>
+          </tbody>
+        </table>
+      </app-standard-table>
+    </div>
+  </app-page-header>
 </div>
 

@@ -5,8 +5,8 @@ from django.db import connection
 import os
 
 # Personalização do Django Admin
-admin.site.site_header = "Administração do Sistema de apoio ao Cemos"
-admin.site.site_title = "Administração do Sistema de apoio ao Cemos"
+admin.site.site_header = "Administração do Licitacação 360"
+admin.site.site_title = "Administração do Licitacação 360"
 admin.site.index_title = "Painel de Administração"
 
 def health_check(request):
@@ -64,4 +64,7 @@ urlpatterns = [
 
     # Imprensa Nacional (INLABS)
     path('api/inlabs/', include('django_licitacao360.apps.imprensa_nacional.urls')),
+    
+    # Empresas Sancionadas (CEIS)
+    path('api/', include('django_licitacao360.apps.empresas_sancionadas.urls')),
 ]

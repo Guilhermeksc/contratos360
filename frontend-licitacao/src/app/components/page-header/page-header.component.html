@@ -1,0 +1,31 @@
+<div class="page-header">
+  <div class="header-top">
+    <div class="header-left">
+      <div class="icon-container" *ngIf="iconPath">
+        <img [src]="iconPath" [alt]="title" class="header-icon" />
+      </div>
+      <h2 class="page-title">{{ title }}</h2>
+    </div>
+    
+    <div class="header-right">
+      <!-- Conteúdo customizado (filtros, combobox, etc.) -->
+      <ng-content select="[headerControls]"></ng-content>
+      
+      <!-- Botão de tema -->
+      <button 
+        *ngIf="showThemeToggle"
+        class="theme-toggle-button"
+        (click)="onThemeToggle()"
+        [title]="isDarkTheme ? 'Mudar para tema claro' : 'Mudar para tema escuro'">
+        <span *ngIf="isDarkTheme">☀️</span>
+        <span *ngIf="!isDarkTheme">🌙</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Área de conteúdo abaixo do header -->
+  <div class="header-content">
+    <ng-content select="[headerContent]"></ng-content>
+  </div>
+</div>
+

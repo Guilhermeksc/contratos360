@@ -34,28 +34,8 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('./modules/features/contratos/pages/uasg-search/uasg-search.component').then((m) => m.UasgSearchComponent),
-            data: { breadcrumb: 'Buscar UASG' }
-          },
-          {
-            path: 'lista',
-            loadComponent: () => import('./modules/features/contratos/pages/contracts-table/contracts-table.component').then((m) => m.ContractsTableComponent),
-            data: { breadcrumb: 'Visualizar Tabelas' }
-          },
-          {
-            path: ':id',
-            loadComponent: () => import('./modules/features/contratos/pages/contract-details/contract-details.component').then((m) => m.ContractDetailsComponent),
-            data: { breadcrumb: 'Detalhes do Contrato' }
-          },
-          {
-            path: 'mensagens',
-            loadComponent: () => import('./modules/features/contratos/pages/message-builder/message-builder.component').then((m) => m.MessageBuilderComponent),
-            data: { breadcrumb: 'Mensagens' }
-          },
-          {
-            path: 'configuracoes',
-            loadComponent: () => import('./modules/features/contratos/pages/settings/settings.component').then((m) => m.SettingsComponent),
-            data: { breadcrumb: 'Configurações' }
+            loadComponent: () => import('./pages/contratos/contratos.component').then((m) => m.ContratosComponent),
+            data: { breadcrumb: 'Contratos' }
           }
         ]
       },
@@ -80,14 +60,14 @@ export const routes: Routes = [
         data: { breadcrumb: 'Controle Interno' }
       },
       {
-        path: 'dashboard',
-        loadComponent: () => import('./modules/features/contratos/pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
-        data: { breadcrumb: 'Dashboard' }
-      },
-      {
         path: 'diario-oficial',
         loadComponent: () => import('./pages/diario-oficial/diario-oficial').then((m) => m.DiarioOficialComponent),
         data: { breadcrumb: 'Diário Oficial' }
+      },
+      {
+        path: 'calendario',
+        loadComponent: () => import('./pages/calendario/calendario').then((m) => m.CalendarioComponent),
+        data: { breadcrumb: 'Calendário' }
       },
     ]
   },

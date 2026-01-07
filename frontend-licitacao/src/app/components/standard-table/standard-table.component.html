@@ -1,0 +1,9 @@
+<div class="standard-table-container" 
+     [class.light-theme]="!isDarkTheme" 
+     [class.dark-theme]="isDarkTheme"
+     [class.no-border]="!showBorder">
+  <div class="table-wrapper">
+    <ng-content></ng-content>
+  </div>
+</div>
+

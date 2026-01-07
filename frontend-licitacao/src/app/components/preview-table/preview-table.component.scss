@@ -1,64 +1,30 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.preview-table-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #000000; // Preto para o fundo do conteúdo interno
-}
+// Estilos do container e wrapper foram movidos para o componente standard-table
+// Mantendo apenas estilos específicos do preview-table
 
-.table-wrapper {
-  width: 100%;
-  height: 100%;
-  max-height: 600px; // Altura máxima para forçar scroll
-  overflow-y: auto;
-  overflow-x: auto;
-  @include scrollbar;
-  background-color: #000000; // Preto para o fundo do conteúdo interno
-  
-  // Garante que a tabela tenha largura mínima
-  min-width: 100%;
-}
+// Estilos da tabela foram movidos para o componente standard-table
+// Mantendo apenas estilos específicos do preview-table
 
 .preview-table {
   @include table;
   width: 100%;
-  min-width: fit-content; // Permite que a tabela se ajuste ao conteúdo
+  min-width: fit-content;
   font-size: $font-size-sm;
-  background-color: #000000; // Preto para o fundo do conteúdo interno
-  table-layout: auto; // Permite redimensionamento automático das colunas
+  table-layout: auto;
   
   th {
     padding: $spacing-sm $spacing-md;
     font-size: $font-size-xs;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background-color: $bg-tertiary;
-    color: $text-primary;
-    font-weight: $font-weight-semibold;
-    vertical-align: middle;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-bottom: 2px solid $border-color-hover;
-    text-align: center; // Centraliza o conteúdo do header
+    text-align: center;
   }
   
   td {
     padding: $spacing-sm $spacing-md;
-    vertical-align: middle;
-    background-color: #000000; // Preto para o fundo das células
-    text-align: center; // Centraliza o conteúdo das células
-  }
-  
-  tbody {
-    background-color: #000000; // Preto para o fundo do tbody
-  }
-  
-  thead {
-    background-color: $bg-tertiary;
+    text-align: center;
   }
 }
 
@@ -91,7 +57,6 @@
   .cell-main {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $text-primary;
     line-height: 1.3;
     text-align: center;
   }
@@ -99,7 +64,6 @@
   .objeto-text {
     font-size: $font-size-xs; // Fonte menor
     font-weight: $font-weight-medium;
-    color: $text-primary;
     line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2; // Permite apenas uma quebra de linha (máximo 2 linhas)
@@ -114,7 +78,6 @@
   
   .cell-subtitle {
     font-size: $font-size-xs;
-    color: $text-muted;
     line-height: 1.2;
     text-align: center;
   }
@@ -134,6 +97,56 @@
   }
 }
 
+// Estilos para cell-content - cores serão aplicadas pelo standard-table baseado no tema
+.preview-table .cell-content {
+  .cell-main {
+    // Cores serão aplicadas pelo standard-table
+  }
+  
+  .objeto-text {
+    // Cores serão aplicadas pelo standard-table
+  }
+  
+  .cell-subtitle {
+    // Cores serão aplicadas pelo standard-table
+  }
+}
+
+// Aplicar cores baseadas no tema do standard-table
+::ng-deep app-standard-table {
+  &.dark-theme {
+    .cell-content {
+      .cell-main {
+        color: $text-primary;
+      }
+      
+      .objeto-text {
+        color: $text-primary;
+      }
+      
+      .cell-subtitle {
+        color: $text-muted;
+      }
+    }
+  }
+  
+  &.light-theme {
+    .cell-content {
+      .cell-main {
+        color: #333333;
+      }
+      
+      .objeto-text {
+        color: #333333;
+      }
+      
+      .cell-subtitle {
+        color: #666666;
+      }
+    }
+  }
+}
+
 .clickable-text {
   cursor: pointer;
   transition: color $transition-base;
@@ -149,17 +162,10 @@
   }
 }
 
+// Estilos de hover/active foram movidos para o componente standard-table
 .preview-row {
   cursor: pointer;
   transition: background-color $transition-base;
-  
-  &:hover {
-    background-color: $bg-hover;
-  }
-  
-  &:active {
-    background-color: $bg-tertiary;
-  }
 }
 
 // Cores vibrantes para a coluna Dias
@@ -261,9 +267,23 @@ td.dias-gray {
 
 .empty-message {
   text-align: center;
-  color: $text-muted;
   padding: $spacing-lg;
   font-style: italic;
+}
+
+// Cores serão aplicadas pelo standard-table baseado no tema
+::ng-deep app-standard-table {
+  &.dark-theme {
+    .empty-message {
+      color: $text-muted;
+    }
+  }
+  
+  &.light-theme {
+    .empty-message {
+      color: #666666;
+    }
+  }
 }
 
 // Estilos customizados para o tooltip de cópia

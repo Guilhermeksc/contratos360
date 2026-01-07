@@ -1,6 +1,5 @@
-<div class="preview-table-container">
-  <div class="table-wrapper">
-    <table class="preview-table">
+<app-standard-table [isDarkTheme]="isDarkTheme" [showBorder]="true">
+  <table class="preview-table">
     <thead>
       <tr>
         <th>UASG</th>
@@ -51,7 +50,7 @@
         
         <!-- Status -->
         <td class="status-cell">
-          <app-status-badge [status]="contrato.status_atual || 'SEÇÃO CONTRATOS'"></app-status-badge>
+          <app-status-badge [status]="contrato.status_atual || 'SEÇÃO CONTRATOS'" [isDarkTheme]="isDarkTheme"></app-status-badge>
         </td>
         
         <!-- Dias -->
@@ -138,6 +137,5 @@
       </tr>
     </tbody>
   </table>
-  </div>
-</div>
+</app-standard-table>
 
