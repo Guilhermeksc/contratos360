@@ -56,8 +56,33 @@ export const routes: Routes = [
       },
       {
         path: 'controle-interno',
-        loadComponent: () => import('./pages/controle-interno/controle-interno.component').then((m) => m.ControleInternoComponent),
-        data: { breadcrumb: 'Controle Interno' }
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./pages/controle-interno/controle-interno.component').then((m) => m.ControleInternoComponent),
+            data: { breadcrumb: 'Controle Interno' }
+          },
+          {
+            path: 'pncp',
+            loadComponent: () => import('./pages/controle-interno/ccimar-pncp/ccimar-pncp').then((m) => m.CcimarPncp),
+            data: { breadcrumb: 'PNCP' }
+          },
+          {
+            path: 'ata',
+            loadComponent: () => import('./pages/controle-interno/ccimar-ata/ccimar-ata').then((m) => m.CcimarAta),
+            data: { breadcrumb: 'Atas' }
+          },
+          {
+            path: 'contratos',
+            loadComponent: () => import('./pages/controle-interno/ccimar-contratos/ccimar-contratos').then((m) => m.CcimarContratos),
+            data: { breadcrumb: 'Contratos' }
+          },
+          {
+            path: 'dashboard',
+            loadComponent: () => import('./pages/controle-interno/ccimar-dash/ccimar-dash').then((m) => m.CcimarDash),
+            data: { breadcrumb: 'Dashboard' }
+          }
+        ]
       },
       {
         path: 'diario-oficial',

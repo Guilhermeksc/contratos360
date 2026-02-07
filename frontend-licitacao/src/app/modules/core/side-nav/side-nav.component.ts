@@ -65,9 +65,10 @@ export class SideNavComponent implements OnInit {
     ],
     // Opções específicas para Controle Interno
     'controle-interno': [
-      { icon: 'verified', label: 'Auditorias', route: '/controle-interno/auditorias', tooltip: 'Auditorias' },
-      { icon: 'check_circle', label: 'Conformidade', route: '/controle-interno/conformidade', tooltip: 'Conformidade' },
-      { icon: 'report', label: 'Relatórios', route: '/controle-interno/relatorios', tooltip: 'Relatórios' }
+      { icon: 'public', label: 'PNCP', route: '/controle-interno/pncp', tooltip: 'Portal Nacional de Contratações Públicas' },
+      { icon: 'description', label: 'Atas', route: '/controle-interno/ata', tooltip: 'Gestão de Atas de Registro de Preços' },
+      { icon: 'assignment', label: 'Contratos', route: '/controle-interno/contratos', tooltip: 'Controle e gestão de contratos' },
+      { icon: 'dashboard', label: 'Dashboard', route: '/controle-interno/dashboard', tooltip: 'Painel de indicadores e métricas' }
     ]
   };
 

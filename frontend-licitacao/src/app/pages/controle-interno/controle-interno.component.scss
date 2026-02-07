@@ -1,16 +1,105 @@
 @use '../../styles/variables' as *;
 
-.container {
+.controle-interno-container {
   padding: $spacing-xxl;
-  color: $text-primary;
+  min-height: 100vh;
+  background: var(--background-color, #f5f5f5);
   
-  h1 {
-    color: $text-primary;
-    margin-bottom: $spacing-lg;
+  .header {
+    margin-bottom: $spacing-xxl;
+    text-align: center;
+    
+    h1 {
+      color: $text-primary;
+      margin-bottom: $spacing-md;
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+    
+    .subtitle {
+      color: $text-secondary;
+      font-size: 1.1rem;
+    }
   }
   
-  p {
-    color: $text-secondary;
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $spacing-xl;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .navigation-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-top: 4px solid;
+    border-radius: 8px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    
+    mat-card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: $spacing-xl;
+      
+      .card-icon {
+        margin-bottom: $spacing-lg;
+        
+        mat-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+        }
+      }
+      
+      .card-title {
+        color: $text-primary;
+        margin-bottom: $spacing-md;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      
+      .card-description {
+        color: $text-secondary;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+    }
+    
+    mat-card-actions {
+      padding: $spacing-md $spacing-lg;
+      display: flex;
+      justify-content: center;
+      
+      button {
+        font-weight: 500;
+        
+        mat-icon {
+          margin-left: $spacing-xs;
+        }
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .controle-interno-container {
+    padding: $spacing-lg;
+    
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
   }
 }
 

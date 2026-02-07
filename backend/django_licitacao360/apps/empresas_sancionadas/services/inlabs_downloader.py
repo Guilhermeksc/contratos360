@@ -23,7 +23,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
 
-from ..models import InlabsArticle
+from django_licitacao360.apps.imprensa_nacional.models import InlabsArticle
 
 logger = logging.getLogger(__name__)
 

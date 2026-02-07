@@ -1,0 +1,88 @@
+@use '../../../styles/variables' as *;
+
+.contratos-container {
+  padding: $spacing-xl;
+  min-height: 100vh;
+  
+  .header-section {
+    margin-bottom: $spacing-xl;
+    
+    h1 {
+      color: $text-primary;
+      margin-bottom: $spacing-sm;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+    
+    .subtitle {
+      color: $text-secondary;
+      font-size: 1rem;
+    }
+  }
+  
+  .content-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    
+    .info-card {
+      margin-bottom: $spacing-xl;
+      
+      .info-content {
+        display: flex;
+        gap: $spacing-lg;
+        align-items: flex-start;
+        
+        .info-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: #f57c00;
+          flex-shrink: 0;
+        }
+        
+        h2 {
+          color: $text-primary;
+          margin-bottom: $spacing-md;
+          font-size: 1.5rem;
+        }
+        
+        p {
+          color: $text-secondary;
+          margin-bottom: $spacing-sm;
+          line-height: 1.6;
+          
+          strong {
+            color: $text-primary;
+            font-weight: 600;
+          }
+        }
+        
+        ul {
+          color: $text-secondary;
+          margin-left: $spacing-lg;
+          line-height: 1.8;
+          
+          li {
+            margin-bottom: $spacing-xs;
+          }
+        }
+      }
+    }
+    
+    .placeholder-section {
+      // Área reservada para conteúdo futuro
+      min-height: 200px;
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .contratos-container {
+    padding: $spacing-md;
+    
+    .content-section .info-card .info-content {
+      flex-direction: column;
+    }
+  }
+}

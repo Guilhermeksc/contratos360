@@ -67,4 +67,7 @@ urlpatterns = [
     
     # Empresas Sancionadas (CEIS)
     path('api/', include('django_licitacao360.apps.empresas_sancionadas.urls')),
+    
+    # PNCP (Portal Nacional de Contratações Públicas)
+    path('api/pncp/', include('django_licitacao360.apps.pncp.urls')),
 ]

@@ -1,5 +1,29 @@
-<div class="container">
-  <h1>Controle Interno</h1>
-  <p>Módulo de Controle Interno em desenvolvimento...</p>
+<div class="controle-interno-container">
+  <div class="header">
+    <h1>Controle Interno</h1>
+    <p class="subtitle">Acesso centralizado às funcionalidades do sistema</p>
+  </div>
+
+  <div class="cards-grid">
+    <mat-card 
+      *ngFor="let card of navigationCards" 
+      class="navigation-card"
+      [style.border-top-color]="card.color"
+      (click)="navigateTo(card.route)">
+      <mat-card-content>
+        <div class="card-icon" [style.color]="card.color">
+          <mat-icon>{{ card.icon }}</mat-icon>
+        </div>
+        <h2 class="card-title">{{ card.title }}</h2>
+        <p class="card-description">{{ card.description }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button [style.color]="card.color">
+          Acessar
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </div>
 

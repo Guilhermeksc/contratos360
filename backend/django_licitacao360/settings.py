@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'django_licitacao360.apps.imprensa_nacional',
     # Empresas Sancionadas (CEIS)
     'django_licitacao360.apps.empresas_sancionadas',
+    # PNCP
+    'django_licitacao360.apps.pncp',
 ]
 
 MIDDLEWARE = [

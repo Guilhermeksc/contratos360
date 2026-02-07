@@ -1,0 +1,259 @@
+<div class="pncp-container">
+  <div class="header-section">
+    <h1>Portal Nacional de Contratações Públicas (PNCP)</h1>
+    <p class="subtitle">Acesse dados de compras públicas por código de unidade</p>
+  </div>
+
+  <div class="search-section">
+    <mat-card>
+      <mat-card-content>
+        <div class="search-controls">
+          <mat-form-field appearance="outline">
+            <mat-label>Código da Unidade</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="codigoUnidade" 
+              placeholder="Ex: 765701"
+              (keyup.enter)="carregarDados()" />
+          </mat-form-field>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="carregarDados()"
+            [disabled]="loading()">
+            <mat-icon>search</mat-icon>
+            Buscar
+          </button>
+          <button 
+            mat-raised-button 
+            color="accent" 
+            (click)="exportarXlsx()"
+            [disabled]="loading() || compras().length === 0">
+            <mat-icon>download</mat-icon>
+            Exportar XLSX
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="loading-container" *ngIf="loading()">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Carregando dados...</p>
+  </div>
+
+  <div class="content-section" *ngIf="!loading() && compras().length > 0">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+      <!-- Aba: Compras -->
+      <mat-tab label="Compras">
+        <div class="tab-content">
+          <div class="tab-loading" *ngIf="loadingCompras() || loadingTab() === 'compras'">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Carregando compras...</p>
+          </div>
+          <mat-card *ngIf="!loadingCompras() && loadingTab() !== 'compras'">
+            <mat-card-header>
+              <mat-card-title>Compras ({{ compras().length }})</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-container">
+                <table mat-table [dataSource]="compras()" class="data-table">
+                  <ng-container matColumnDef="numero_compra">
+                    <th mat-header-cell *matHeaderCellDef>Número</th>
+                    <td mat-cell *matCellDef="let compra">{{ compra.numero_compra }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="ano_compra">
+                    <th mat-header-cell *matHeaderCellDef>Ano</th>
+                    <td mat-cell *matCellDef="let compra">{{ compra.ano_compra }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="modalidade_nome">
+                    <th mat-header-cell *matHeaderCellDef>Modalidade</th>
+                    <td mat-cell *matCellDef="let compra">{{ compra.modalidade_nome }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="objeto_compra">
+                    <th mat-header-cell *matHeaderCellDef>Objeto</th>
+                    <td mat-cell *matCellDef="let compra">{{ compra.objeto_compra | slice:0:50 }}...</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="valor_total_estimado">
+                    <th mat-header-cell *matHeaderCellDef>Valor Estimado</th>
+                    <td mat-cell *matCellDef="let compra">{{ formatarMoeda(compra.valor_total_estimado) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="valor_total_homologado">
+                    <th mat-header-cell *matHeaderCellDef>Valor Homologado</th>
+                    <td mat-cell *matCellDef="let compra">{{ formatarMoeda(compra.valor_total_homologado) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="link_pncp">
+                    <th mat-header-cell *matHeaderCellDef>Ações</th>
+                    <td mat-cell *matCellDef="let compra">
+                      <button 
+                        mat-icon-button 
+                        color="primary" 
+                        (click)="abrirLinkPncp(compra.link_pncp)"
+                        title="Abrir no PNCP">
+                        <mat-icon>open_in_new</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumnsCompras"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsCompras;"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Aba: Itens com Resultados -->
+      <mat-tab label="Itens com Resultados">
+        <div class="tab-content">
+          <div class="tab-loading" *ngIf="loadingItens() || loadingTab() === 'itens'">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Carregando itens...</p>
+          </div>
+          <mat-card *ngIf="!loadingItens() && loadingTab() !== 'itens'">
+            <mat-card-header>
+              <mat-card-title>Itens com Resultados ({{ itensMerge().length }})</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-container">
+                <table mat-table [dataSource]="itensMerge()" class="data-table">
+                  <ng-container matColumnDef="numero_item">
+                    <th mat-header-cell *matHeaderCellDef>Item</th>
+                    <td mat-cell *matCellDef="let item">{{ item.numero_item }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="descricao">
+                    <th mat-header-cell *matHeaderCellDef>Descrição</th>
+                    <td mat-cell *matCellDef="let item">{{ item.descricao | slice:0:60 }}...</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="quantidade">
+                    <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+                    <td mat-cell *matCellDef="let item">{{ item.quantidade }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="valor_total_estimado">
+                    <th mat-header-cell *matHeaderCellDef>Valor Estimado</th>
+                    <td mat-cell *matCellDef="let item">{{ formatarMoeda(item.valor_total_estimado) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="valor_total_homologado">
+                    <th mat-header-cell *matHeaderCellDef>Valor Homologado</th>
+                    <td mat-cell *matCellDef="let item">{{ formatarMoeda(item.valor_total_homologado) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="percentual_desconto">
+                    <th mat-header-cell *matHeaderCellDef>Desconto</th>
+                    <td mat-cell *matCellDef="let item">{{ formatarPercentual(item.percentual_desconto) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="razao_social">
+                    <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+                    <td mat-cell *matCellDef="let item">{{ item.razao_social || '-' }}</td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumnsItens"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsItens;"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Aba: Modalidades -->
+      <mat-tab label="Modalidades">
+        <div class="tab-content">
+          <div class="tab-loading" *ngIf="loadingModalidades() || loadingTab() === 'modalidades'">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Carregando modalidades...</p>
+          </div>
+          <mat-card *ngIf="!loadingModalidades() && loadingTab() !== 'modalidades'">
+            <mat-card-header>
+              <mat-card-title>Estatísticas por Modalidade</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-container">
+                <table mat-table [dataSource]="modalidades()" class="data-table">
+                  <ng-container matColumnDef="ano_compra">
+                    <th mat-header-cell *matHeaderCellDef>Ano</th>
+                    <td mat-cell *matCellDef="let mod">{{ mod.ano_compra }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="modalidade_nome">
+                    <th mat-header-cell *matHeaderCellDef>Modalidade</th>
+                    <td mat-cell *matCellDef="let mod">{{ mod.modalidade_nome }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="quantidade_compras">
+                    <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+                    <td mat-cell *matCellDef="let mod">{{ mod.quantidade_compras }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="valor_total_homologado">
+                    <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+                    <td mat-cell *matCellDef="let mod">{{ formatarMoeda(mod.valor_total_homologado) }}</td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumnsModalidades"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsModalidades;"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Aba: Fornecedores -->
+      <mat-tab label="Fornecedores">
+        <div class="tab-content">
+          <div class="tab-loading" *ngIf="loadingFornecedores() || loadingTab() === 'fornecedores'">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Carregando fornecedores...</p>
+          </div>
+          <mat-card *ngIf="!loadingFornecedores() && loadingTab() !== 'fornecedores'">
+            <mat-card-header>
+              <mat-card-title>Fornecedores Agregados ({{ fornecedores().length }})</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-container">
+                <table mat-table [dataSource]="fornecedores()" class="data-table">
+                  <ng-container matColumnDef="cnpj_fornecedor">
+                    <th mat-header-cell *matHeaderCellDef>CNPJ</th>
+                    <td mat-cell *matCellDef="let fornecedor">{{ fornecedor.cnpj_fornecedor }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="razao_social">
+                    <th mat-header-cell *matHeaderCellDef>Razão Social</th>
+                    <td mat-cell *matCellDef="let fornecedor">{{ fornecedor.razao_social || '-' }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="valor_total_homologado">
+                    <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+                    <td mat-cell *matCellDef="let fornecedor">{{ formatarMoeda(fornecedor.valor_total_homologado) }}</td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumnsFornecedores"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsFornecedores;"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading() && compras().length === 0">
+    <mat-icon>search_off</mat-icon>
+    <h2>Nenhum dado encontrado</h2>
+    <p>Informe um código de unidade e clique em "Buscar" para carregar os dados.</p>
+  </div>
+</div>
