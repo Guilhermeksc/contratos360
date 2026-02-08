@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from decimal import Decimal
-from .models import Compra, ItemCompra, ResultadoItem, Fornecedor
+from .models import AmparoLegal, Compra, ItemCompra, Modalidade, ModoDisputa, ResultadoItem, Fornecedor
 
 
 class FornecedorSerializer(serializers.ModelSerializer):
@@ -25,17 +25,33 @@ class ItemCompraSerializer(serializers.ModelSerializer):
         exclude = ['compra', 'tem_resultado']
 
 
+class ModalidadeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Modalidade
+        fields = ["id", "nome", "descricao"]
+
+
+class AmparoLegalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmparoLegal
+        fields = ["id", "nome", "descricao"]
+
+
+class ModoDisputaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModoDisputa
+        fields = ["id", "nome", "descricao"]
+
+
 class CompraSerializer(serializers.ModelSerializer):
     itens = ItemCompraSerializer(many=True, read_only=True)
-    link_pncp = serializers.SerializerMethodField()
+    modalidade = ModalidadeSerializer(read_only=True)
+    amparo_legal = AmparoLegalSerializer(read_only=True)
+    modo_disputa = ModoDisputaSerializer(read_only=True)
 
     class Meta:
         model = Compra
         fields = "__all__"
-    
-    def get_link_pncp(self, obj):
-        """Gera o link do PNCP para a compra"""
-        return f"https://pncp.gov.br/app/editais/00394502000144/{obj.ano_compra}/{obj.sequencial_compra}"
 
 
 class ItemResultadoMergeSerializer(serializers.Serializer):
@@ -54,14 +70,14 @@ class ItemResultadoMergeSerializer(serializers.Serializer):
     valor_unitario_homologado = serializers.DecimalField(max_digits=19, decimal_places=4, allow_null=True)
     quantidade_homologada = serializers.IntegerField(allow_null=True)
     percentual_desconto = serializers.DecimalField(max_digits=7, decimal_places=4, allow_null=True)
-    link_pncp = serializers.CharField(allow_null=True)
     razao_social = serializers.CharField(allow_null=True)
 
 
 class ModalidadeAgregadaSerializer(serializers.Serializer):
     """Serializer para modalidades agregadas"""
     ano_compra = serializers.IntegerField()
-    modalidade_nome = serializers.CharField()
+    modalidade_id = serializers.IntegerField(allow_null=True, required=False)
+    modalidade = ModalidadeSerializer(allow_null=True, required=False)
     quantidade_compras = serializers.IntegerField()
     valor_total_homologado = serializers.DecimalField(max_digits=19, decimal_places=4, allow_null=True)
 

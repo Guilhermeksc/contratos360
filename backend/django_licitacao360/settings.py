@@ -301,23 +301,28 @@ CELERY_BEAT_SCHEDULE = {
     },
     "coletar_inlabs_10": {
         "task": "django_licitacao360.apps.imprensa_nacional.tasks.collect_inlabs_articles",
-        "schedule": crontab(hour=10, minute=0),  # Diariamente às 10:00 BRT/BRST (Brasília)
+        "schedule": crontab(hour=12, minute=0),  # Diariamente às 10:00 BRT/BRST (Brasília)
     },
     # Sincronização de Contratos ComprasNet
     "sync_contratos_uasg_787010": {
         "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
-        "schedule": crontab(hour=22, minute=5),  # Diariamente às 22:05 BRT/BRST (Brasília)
+        "schedule": crontab(hour=22, minute=5),  # Diariamente às 22:05 BRT/BRST (Brasília) 789330
         "args": ("787010",),
     },
-    "sync_contratos_uasg_787000": {
+    "sync_contratos_uasg_789330": {
         "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
-        "schedule": crontab(hour=22, minute=5),  # Diariamente às 22:05 BRT/BRST (Brasília)
-        "args": ("787000",),
+        "schedule": crontab(hour=9, minute=30),  # Diariamente às 22:05 BRT/BRST (Brasília)
+        "args": ("789330",), # capitania dos portos do paraná - cppr
     },
-    "sync_contratos_uasg_770001": {
+    "sync_contratos_uasg_732100": {
         "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
-        "schedule": crontab(hour=22, minute=5),  # Diariamente às 22:05 BRT/BRST (Brasília)
-        "args": ("770001",),
+        "schedule": crontab(hour=9, minute=28),  # Diariamente às 22:05 BRT/BRST (Brasília)
+        "args": ("732110",), # centro de instrução CIASC
+    },
+    "sync_contratos_uasg_765701": {
+        "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
+        "schedule": crontab(hour=9, minute=25),  # Diariamente às 22:05 BRT/BRST (Brasília)
+        "args": ("765701",), #  Hospital Central da Marinha - HCM
     },
     "sync_contratos_uasg_787400": {
         "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
@@ -328,6 +333,74 @@ CELERY_BEAT_SCHEDULE = {
         "task": "django_licitacao360.apps.gestao_contratos.tasks.sync_contratos_uasg",
         "schedule": crontab(hour=22, minute=7),  # Diariamente às 22:07 BRT/BRST (Brasília)
         "args": ("787700",),
+    },
+    # Atualização de Sequenciais PNCP
+    "atualizacao_seq_pncp_08": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_seq_pncp",
+        "schedule": crontab(hour=8, minute=0),  # Diariamente às 8:00 BRT/BRST (Brasília)
+    },
+    "atualizacao_seq_pncp_12": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_seq_pncp",
+        "schedule": crontab(hour=12, minute=0),  # Diariamente às 12:00 BRT/BRST (Brasília)
+    },
+    "atualizacao_seq_pncp_16": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_seq_pncp",
+        "schedule": crontab(hour=16, minute=0),  # Diariamente às 16:00 BRT/BRST (Brasília)
+    },
+    "atualizacao_seq_pncp_19": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_seq_pncp",
+        "schedule": crontab(hour=19, minute=0),  # Diariamente às 18:00 BRT/BRST (Brasília)
+    },
+    "atualizacao_seq_pncp_23_39": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_seq_pncp",
+        "schedule": crontab(hour=23, minute=39),  # Diariamente às 22:49 BRT/BRST (Brasília)
+    },
+    # Atualização de Itens PNCP (executa após atualização de sequenciais - 10 minutos depois)
+    "atualizacao_itens_pncp_08": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_itens_pncp",
+        "schedule": crontab(hour=8, minute=10),  # Diariamente às 8:10 BRT/BRST (10 min após sequenciais)
+    },
+    "atualizacao_itens_pncp_12": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_itens_pncp",
+        "schedule": crontab(hour=12, minute=10),  # Diariamente às 12:10 BRT/BRST
+    },
+    "atualizacao_itens_pncp_16": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_itens_pncp",
+        "schedule": crontab(hour=16, minute=10),  # Diariamente às 15:10 BRT/BRST
+    },
+    "atualizacao_itens_pncp_19": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_itens_pncp",
+        "schedule": crontab(hour=19, minute=10),  # Diariamente às 18:10 BRT/BRST
+    },
+    # Atualização de Resultados PNCP (executa após atualização de itens - 20 minutos após sequenciais)
+    "atualizacao_resultados_pncp_08": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_resultados_pncp",
+        "schedule": crontab(hour=8, minute=20),  # Diariamente às 8:20 BRT/BRST (20 min após sequenciais)
+    },
+    "atualizacao_resultados_pncp_12": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_resultados_pncp",
+        "schedule": crontab(hour=12, minute=20),  # Diariamente às 12:20 BRT/BRST
+    },
+    "atualizacao_resultados_pncp_16": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_resultados_pncp",
+        "schedule": crontab(hour=16, minute=20),  # Diariamente às 15:20 BRT/BRST
+    },
+    # Atualização de Compras via endpoint de atualização (executa após resultados - 30 minutos após sequenciais)
+    "atualizacao_compras_pncp_08": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_compras_pncp",
+        "schedule": crontab(hour=8, minute=30),  # Diariamente às 8:30 BRT/BRST (30 min após sequenciais)
+    },
+    "atualizacao_compras_pncp_13": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_compras_pncp",
+        "schedule": crontab(hour=13, minute=30),  # Diariamente às 13:30 BRT/BRST
+    },
+    "atualizacao_compras_pncp_19": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_compras_pncp",
+        "schedule": crontab(hour=19, minute=50),  # Diariamente às 18:30 BRT/BRST
+    },
+    "atualizacao_compras_pncp_23_42": {
+        "task": "django_licitacao360.apps.pncp.tasks.task_atualizacao_compras_pncp",
+        "schedule": crontab(hour=23, minute=42),  # Diariamente às 22:26 BRT/BRST
     },
 }
 

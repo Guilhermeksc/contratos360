@@ -68,9 +68,9 @@
                     <td mat-cell *matCellDef="let compra">{{ compra.ano_compra }}</td>
                   </ng-container>
 
-                  <ng-container matColumnDef="modalidade_nome">
+                  <ng-container matColumnDef="modalidade">
                     <th mat-header-cell *matHeaderCellDef>Modalidade</th>
-                    <td mat-cell *matCellDef="let compra">{{ compra.modalidade_nome }}</td>
+                    <td mat-cell *matCellDef="let compra">{{ compra.modalidade?.nome || '-' }}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="objeto_compra">
@@ -86,19 +86,6 @@
                   <ng-container matColumnDef="valor_total_homologado">
                     <th mat-header-cell *matHeaderCellDef>Valor Homologado</th>
                     <td mat-cell *matCellDef="let compra">{{ formatarMoeda(compra.valor_total_homologado) }}</td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="link_pncp">
-                    <th mat-header-cell *matHeaderCellDef>Ações</th>
-                    <td mat-cell *matCellDef="let compra">
-                      <button 
-                        mat-icon-button 
-                        color="primary" 
-                        (click)="abrirLinkPncp(compra.link_pncp)"
-                        title="Abrir no PNCP">
-                        <mat-icon>open_in_new</mat-icon>
-                      </button>
-                    </td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsCompras"></tr>
@@ -187,9 +174,9 @@
                     <td mat-cell *matCellDef="let mod">{{ mod.ano_compra }}</td>
                   </ng-container>
 
-                  <ng-container matColumnDef="modalidade_nome">
+                  <ng-container matColumnDef="modalidade">
                     <th mat-header-cell *matHeaderCellDef>Modalidade</th>
-                    <td mat-cell *matCellDef="let mod">{{ mod.modalidade_nome }}</td>
+                    <td mat-cell *matCellDef="let mod">{{ mod.modalidade?.nome || '-' }}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="quantidade_compras">

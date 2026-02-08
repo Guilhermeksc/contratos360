@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
-from ...models import Fornecedor, Compra, ItemCompra, ResultadoItem
+from ...models import AmparoLegal, Fornecedor, Compra, ItemCompra, Modalidade, ModoDisputa, ResultadoItem
 
 
 class Command(BaseCommand):
@@ -167,38 +167,124 @@ class Command(BaseCommand):
                 )
                 raise
     
+    def _get_modalidade_by_name(self, nome):
+        """Busca modalidade por nome"""
+        if not nome:
+            return None
+        try:
+            return Modalidade.objects.get(nome=nome.strip())
+        except Modalidade.DoesNotExist:
+            return None
+        except Modalidade.MultipleObjectsReturned:
+            return Modalidade.objects.filter(nome=nome.strip()).first()
+    
+    def _get_amparo_legal_by_codigo(self, codigo):
+        """Busca amparo legal por código"""
+        if not codigo:
+            return None
+        try:
+            return AmparoLegal.objects.get(id=int(codigo))
+        except (AmparoLegal.DoesNotExist, ValueError, TypeError):
+            return None
+    
+    def _get_modo_disputa_by_id(self, modo_id):
+        """Busca modo de disputa por ID"""
+        if not modo_id:
+            return None
+        try:
+            return ModoDisputa.objects.get(id=int(modo_id))
+        except (ModoDisputa.DoesNotExist, ValueError, TypeError):
+            return None
+    
     def _migrate_compras(self, conn, dry_run=False, batch_size=1000):
         """Migra tabela compras"""
         self.stdout.write('Migrando compras...')
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT ano_compra, sequencial_compra, numero_compra, codigo_unidade,
-                   objeto_compra, modalidade_nome, compra_id, numero_processo,
-                   data_publicacao_pncp, data_atualizacao, valor_total_estimado,
-                   valor_total_homologado, percentual_desconto
-            FROM compras
-        """)
+        
+        # Verifica quais colunas existem na tabela SQLite
+        cursor.execute("PRAGMA table_info(compras)")
+        columns_info = cursor.fetchall()
+        column_names = [col[1] for col in columns_info]
+        
+        # Monta query baseada nas colunas disponíveis
+        select_fields = [
+            'ano_compra', 'sequencial_compra', 'numero_compra', 'codigo_unidade',
+            'objeto_compra', 'compra_id', 'numero_processo',
+            'data_publicacao_pncp', 'data_atualizacao', 'valor_total_estimado',
+            'valor_total_homologado', 'percentual_desconto'
+        ]
+        
+        # Adiciona campos opcionais se existirem
+        optional_fields = ['modalidade_nome', 'modalidade_id', 'amparo_legal_id', 'modo_disputa_id']
+        
+        available_fields = []
+        for field in select_fields:
+            if field in column_names:
+                available_fields.append(field)
+        
+        for field in optional_fields:
+            if field in column_names:
+                available_fields.append(field)
+        
+        query = f"SELECT {', '.join(available_fields)} FROM compras"
+        cursor.execute(query)
         rows = cursor.fetchall()
         
         count = 0
+        skipped = 0
         batch = []
         
         for row in rows:
-            (ano_compra, sequencial_compra, numero_compra, codigo_unidade,
-             objeto_compra, modalidade_nome, compra_id, numero_processo,
-             data_publicacao_pncp, data_atualizacao, valor_total_estimado,
-             valor_total_homologado, percentual_desconto) = row
+            row_dict = dict(zip(available_fields, row))
+            
+            # Extrai valores
+            ano_compra = row_dict.get('ano_compra')
+            sequencial_compra = row_dict.get('sequencial_compra')
+            numero_compra = row_dict.get('numero_compra')
+            codigo_unidade = row_dict.get('codigo_unidade')
+            objeto_compra = row_dict.get('objeto_compra')
+            compra_id = row_dict.get('compra_id')
+            numero_processo = row_dict.get('numero_processo')
+            data_publicacao_pncp = row_dict.get('data_publicacao_pncp')
+            data_atualizacao = row_dict.get('data_atualizacao')
+            valor_total_estimado = row_dict.get('valor_total_estimado')
+            valor_total_homologado = row_dict.get('valor_total_homologado')
+            percentual_desconto = row_dict.get('percentual_desconto')
+            
+            # Busca relacionamentos
+            modalidade = None
+            if 'modalidade_id' in row_dict and row_dict.get('modalidade_id'):
+                try:
+                    modalidade = Modalidade.objects.get(id=int(row_dict['modalidade_id']))
+                except (Modalidade.DoesNotExist, ValueError, TypeError):
+                    pass
+            elif 'modalidade_nome' in row_dict and row_dict.get('modalidade_nome'):
+                modalidade = self._get_modalidade_by_name(row_dict['modalidade_nome'])
+            
+            amparo_legal = None
+            if 'amparo_legal_id' in row_dict and row_dict.get('amparo_legal_id'):
+                amparo_legal = self._get_amparo_legal_by_codigo(row_dict['amparo_legal_id'])
+            
+            modo_disputa = None
+            if 'modo_disputa_id' in row_dict and row_dict.get('modo_disputa_id'):
+                modo_disputa = self._get_modo_disputa_by_id(row_dict['modo_disputa_id'])
             
             if not dry_run:
+                if not compra_id:
+                    skipped += 1
+                    continue
+                
                 batch.append({
-                    'compra_id': self._truncate_field(compra_id, 100),  # max_length=100
+                    'compra_id': self._truncate_field(compra_id, 100),
                     'ano_compra': int(ano_compra) if ano_compra else None,
                     'sequencial_compra': int(sequencial_compra) if sequencial_compra else None,
-                    'numero_compra': self._truncate_field(numero_compra, 50),  # max_length=50
-                    'codigo_unidade': self._truncate_field(codigo_unidade, 50),  # max_length=50
-                    'objeto_compra': str(objeto_compra).strip() if objeto_compra else '',  # TextField, sem limite
-                    'modalidade_nome': self._truncate_field(modalidade_nome, 100),  # max_length=100
-                    'numero_processo': self._truncate_field(numero_processo, 100),  # max_length=100
+                    'numero_compra': self._truncate_field(numero_compra, 50),
+                    'codigo_unidade': self._truncate_field(codigo_unidade, 50),
+                    'objeto_compra': str(objeto_compra).strip() if objeto_compra else '',
+                    'modalidade': modalidade,
+                    'amparo_legal': amparo_legal,
+                    'modo_disputa': modo_disputa,
+                    'numero_processo': self._truncate_field(numero_processo, 100),
                     'data_publicacao_pncp': self._parse_date(data_publicacao_pncp),
                     'data_atualizacao': self._parse_date(data_atualizacao),
                     'valor_total_estimado': self._parse_decimal(valor_total_estimado),
@@ -217,6 +303,8 @@ class Command(BaseCommand):
             self._bulk_create_compras(batch)
             count += len(batch)
         
+        if skipped > 0:
+            self.stdout.write(self.style.WARNING(f'  ⚠ Puladas {skipped} compras (sem compra_id)'))
         self.stdout.write(self.style.SUCCESS(f'  ✓ Migradas {count} compras'))
         return count
     
@@ -224,13 +312,14 @@ class Command(BaseCommand):
         """Cria compras em lote usando update_or_create"""
         for item in batch:
             try:
+                compra_id = item.pop('compra_id')
                 Compra.objects.update_or_create(
-                    compra_id=item['compra_id'],
+                    compra_id=compra_id,
                     defaults=item
                 )
             except Exception as e:
                 self.stdout.write(
-                    self.style.ERROR(f'Erro ao criar compra {item.get("compra_id", "N/A")}: {str(e)}')
+                    self.style.ERROR(f'Erro ao criar compra {compra_id}: {str(e)}')
                 )
                 raise
     

@@ -57,9 +57,9 @@ export class CcimarPncp implements OnInit {
   loadingFornecedores = signal<boolean>(false);
   
   // Tabelas
-  displayedColumnsCompras: string[] = ['numero_compra', 'ano_compra', 'modalidade_nome', 'objeto_compra', 'valor_total_estimado', 'valor_total_homologado', 'link_pncp'];
+  displayedColumnsCompras: string[] = ['numero_compra', 'ano_compra', 'modalidade', 'objeto_compra', 'valor_total_estimado', 'valor_total_homologado'];
   displayedColumnsItens: string[] = ['numero_item', 'descricao', 'quantidade', 'valor_total_estimado', 'valor_total_homologado', 'percentual_desconto', 'razao_social'];
-  displayedColumnsModalidades: string[] = ['ano_compra', 'modalidade_nome', 'quantidade_compras', 'valor_total_homologado'];
+  displayedColumnsModalidades: string[] = ['ano_compra', 'modalidade', 'quantidade_compras', 'valor_total_homologado'];
   displayedColumnsFornecedores: string[] = ['cnpj_fornecedor', 'razao_social', 'valor_total_homologado'];
 
   // Getter/Setter para ngModel
@@ -178,14 +178,13 @@ export class CcimarPncp implements OnInit {
           numero_compra: c.numero_compra,
           codigo_unidade: c.codigo_unidade,
           objeto_compra: c.objeto_compra,
-          modalidade_nome: c.modalidade_nome,
+          modalidade_nome: c.modalidade?.nome || '',
           numero_processo: c.numero_processo,
           data_publicacao_pncp: c.data_publicacao_pncp || '',
           data_atualizacao: c.data_atualizacao || '',
           valor_total_estimado: this.converterParaNumero(c.valor_total_estimado),
           valor_total_homologado: this.converterParaNumero(c.valor_total_homologado),
-          percentual_desconto: this.converterPercentual(c.percentual_desconto),
-          link_pncp: c.link_pncp
+          percentual_desconto: this.converterPercentual(c.percentual_desconto)
         }));
         const wsCompras = XLSX.utils.json_to_sheet(comprasData);
         this.aplicarFormatacaoCelulas(wsCompras, ['valor_total_estimado', 'valor_total_homologado'], ['percentual_desconto']);
@@ -209,8 +208,7 @@ export class CcimarPncp implements OnInit {
           percentual_desconto: this.converterPercentual(i.percentual_desconto),
           situacao_compra_item_nome: i.situacao_compra_item_nome,
           cnpj_fornecedor: i.cnpj_fornecedor || '',
-          razao_social: i.razao_social || '',
-          link_pncp: i.link_pncp
+          razao_social: i.razao_social || ''
         }));
         const wsItens = XLSX.utils.json_to_sheet(itensData);
         this.aplicarFormatacaoCelulas(
@@ -225,7 +223,7 @@ export class CcimarPncp implements OnInit {
       if (modalidades.length > 0) {
         const modalidadesData = modalidades.map(m => ({
           ano_compra: m.ano_compra,
-          modalidade_nome: m.modalidade_nome,
+          modalidade_nome: m.modalidade?.nome || '',
           quantidade_compras: m.quantidade_compras,
           valor_total_homologado: this.converterParaNumero(m.valor_total_homologado)
         }));
@@ -252,7 +250,7 @@ export class CcimarPncp implements OnInit {
           c.ano_compra === item.ano_compra && 
           c.sequencial_compra === item.sequencial_compra
         );
-        return compra?.modalidade_nome === 'Inexigibilidade';
+        return compra?.modalidade?.nome === 'Inexigibilidade';
       });
 
       if (inexigibilidadeData.length > 0) {
@@ -274,10 +272,14 @@ export class CcimarPncp implements OnInit {
       }
 
       // Sheets por modalidade (exceto Inexigibilidade)
-      const modalidadesUnicas = [...new Set(compras.map(c => c.modalidade_nome))];
+      const modalidadesUnicas = [...new Set(
+        compras
+          .map(c => c.modalidade?.nome)
+          .filter((nome): nome is string => !!nome)
+      )];
       
-      for (const modalidade of modalidadesUnicas) {
-        if (!modalidade || modalidade.toLowerCase() === 'inexigibilidade') {
+      for (const modalidadeNome of modalidadesUnicas) {
+        if (!modalidadeNome || modalidadeNome.toLowerCase() === 'inexigibilidade') {
           continue;
         }
 
@@ -286,7 +288,7 @@ export class CcimarPncp implements OnInit {
             c.ano_compra === item.ano_compra && 
             c.sequencial_compra === item.sequencial_compra
           );
-          return compra?.modalidade_nome === modalidade;
+          return compra?.modalidade?.nome === modalidadeNome;
         });
 
         if (modalidadeData.length > 0) {
@@ -304,7 +306,7 @@ export class CcimarPncp implements OnInit {
           }));
           
           // Limita o nome da sheet a 31 caracteres (limite do Excel)
-          const sheetName = this.limitarNomeSheet(modalidade);
+          const sheetName = this.limitarNomeSheet(modalidadeNome);
           const wsMod = XLSX.utils.json_to_sheet(modData);
           this.aplicarFormatacaoCelulas(wsMod, ['valor_total_estimado', 'valor_total_homologado'], ['percentual_desconto']);
           XLSX.utils.book_append_sheet(wb, wsMod, sheetName);
@@ -377,7 +379,8 @@ export class CcimarPncp implements OnInit {
     return `${num.toFixed(2)}%`;
   }
 
-  abrirLinkPncp(url: string): void {
+  abrirLinkPncp(ano: number, sequencial: number): void {
+    const url = `https://pncp.gov.br/app/editais/00394502000144/${ano}/${sequencial}`;
     window.open(url, '_blank');
   }
 }

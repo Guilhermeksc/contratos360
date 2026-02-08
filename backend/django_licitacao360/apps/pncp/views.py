@@ -13,7 +13,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from .models import Compra, ItemCompra, ResultadoItem, Fornecedor
+from .models import AmparoLegal, Compra, ItemCompra, Modalidade, ModoDisputa, ResultadoItem, Fornecedor
 from .serializers import (
     CompraSerializer,
     ItemCompraSerializer,
@@ -36,7 +36,7 @@ class CompraViewSet(viewsets.ModelViewSet):
     queryset = Compra.objects.all()
     serializer_class = CompraSerializer
     permission_classes = [AllowAny]
-    filterset_fields = ["ano_compra", "codigo_unidade", "modalidade_nome"]
+    filterset_fields = ["ano_compra", "codigo_unidade", "modalidade", "amparo_legal", "modo_disputa"]
     search_fields = ["numero_compra", "objeto_compra", "numero_processo"]
     
     @action(detail=False, methods=['get'], url_path='por-unidade/(?P<codigo_unidade>[^/.]+)', permission_classes=[AllowAny])
@@ -72,13 +72,33 @@ class CompraViewSet(viewsets.ModelViewSet):
             modalidades = (
                 Compra.objects
                 .filter(codigo_unidade=codigo_unidade)
-                .values('ano_compra', 'modalidade_nome')
+                .select_related('modalidade')
+                .values('ano_compra', 'modalidade_id')
                 .annotate(
-                    quantidade_compras=Count('modalidade_nome'),
+                    quantidade_compras=Count('compra_id'),
                     valor_total_homologado=Sum('valor_total_homologado')
                 )
-                .order_by('ano_compra', 'modalidade_nome')
+                .order_by('ano_compra', 'modalidade_id')
             )
+            # Formata para o serializer - busca objetos Modalidade completos
+            modalidades_formatted = []
+            for mod in modalidades:
+                modalidade_obj = None
+                modalidade_id = mod.get('modalidade_id')
+                if modalidade_id:
+                    try:
+                        modalidade_obj = Modalidade.objects.get(pk=modalidade_id)
+                    except Modalidade.DoesNotExist:
+                        pass
+                
+                modalidades_formatted.append({
+                    'ano_compra': mod['ano_compra'],
+                    'modalidade_id': modalidade_id,
+                    'modalidade': modalidade_obj,
+                    'quantidade_compras': mod['quantidade_compras'],
+                    'valor_total_homologado': mod['valor_total_homologado'],
+                })
+            modalidades = modalidades_formatted
             serializer = ModalidadeAgregadaSerializer(modalidades, many=True)
             return Response(serializer.data)
         except Exception as e:
@@ -119,9 +139,6 @@ class CompraViewSet(viewsets.ModelViewSet):
                             / item.valor_total_estimado
                         ) * 100
                 
-                # Gera link PNCP
-                link_pncp = f"https://pncp.gov.br/app/editais/00394502000144/{item.compra.ano_compra}/{item.compra.sequencial_compra}"
-                
                 result_data.append({
                     'ano_compra': item.compra.ano_compra,
                     'sequencial_compra': item.compra.sequencial_compra,
@@ -137,7 +154,6 @@ class CompraViewSet(viewsets.ModelViewSet):
                     'valor_unitario_homologado': resultado.valor_unitario_homologado if resultado else None,
                     'quantidade_homologada': resultado.quantidade_homologada if resultado else None,
                     'percentual_desconto': percentual_desconto,
-                    'link_pncp': link_pncp,
                     'razao_social': resultado.fornecedor.razao_social if resultado else None,
                 })
             
@@ -208,11 +224,11 @@ class CompraViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            modalidade_nome = request.query_params.get('modalidade_nome')
+            modalidade_id = request.query_params.get('modalidade_id')
             
             compras = Compra.objects.filter(codigo_unidade=codigo_unidade)
-            if modalidade_nome:
-                compras = compras.filter(modalidade_nome=modalidade_nome)
+            if modalidade_id:
+                compras = compras.filter(modalidade_id=modalidade_id)
             
             compra_ids = list(compras.values_list('compra_id', flat=True))
             itens = ItemCompra.objects.filter(compra_id__in=compra_ids).select_related('compra').prefetch_related('resultados__fornecedor')
@@ -332,12 +348,32 @@ class CompraViewSet(viewsets.ModelViewSet):
             
             # --- Modalidades Agregadas ---
             modalidades = (
-                compras.values('ano_compra', 'modalidade_nome')
+                compras.select_related('modalidade')
+                .values('ano_compra', 'modalidade_id')
                 .annotate(
-                    quantidade_compras=Count('modalidade_nome'),
+                    quantidade_compras=Count('compra_id'),
                     valor_total_homologado=Sum('valor_total_homologado')
                 )
             )
+            # Formata para o serializer - busca objetos Modalidade completos
+            modalidades_formatted = []
+            for mod in modalidades:
+                modalidade_obj = None
+                modalidade_id = mod.get('modalidade_id')
+                if modalidade_id:
+                    try:
+                        modalidade_obj = Modalidade.objects.get(pk=modalidade_id)
+                    except Modalidade.DoesNotExist:
+                        pass
+                
+                modalidades_formatted.append({
+                    'ano_compra': mod['ano_compra'],
+                    'modalidade_id': modalidade_id,
+                    'modalidade': modalidade_obj,
+                    'quantidade_compras': mod['quantidade_compras'],
+                    'valor_total_homologado': mod['valor_total_homologado'],
+                })
+            modalidades = modalidades_formatted
             
             # --- Fornecedores Agregados ---
             fornecedores_agregados = []
@@ -356,25 +392,24 @@ class CompraViewSet(viewsets.ModelViewSet):
                     'valor_total_homologado': valor,
                 })
             
-            # --- Adicionar link_pncp às compras ---
+            # --- Preparar dados das compras ---
             compras_data = []
             for compra in compras:
                 compra_dict = CompraSerializer(compra).data
                 compras_data.append(compra_dict)
             
-            # --- Adicionar link_pncp ao merge ---
+            # --- Adicionar razao_social ao merge ---
             for item in merge_data:
-                item['link_pncp'] = f"https://pncp.gov.br/app/editais/00394502000144/{item['ano_compra']}/{item['sequencial_compra']}"
                 item['razao_social'] = fornecedores_dict.get(item['cnpj_fornecedor']) if item['cnpj_fornecedor'] else None
             
             # --- Criar dicionário de compras para lookup rápido ---
             compras_lookup = {}
             for compra in compras:
                 key = (compra.ano_compra, compra.sequencial_compra)
-                compras_lookup[key] = compra.modalidade_nome
+                compras_lookup[key] = compra.modalidade if compra.modalidade else None
             
             # --- Itens por Modalidade ---
-            modalidades_unicas = compras.values_list('modalidade_nome', flat=True).distinct()
+            modalidades_unicas = compras.select_related('modalidade').values_list('modalidade', flat=True).distinct()
             
             # --- Criar XLSX ---
             output = io.BytesIO()
@@ -411,11 +446,13 @@ class CompraViewSet(viewsets.ModelViewSet):
             
             # Sheet: modalidades
             ws_modalidades = wb.create_sheet("modalidades")
-            ws_modalidades.append(['ano_compra', 'modalidade_nome', 'quantidade_compras', 'valor_total_homologado'])
+            ws_modalidades.append(['ano_compra', 'modalidade_id', 'modalidade_nome', 'quantidade_compras', 'valor_total_homologado'])
             for mod in modalidades:
+                modalidade_nome = mod.get('modalidade').nome if mod.get('modalidade') else None
                 ws_modalidades.append([
                     mod['ano_compra'],
-                    mod['modalidade_nome'],
+                    mod.get('modalidade_id'),
+                    modalidade_nome,
                     mod['quantidade_compras'],
                     mod['valor_total_homologado']
                 ])
@@ -431,9 +468,10 @@ class CompraViewSet(viewsets.ModelViewSet):
                 ])
             
             # Sheet: inexigibilidade
+            inexigibilidade_modalidade = Modalidade.objects.filter(nome='Inexigibilidade').first()
             inexigibilidade_data = [
                 item for item in merge_data
-                if compras_lookup.get((item['ano_compra'], item['sequencial_compra'])) == 'Inexigibilidade'
+                if compras_lookup.get((item['ano_compra'], item['sequencial_compra'])) == inexigibilidade_modalidade
             ]
             ws_inex = wb.create_sheet("inexigibilidade")
             if inexigibilidade_data:
@@ -445,19 +483,28 @@ class CompraViewSet(viewsets.ModelViewSet):
                     ws_inex.append([item.get(c) for c in cols_inex])
             
             # Sheets por modalidade
-            for modalidade in modalidades_unicas:
-                if not modalidade or str(modalidade).lower() == 'inexigibilidade':
+            for modalidade_id in modalidades_unicas:
+                if not modalidade_id:
+                    continue
+                
+                try:
+                    modalidade_obj = Modalidade.objects.get(id=modalidade_id)
+                except Modalidade.DoesNotExist:
+                    continue
+                
+                # Pula inexigibilidade (já tem sheet própria)
+                if modalidade_obj.nome.lower() == 'inexigibilidade':
                     continue
                 
                 modalidade_data = [
                     item for item in merge_data
-                    if compras_lookup.get((item['ano_compra'], item['sequencial_compra'])) == modalidade
+                    if compras_lookup.get((item['ano_compra'], item['sequencial_compra'])) == modalidade_obj
                 ]
                 
                 if not modalidade_data:
                     continue
                 
-                sheet_name = _sheet_name_from_modalidade(modalidade)
+                sheet_name = _sheet_name_from_modalidade(modalidade_obj.nome)
                 ws_mod = wb.create_sheet(sheet_name)
                 cols_mod = ['ano_compra', 'sequencial_compra', 'numero_item', 'cnpj_fornecedor', 
                            'razao_social', 'descricao', 'quantidade', 'valor_total_estimado', 

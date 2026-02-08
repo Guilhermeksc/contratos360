@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "nome": "Leilão - Eletrônico",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 2,
+    "nome": "Diálogo Competitivo",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 3,
+    "nome": "Concurso",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 4,
+    "nome": "Concorrência - Eletrônica",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 5,
+    "nome": "Concorrência - Presencial",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 6,
+    "nome": "Pregão - Eletrônico",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 7,
+    "nome": "Pregão - Presencial",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 8,
+    "nome": "Dispensa",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 9,
+    "nome": "Inexigibilidade",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 10,
+    "nome": "Manifestação de Interesse",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-28T09:11:47",
+    "statusAtivo": true
+  },
+  {
+    "id": 11,
+    "nome": "Pré-qualificação",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-29T12:44:48",
+    "statusAtivo": true
+  },
+  {
+    "id": 12,
+    "nome": "Credenciamento",
+    "descricao": null,
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2021-07-29T12:44:48",
+    "statusAtivo": true
+  },
+  {
+    "id": 13,
+    "nome": "Leilão - Presencial",
+    "descricao": "Modalidade de licitação realizada sob a forma presencial para alienação de bens imóveis ou de bens móveis inservíveis ou legalmente apreendidos a quem oferecer o maior lance",
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2023-03-31T22:34:09",
+    "statusAtivo": true
+  },
+  {
+    "id": 14,
+    "nome": "Inaplicabilidade da Licitação",
+    "descricao": "Situação em que, por especificidades da legislação ou natureza da atividade, não se exige o processo licitatório. Refere-se aos casos em que a lei determina que a licitação não é aplicável, seja pela natureza única do objeto ou pela impossibilidade de competição.",
+    "dataInclusao": "1900-01-01T00:00:00",
+    "dataAtualizacao": "2023-11-01T10:57:42",
+    "statusAtivo": true
+  },
+  {
+    "id": 15,
+    "nome": "Chamada pública",
+    "descricao": "Procedimento administrativo em que o poder público convoca interessados para apresentar propostas, visando selecionar fornecedores ou parceiros de forma aberta e previamente regulamentada.",
+    "dataInclusao": "2025-11-10T14:32:56",
+    "dataAtualizacao": "2025-11-10T14:32:56",
+    "statusAtivo": true
+  }
+]

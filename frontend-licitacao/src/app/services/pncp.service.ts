@@ -46,10 +46,10 @@ export class PncpService {
   /**
    * Obtém itens por modalidade
    */
-  getItensPorModalidade(codigoUnidade: string, modalidadeNome?: string): Observable<ItemResultadoMerge[]> {
+  getItensPorModalidade(codigoUnidade: string, modalidadeId?: number): Observable<ItemResultadoMerge[]> {
     let url = `${this.apiUrl}/compras/itens-por-modalidade/${codigoUnidade}/`;
-    if (modalidadeNome) {
-      url += `?modalidade_nome=${encodeURIComponent(modalidadeNome)}`;
+    if (modalidadeId) {
+      url += `?modalidade_id=${modalidadeId}`;
     }
     return this.http.get<ItemResultadoMerge[]>(url);
   }

@@ -1,3 +1,21 @@
+export interface Modalidade {
+  id: number;
+  nome: string;
+  descricao: string | null;
+}
+
+export interface AmparoLegal {
+  id: number;
+  nome: string;
+  descricao: string | null;
+}
+
+export interface ModoDisputa {
+  id: number;
+  nome: string;
+  descricao: string | null;
+}
+
 export interface Compra {
   compra_id: string;
   ano_compra: number;
@@ -5,14 +23,15 @@ export interface Compra {
   numero_compra: string;
   codigo_unidade: string;
   objeto_compra: string;
-  modalidade_nome: string;
+  modalidade: Modalidade | null;
+  amparo_legal: AmparoLegal | null;
+  modo_disputa: ModoDisputa | null;
   numero_processo: string;
   data_publicacao_pncp: string | null;
   data_atualizacao: string | null;
   valor_total_estimado: string | null;
   valor_total_homologado: string | null;
   percentual_desconto: string | null;
-  link_pncp: string;
   itens?: ItemCompra[];
 }
 
@@ -55,13 +74,13 @@ export interface ItemResultadoMerge {
   valor_unitario_homologado: string | null;
   quantidade_homologada: number | null;
   percentual_desconto: number | string | null;
-  link_pncp: string;
   razao_social: string | null;
 }
 
 export interface ModalidadeAgregada {
   ano_compra: number;
-  modalidade_nome: string;
+  modalidade_id: number | null;
+  modalidade: Modalidade | null;
   quantidade_compras: number;
   valor_total_homologado: string | null;
 }

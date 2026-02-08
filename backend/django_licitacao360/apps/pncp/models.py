@@ -1,6 +1,60 @@
 from django.db import models
 
 
+class AmparoLegal(models.Model):
+    """Amparo Legal para fundamentação de contratos"""
+    id = models.IntegerField("ID", primary_key=True)
+    nome = models.CharField("Nome", max_length=255)
+    descricao = models.TextField("Descrição", blank=True, null=True)
+    data_inclusao = models.DateTimeField("Data de Inclusão", null=True, blank=True)
+    data_atualizacao = models.DateTimeField("Data de Atualização", null=True, blank=True)
+    status_ativo = models.BooleanField("Status Ativo", default=True)
+
+    class Meta:
+        verbose_name = "Amparo Legal"
+        verbose_name_plural = "Amparos Legais"
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.id} - {self.nome}"
+
+
+class Modalidade(models.Model):
+    """Modalidade de licitação"""
+    id = models.IntegerField("ID", primary_key=True)
+    nome = models.CharField("Nome", max_length=255)
+    descricao = models.TextField("Descrição", blank=True, null=True)
+    data_inclusao = models.DateTimeField("Data de Inclusão", null=True, blank=True)
+    data_atualizacao = models.DateTimeField("Data de Atualização", null=True, blank=True)
+    status_ativo = models.BooleanField("Status Ativo", default=True)
+
+    class Meta:
+        verbose_name = "Modalidade"
+        verbose_name_plural = "Modalidades"
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.id} - {self.nome}"
+
+
+class ModoDisputa(models.Model):
+    """Modo de Disputa da licitação"""
+    id = models.IntegerField("ID", primary_key=True)
+    nome = models.CharField("Nome", max_length=255)
+    descricao = models.TextField("Descrição", blank=True, null=True)
+    data_inclusao = models.DateTimeField("Data de Inclusão", null=True, blank=True)
+    data_atualizacao = models.DateTimeField("Data de Atualização", null=True, blank=True)
+    status_ativo = models.BooleanField("Status Ativo", default=True)
+
+    class Meta:
+        verbose_name = "Modo de Disputa"
+        verbose_name_plural = "Modos de Disputa"
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.id} - {self.nome}"
+
+
 class Fornecedor(models.Model):
     cnpj_fornecedor = models.CharField("CNPJ do Fornecedor", max_length=20, primary_key=True)
     razao_social = models.CharField("Razão Social", max_length=255)
@@ -20,7 +74,9 @@ class Compra(models.Model):
     numero_compra = models.CharField("Número da Compra", max_length=50)
     codigo_unidade = models.CharField("Código da Unidade", max_length=50)
     objeto_compra = models.TextField("Objeto da Compra")
-    modalidade_nome = models.CharField("Modalidade", max_length=100)
+    modalidade = models.ForeignKey(Modalidade, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras", verbose_name="Modalidade")
+    amparo_legal = models.ForeignKey(AmparoLegal, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras", verbose_name="Amparo Legal")
+    modo_disputa = models.ForeignKey(ModoDisputa, on_delete=models.SET_NULL, null=True, blank=True, related_name="compras", verbose_name="Modo de Disputa")
     numero_processo = models.CharField("Número do Processo", max_length=100)
     data_publicacao_pncp = models.DateTimeField("Data de Publicação no PNCP", null=True, blank=True)
     data_atualizacao = models.DateTimeField("Data de Atualização", null=True, blank=True)
