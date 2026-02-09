@@ -26,8 +26,23 @@ export const routes: Routes = [
     children: [
       {
         path: 'planejamento',
-        loadComponent: () => import('./pages/planejamento/planejamento.component').then((m) => m.PlanejamentoComponent),
-        data: { breadcrumb: 'Planejamento' }
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full'
+          },
+          {
+            path: 'consulta',
+            loadComponent: () => import('./pages/planejamento/planejamento.component').then((m) => m.PlanejamentoComponent),
+            data: { breadcrumb: 'Planejamento' }
+          },
+          {
+            path: 'analises',
+            loadComponent: () => import('./pages/planejamento/planejamento-analises/planejamento-analises').then((m) => m.PlanejamentoAnalises),
+            data: { breadcrumb: 'Análises' }
+          }
+        ]
       },
       {
         path: 'contratos',

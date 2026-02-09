@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { 
   Compra, 
   ItemResultadoMerge, 
@@ -18,35 +18,87 @@ import { environment } from '../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class PncpService {
   private apiUrl = `${environment.apiUrl}/pncp`;
+  private readonly CACHE_TTL_MS = 2 * 60 * 60 * 1000;
 
   constructor(private http: HttpClient) {}
+
+  private buildCacheKey(path: string, params?: HttpParams): string {
+    const query = params?.toString();
+    return `pncp_cache|${path}${query ? `?${query}` : ''}`;
+  }
+
+  private getCached<T>(key: string): T | null {
+    const raw = localStorage.getItem(key);
+    if (!raw) {
+      return null;
+    }
+    try {
+      const parsed = JSON.parse(raw) as { timestamp: number; data: T };
+      if (!parsed?.timestamp || Date.now() - parsed.timestamp > this.CACHE_TTL_MS) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      return parsed.data;
+    } catch {
+      localStorage.removeItem(key);
+      return null;
+    }
+  }
+
+  private setCached<T>(key: string, data: T): void {
+    localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
+  }
+
+  private withCache<T>(key: string, request$: Observable<T>): Observable<T> {
+    const cached = this.getCached<T>(key);
+    if (cached !== null) {
+      return of(cached);
+    }
+    return request$.pipe(tap((data) => this.setCached(key, data)));
+  }
 
   /**
    * Obtém compras por código de unidade
    */
   getComprasPorUnidade(codigoUnidade: string): Observable<Compra[]> {
-    return this.http.get<Compra[]>(`${this.apiUrl}/compras/por-unidade/${codigoUnidade}/`);
+    const url = `${this.apiUrl}/compras/por-unidade/${codigoUnidade}/`;
+    return this.withCache(this.buildCacheKey(url), this.http.get<Compra[]>(url));
   }
 
   /**
    * Obtém itens com resultado merge por código de unidade
    */
   getItensResultadoMerge(codigoUnidade: string): Observable<ItemResultadoMerge[]> {
-    return this.http.get<ItemResultadoMerge[]>(`${this.apiUrl}/compras/itens-resultado-merge/${codigoUnidade}/`);
+    const url = `${this.apiUrl}/compras/itens-resultado-merge/${codigoUnidade}/`;
+    return this.withCache(this.buildCacheKey(url), this.http.get<ItemResultadoMerge[]>(url));
   }
 
   /**
    * Obtém modalidades agregadas por código de unidade
    */
   getModalidadesAgregadas(codigoUnidade: string): Observable<ModalidadeAgregada[]> {
-    return this.http.get<ModalidadeAgregada[]>(`${this.apiUrl}/compras/modalidades-agregadas/${codigoUnidade}/`);
+    const url = `${this.apiUrl}/compras/modalidades-agregadas/${codigoUnidade}/`;
+    return this.withCache(this.buildCacheKey(url), this.http.get<ModalidadeAgregada[]>(url));
+  }
+
+  /**
+   * Obtém modalidades agregadas por ano (todas as UASG)
+   */
+  getModalidadesAgregadasAno(anoCompra: number): Observable<ModalidadeAgregada[]> {
+    const params = new HttpParams().set('ano_compra', anoCompra.toString());
+    const url = `${this.apiUrl}/compras/modalidades-agregadas-ano/`;
+    return this.withCache(
+      this.buildCacheKey(url, params),
+      this.http.get<ModalidadeAgregada[]>(url, { params })
+    );
   }
 
   /**
    * Obtém fornecedores agregados por código de unidade
    */
   getFornecedoresAgregados(codigoUnidade: string): Observable<FornecedorAgregado[]> {
-    return this.http.get<FornecedorAgregado[]>(`${this.apiUrl}/compras/fornecedores-agregados/${codigoUnidade}/`);
+    const url = `${this.apiUrl}/compras/fornecedores-agregados/${codigoUnidade}/`;
+    return this.withCache(this.buildCacheKey(url), this.http.get<FornecedorAgregado[]>(url));
   }
 
   /**
@@ -57,7 +109,7 @@ export class PncpService {
     if (modalidadeId) {
       url += `?modalidade_id=${modalidadeId}`;
     }
-    return this.http.get<ItemResultadoMerge[]>(url);
+    return this.withCache(this.buildCacheKey(url), this.http.get<ItemResultadoMerge[]>(url));
   }
 
   /**
@@ -74,8 +126,9 @@ export class PncpService {
       .set('numero_compra', numeroCompra)
       .set('ano_compra', anoCompra.toString())
       .set('modalidade', modalidade.toString());
-    
-    return this.http.get<CompraDetalhada>(`${this.apiUrl}/compras/detalhada/`, { params });
+
+    const url = `${this.apiUrl}/compras/detalhada/`;
+    return this.withCache(this.buildCacheKey(url, params), this.http.get<CompraDetalhada>(url, { params }));
   }
 
   /**
@@ -85,8 +138,9 @@ export class PncpService {
     const params = new HttpParams()
       .set('codigo_unidade', codigoUnidade)
       .set('ano_compra', anoCompra.toString());
-    
-    return this.http.get<ListagemComprasResponse>(`${this.apiUrl}/compras/listagem/`, { params });
+
+    const url = `${this.apiUrl}/compras/listagem/`;
+    return this.withCache(this.buildCacheKey(url, params), this.http.get<ListagemComprasResponse>(url, { params }));
   }
 
   /**
@@ -94,18 +148,18 @@ export class PncpService {
    */
   getUnidadesPorAno(anoCompra: number): Observable<UnidadePorAno[]> {
     const params = new HttpParams().set('ano_compra', anoCompra.toString());
-    return this.http.get<{ ano_compra: number; count: number; results: UnidadePorAno[] }>(
-      `${this.apiUrl}/unidades/por-ano/`,
-      { params }
-    ).pipe(
-      map(response => response.results)
-    );
+    const url = `${this.apiUrl}/unidades/por-ano/`;
+    return this.withCache(
+      this.buildCacheKey(url, params),
+      this.http.get<{ ano_compra: number; count: number; results: UnidadePorAno[] }>(url, { params })
+    ).pipe(map(response => response.results));
   }
 
   /**
    * Obtém anos e unidades para combobox
    */
   getAnosUnidadesCombo(): Observable<AnosUnidadesCombo> {
-    return this.http.get<AnosUnidadesCombo>(`${this.apiUrl}/combo/anos-unidades/`);
+    const url = `${this.apiUrl}/combo/anos-unidades/`;
+    return this.withCache(this.buildCacheKey(url), this.http.get<AnosUnidadesCombo>(url));
   }
 }

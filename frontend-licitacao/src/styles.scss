@@ -6,6 +6,21 @@
 @use '@angular/material' as mat;
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+/* Tooltip - fundo cinza e borda preta (global) */
+.mat-mdc-tooltip {
+  --mdc-plain-tooltip-container-color: #9e9e9e;
+  --mdc-plain-tooltip-supporting-text-color: #ffffff;
+}
+
+.mat-mdc-tooltip .mdc-tooltip__surface {
+  background-color: #9e9e9e !important;
+  color: #ffffff !important;
+  border: 1px solid #000000 !important;
+  border-radius: 6px !important;
+  opacity: 1 !important;
+}
+
+
 // Forçar fundo branco no calendário Material - máxima prioridade
 body .cdk-overlay-container .mat-datepicker-content,
 body .cdk-overlay-container .mat-datepicker-popup,

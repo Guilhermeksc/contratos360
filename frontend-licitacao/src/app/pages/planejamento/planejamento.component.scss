@@ -59,6 +59,22 @@
     min-height: 0; // Importante para flex funcionar corretamente
     display: flex;
     flex-direction: column;
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: $spacing-sm;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+      }
+    }
     
     // Mat-card com fundo branco
     ::ng-deep mat-card {
@@ -119,7 +135,17 @@
         scrollbar-color: rgba(0, 0, 0, 0.4) #f0f0f0;
       }
     }
+
+    .compras-table .mat-mdc-cell.mat-column-acoes {
+      white-space: nowrap;
+      min-width: 190px;
+    }
+
+    .compras-table .mat-mdc-cell.mat-column-acoes button {
+      margin-right: $spacing-xs;
+    }
   }
+
   
   .detalhada-header {
     margin-bottom: $spacing-lg;
@@ -137,6 +163,11 @@
   // Estilos para área de compra detalhada com fundo branco
   .detalhada-card {
     background-color: #ffffff !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    min-height: 0;
     
     ::ng-deep .mat-mdc-card-header {
       background-color: #ffffff !important;
@@ -145,6 +176,10 @@
     ::ng-deep .mat-mdc-card-content {
       background-color: #ffffff !important;
       color: #212121 !important;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
     }
     
     .compra-info {
@@ -164,6 +199,48 @@
           color: #212121 !important;
         }
       }
+    }
+
+    .resumo-itens-card {
+      margin-top: $spacing-md;
+      background-color: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+
+      ::ng-deep .mat-mdc-card-header {
+        background-color: #ffffff !important;
+      }
+
+      ::ng-deep .mat-mdc-card-title {
+        color: #212121 !important;
+      }
+    }
+
+    .resumo-itens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: $spacing-sm $spacing-lg;
+      padding-top: $spacing-sm;
+    }
+
+    .resumo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: $spacing-sm;
+
+      .label {
+        font-weight: $font-weight-medium;
+        color: #212121;
+      }
+
+      .value {
+        font-weight: $font-weight-bold;
+        color: #212121;
+      }
+    }
+
+    .resumo-item.destaque .value {
+      color: #1f4e79;
     }
     
     .item-card {
@@ -202,6 +279,95 @@
           margin-bottom: $spacing-md;
         }
       }
+    }
+
+    .itens-table-card {
+      margin-top: $spacing-md;
+      background-color: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex !important;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+
+      ::ng-deep .mat-mdc-card-header,
+      ::ng-deep .mat-mdc-card-content {
+        background-color: #ffffff !important;
+      }
+
+      .itens-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $spacing-md;
+        width: 100%;
+        flex-wrap: wrap;
+
+        ::ng-deep .mat-mdc-card-title {
+          margin: 0;
+        }
+      }
+
+      .itens-filtros {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-md;
+
+        ::ng-deep .mat-mdc-checkbox {
+          margin-right: 0;
+        }
+      }
+
+      ::ng-deep .mat-mdc-card-content.table-container {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+      }
+    }
+
+    .itens-table-container {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .itens-table {
+      width: 100%;
+    }
+
+    .itens-table .descricao-cell {
+      flex: 1;
+      min-height: 0;
+      white-space: normal;
+    }
+
+    .itens-table .situacao-cell {
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .itens-table .situacao-content {
+      display: inline-flex;
+      align-items: center;
+      align-items: center;
+      gap: $spacing-xs;
+      white-space: nowrap;
+    }
+
+    .itens-table .situacao-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    ::ng-deep .mat-mdc-row.situacao-homologado-row {
+      background-color: #e9f7ef !important;
+    }
+
+    ::ng-deep .mat-mdc-row.situacao-andamento-row {
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-mdc-row.situacao-alerta-row {
+      background-color: #fff7e6 !important;
     }
     
     // Expansion panel

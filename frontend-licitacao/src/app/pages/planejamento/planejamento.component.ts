@@ -11,16 +11,19 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { PncpService } from '../../services/pncp.service';
-import jsPDF from 'jspdf';
+import { RelatorioPdfContratacaoService } from '../../services/relatorio-pdf-contratacao.service';
+import { RelatorioXlsxContratacaoService } from '../../services/relatorio-xlsx-contratacao.service';
 import {
   CompraDetalhada,
   CompraListagem,
   AnosUnidadesCombo,
   UnidadeComSigla,
-  Modalidade
+  Modalidade,
+  ItemCompra
 } from '../../interfaces/pncp.interface';
 import { Combobox } from '../../components/combobox/combobox';
 import { FiltroBusca } from '../../components/filtro-busca/filtro-busca';
@@ -41,7 +44,8 @@ import { FiltroBusca } from '../../components/filtro-busca/filtro-busca';
     MatTabsModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatExpansionModule,
+    MatCheckboxModule,
+    MatTooltipModule,
     Combobox,
     FiltroBusca
   ],
@@ -82,6 +86,15 @@ export class PlanejamentoComponent implements OnInit {
   numeroCompra = signal<string>('');
   modalidadeId = signal<number | null>(null);
 
+  // Filtros de situação dos itens
+  filtroHomologado = signal<boolean>(true);
+  filtroEmAndamento = signal<boolean>(true);
+  filtroOutros = signal<boolean>(true);
+
+  // Controle de requisições de listagem
+  private lastListagemKey: string | null = null;
+  private lastListagemAt = 0;
+
   // Colunas das tabelas
   displayedColumnsListagem: string[] = [
     'numero_compra',
@@ -114,13 +127,16 @@ export class PlanejamentoComponent implements OnInit {
   // Chaves para localStorage
   private readonly STORAGE_KEY_ANO = 'planejamento_ano_selecionado';
   private readonly STORAGE_KEY_UASG = 'planejamento_uasg_selecionada';
+  private readonly STORAGE_KEY_MODALIDADE = 'planejamento_modalidade_selecionada';
   
   // Flag para controlar se estamos carregando do cache (evita limpar cache durante carregamento inicial)
   private carregandoDoCache: boolean = false;
 
   constructor(
     private pncpService: PncpService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private relatorioPdfService: RelatorioPdfContratacaoService,
+    private relatorioXlsxService: RelatorioXlsxContratacaoService
   ) {}
 
   ngOnInit(): void {
@@ -150,6 +166,17 @@ export class PlanejamentoComponent implements OnInit {
   }
 
   /**
+   * Salva a modalidade selecionada no localStorage
+   */
+  private salvarModalidadeNoCache(modalidadeId: number | null): void {
+    if (modalidadeId !== null) {
+      localStorage.setItem(this.STORAGE_KEY_MODALIDADE, String(modalidadeId));
+    } else {
+      localStorage.removeItem(this.STORAGE_KEY_MODALIDADE);
+    }
+  }
+
+  /**
    * Carrega o ano salvo do localStorage
    */
   private carregarAnoDoCache(): number | null {
@@ -166,6 +193,18 @@ export class PlanejamentoComponent implements OnInit {
    */
   private carregarUasgDoCache(): string | null {
     return localStorage.getItem(this.STORAGE_KEY_UASG);
+  }
+
+  /**
+   * Carrega a modalidade salva do localStorage
+   */
+  private carregarModalidadeDoCache(): number | null {
+    const modalidadeSalva = localStorage.getItem(this.STORAGE_KEY_MODALIDADE);
+    if (modalidadeSalva) {
+      const modalidadeId = parseInt(modalidadeSalva, 10);
+      return isNaN(modalidadeId) ? null : modalidadeId;
+    }
+    return null;
   }
 
   /**
@@ -237,6 +276,7 @@ export class PlanejamentoComponent implements OnInit {
    * Quando o ano é alterado, atualiza as unidades disponíveis
    */
   async onAnoChange(ano: number): Promise<void> {
+    const codigoAnterior = this.codigoUnidadeSelecionado();
     this.anoSelecionado.set(ano);
     // Salva no cache
     this.salvarAnoNoCache(ano);
@@ -248,7 +288,6 @@ export class PlanejamentoComponent implements OnInit {
     this.aplicarFiltroUnidade();
     
     // Limpa seleções anteriores
-    this.codigoUnidadeSelecionado.set(null);
     this.comprasListagem.set([]);
     this.comprasListagemFiltradas.set([]);
     this.compraDetalhada.set(null);
@@ -256,10 +295,26 @@ export class PlanejamentoComponent implements OnInit {
     this.modalidadesDisponiveis.set([]);
     this.visualizacaoAtual.set('listagem');
     this.compraSelecionadaParaDetalhes.set(null);
-    
-    // Limpa a UASG do cache quando o ano muda manualmente (não durante carregamento inicial)
-    if (!this.carregandoDoCache) {
-      this.salvarUasgNoCache(null);
+
+    const unidadeAindaExiste = !!codigoAnterior && unidades.some(
+      u => u.codigo_unidade === codigoAnterior
+    );
+
+    if (unidadeAindaExiste) {
+      this.codigoUnidadeSelecionado.set(codigoAnterior);
+      this.salvarUasgNoCache(codigoAnterior);
+      const unidadePreservada = unidades.find(u => u.codigo_unidade === codigoAnterior) || null;
+      if (unidadePreservada) {
+        this.filtroUnidade.set(this.getUnidadeDisplayText(unidadePreservada));
+      }
+      await this.carregarListagemCompras(codigoAnterior, ano);
+    } else {
+      this.codigoUnidadeSelecionado.set(null);
+      this.filtroUnidade.set('');
+      // Limpa a UASG do cache quando o ano muda e a UASG não existe no novo ano
+      if (!this.carregandoDoCache) {
+        this.salvarUasgNoCache(null);
+      }
     }
   }
 
@@ -288,9 +343,8 @@ export class PlanejamentoComponent implements OnInit {
    */
   async onUnidadeSelected(unidade: UnidadeComSigla): Promise<void> {
     await this.onUnidadeChange(unidade.codigo_unidade);
-    // Limpa o filtro após selecionar
-    this.filtroUnidade.set('');
-    this.aplicarFiltroUnidade();
+    // Mantém o texto da UASG selecionada no filtro
+    this.filtroUnidade.set(this.getUnidadeDisplayText(unidade));
   }
 
   /**
@@ -381,6 +435,17 @@ export class PlanejamentoComponent implements OnInit {
    * Carrega a listagem de compras por unidade e ano
    */
   async carregarListagemCompras(codigoUnidade: string, ano: number): Promise<void> {
+    const requestKey = `${codigoUnidade}__${ano}`;
+    const now = Date.now();
+    if (this.loadingListagem()) {
+      return;
+    }
+    if (this.lastListagemKey === requestKey && now - this.lastListagemAt < 1500) {
+      return;
+    }
+    this.lastListagemKey = requestKey;
+    this.lastListagemAt = now;
+
     this.loadingListagem.set(true);
     try {
       const response = await firstValueFrom(
@@ -392,6 +457,18 @@ export class PlanejamentoComponent implements OnInit {
       
       // Extrai modalidades únicas das compras carregadas
       this.extrairModalidades(compras);
+
+      // Tenta restaurar modalidade do cache se existir nesta listagem
+      const modalidadeCache = this.carregarModalidadeDoCache();
+      const modalidadeExiste = !!modalidadeCache && this.modalidadesDisponiveis().some(
+        m => m.id === modalidadeCache
+      );
+      if (modalidadeExiste) {
+        this.modalidadeSelecionada.set(modalidadeCache);
+      } else {
+        this.modalidadeSelecionada.set(null);
+        this.salvarModalidadeNoCache(null);
+      }
       
       // Aplica filtro de modalidade se houver
       this.aplicarFiltroModalidade();
@@ -455,7 +532,116 @@ export class PlanejamentoComponent implements OnInit {
    */
   onModalidadeChange(modalidadeId: number | null): void {
     this.modalidadeSelecionada.set(modalidadeId);
+    this.salvarModalidadeNoCache(modalidadeId);
     this.aplicarFiltroModalidade();
+  }
+
+  /**
+   * Totais e percentuais por situação dos itens
+   */
+  getTotalItensDetalhada(): number {
+    return this.compraDetalhada()?.itens?.length ?? 0;
+  }
+
+  getQuantidadePorSituacao(situacao: 'homologado' | 'fracassado' | 'em_andamento'): number {
+    const itens = this.compraDetalhada()?.itens ?? [];
+    if (!itens.length) {
+      return 0;
+    }
+
+    const normalize = (texto: string) => texto.toLowerCase();
+
+    return itens.filter((item) => {
+      const valor = normalize(item.situacao_compra_item_nome || '');
+      if (situacao === 'homologado') {
+        return valor.includes('homolog');
+      }
+      if (situacao === 'fracassado') {
+        return valor.includes('fracass');
+      }
+      return valor.includes('andamento') || valor.includes('em andamento');
+    }).length;
+  }
+
+  getQuantidadeOutrasSituacoes(): number {
+    const itens = this.compraDetalhada()?.itens ?? [];
+    if (!itens.length) {
+      return 0;
+    }
+    return itens.filter((item) => {
+      const valor = (item.situacao_compra_item_nome || '').toLowerCase();
+      const isHomologado = valor.includes('homolog');
+      const isEmAndamento = valor.includes('andamento') || valor.includes('em andamento');
+      return !isHomologado && !isEmAndamento;
+    }).length;
+  }
+
+  getPercentualConclusao(): string {
+    const total = this.getTotalItensDetalhada();
+    if (total === 0) {
+      return '-';
+    }
+    const homologados = this.getQuantidadePorSituacao('homologado');
+    const percentual = (homologados / total) * 100;
+    return `${percentual.toFixed(2)}%`;
+  }
+
+  getValorTotalHomologadoItem(item: ItemCompra): string | null {
+    if (!item.resultados || item.resultados.length === 0) {
+      return null;
+    }
+    const total = item.resultados.reduce((acc, resultado) => {
+      const valor = parseFloat(resultado.valor_total_homologado || '0');
+      return acc + (isNaN(valor) ? 0 : valor);
+    }, 0);
+    return total ? total.toString() : '0';
+  }
+
+  getSituacaoRowClass(item: ItemCompra): string {
+    const situacao = (item.situacao_compra_item_nome || '').toLowerCase();
+    if (situacao.includes('homolog')) {
+      return 'situacao-homologado-row';
+    }
+    if (situacao.includes('andamento')) {
+      return 'situacao-andamento-row';
+    }
+    return 'situacao-alerta-row';
+  }
+
+  getSituacaoIcon(item: ItemCompra): string | null {
+    const situacao = (item.situacao_compra_item_nome || '').toLowerCase();
+    if (situacao.includes('homolog')) {
+      return 'assets/img/svg/checked.svg';
+    }
+    if (situacao.includes('andamento')) {
+      return null;
+    }
+    return 'assets/img/svg/alert.svg';
+  }
+
+  getItensFiltradosPorSituacao(): ItemCompra[] {
+    const itens = this.compraDetalhada()?.itens ?? [];
+    if (!itens.length) {
+      return [];
+    }
+
+    const incluiHomologado = this.filtroHomologado();
+    const incluiEmAndamento = this.filtroEmAndamento();
+    const incluiOutros = this.filtroOutros();
+
+    return itens.filter((item) => {
+      const situacao = (item.situacao_compra_item_nome || '').toLowerCase();
+      const isHomologado = situacao.includes('homolog');
+      const isEmAndamento = situacao.includes('andamento');
+
+      if (isHomologado) {
+        return incluiHomologado;
+      }
+      if (isEmAndamento) {
+        return incluiEmAndamento;
+      }
+      return incluiOutros;
+    });
   }
 
   /**
@@ -582,6 +768,18 @@ export class PlanejamentoComponent implements OnInit {
   }
 
   /**
+   * Monta o link PNCP da contratação
+   */
+  getLinkPncp(compra: CompraListagem): string {
+    return `https://pncp.gov.br/app/editais/00394502000144/${compra.ano_compra}/${compra.sequencial_compra}`;
+  }
+
+  abrirLinkPncp(compra: CompraListagem): void {
+    const link = this.getLinkPncp(compra);
+    window.open(link, '_blank', 'noopener');
+  }
+
+  /**
    * Obtém a unidade selecionada completa (com sigla)
    */
   getUnidadeSelecionada(): UnidadeComSigla | null {
@@ -607,6 +805,29 @@ export class PlanejamentoComponent implements OnInit {
       return `${unidade.codigo_unidade} - ${unidade.sigla_om}`;
     }
     return unidade.codigo_unidade;
+  }
+
+  /**
+   * Obtém o título dinâmico da tabela de compras
+   */
+  getTituloCompras(): string {
+    const ano = this.anoSelecionado();
+    const modalidadeId = this.modalidadeSelecionada();
+    const count = this.countCompras();
+    
+    if (!ano) {
+      return `Compras encontradas (${count})`;
+    }
+    
+    const modalidade = modalidadeId 
+      ? this.modalidadesDisponiveis().find(m => m.id === modalidadeId)
+      : null;
+    
+    if (modalidade) {
+      return `Compras encontradas para o ano ${ano}, modalidade ${modalidade.nome} (${count})`;
+    }
+    
+    return `Compras encontradas para o ano ${ano} (${count})`;
   }
 
   /**
@@ -661,196 +882,76 @@ export class PlanejamentoComponent implements OnInit {
       return;
     }
 
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
-    const maxWidth = pageWidth - (margin * 2);
-    let yPosition = margin;
-
-    // Função para adicionar rodapé em cada página
-    const addFooter = (pageNum: number, totalPages: number) => {
-      const footerY = pageHeight - 15;
-      const dataHora = new Date().toLocaleString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-      
-      doc.setFontSize(9);
-      doc.setTextColor(100, 100, 100);
-      const footerText = `Relatório gerado pelo Sistema Licitação360 em ${dataHora}`;
-      const footerWidth = doc.getTextWidth(footerText);
-      doc.text(footerText, (pageWidth - footerWidth) / 2, footerY);
-      
-      // Número da página
-      doc.text(`Página ${pageNum} de ${totalPages}`, pageWidth - margin - 20, footerY);
-    };
-
-    let currentPage = 1;
-    let totalPages = 1;
-
-    // Função para verificar se precisa de nova página
-    const checkNewPage = (requiredSpace: number): boolean => {
-      if (yPosition + requiredSpace > pageHeight - 30) {
-        addFooter(currentPage, totalPages);
-        doc.addPage();
-        currentPage++;
-        totalPages++;
-        yPosition = margin;
-        return true;
-      }
-      return false;
-    };
-
-    // Cabeçalho do relatório
-    doc.setFillColor(245, 245, 245);
-    doc.rect(0, 0, pageWidth, 50, 'F');
-    
-    doc.setFontSize(18);
-    doc.setTextColor(33, 33, 33);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Relatório de Contratação', margin, 25);
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text(`UASG: ${this.getUasgSelecionadaTexto()}`, margin, 35);
-    doc.text(`Ano: ${this.anoSelecionado()}`, margin + 80, 35);
-    
-    yPosition = 60;
-
-    // Dados da Contratação
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(33, 33, 33);
-    doc.text('Dados da Contratação', margin, yPosition);
-    yPosition += 10;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    const dadosContratacao = [
-      ['Número da Compra:', compraSelecionada.numero_compra],
-      ['Sequencial:', compra.sequencial_compra.toString()],
-      ['Modalidade:', compraSelecionada.modalidade?.nome || 'N/A'],
-      ['Objeto:', compra.objeto_compra],
-      ['Amparo Legal:', compra.amparo_legal?.nome || 'N/A'],
-      ['Modo de Disputa:', compra.modo_disputa?.nome || 'N/A'],
-      ['Data Publicação PNCP:', this.formatarData(compra.data_publicacao_pncp)],
-      ['Valor Total Estimado:', this.formatarValor(compra.valor_total_estimado)],
-      ['Valor Total Homologado:', this.formatarValor(compra.valor_total_homologado)],
-      ['Percentual de Desconto:', this.formatarPercentual(compra.percentual_desconto)]
-    ];
-
-    dadosContratacao.forEach(([label, value]) => {
-      checkNewPage(8);
-      doc.setFont('helvetica', 'bold');
-      doc.text(label, margin, yPosition);
-      doc.setFont('helvetica', 'normal');
-      const lines = doc.splitTextToSize(String(value), maxWidth - 60);
-      doc.text(lines, margin + 60, yPosition);
-      yPosition += lines.length * 5 + 3;
-    });
-
-    yPosition += 5;
-
-    // Itens da Compra
-    if (compra.itens && compra.itens.length > 0) {
-      checkNewPage(15);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Itens da Compra', margin, yPosition);
-      yPosition += 10;
-
-      compra.itens.forEach((item, index) => {
-        checkNewPage(40);
-        
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`Item ${item.numero_item}`, margin, yPosition);
-        yPosition += 7;
-
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        const itemInfo = [
-          ['Descrição:', item.descricao],
-          ['Quantidade:', `${item.quantidade} ${item.unidade_medida}`],
-          ['Valor Total Estimado:', this.formatarValor(item.valor_total_estimado)],
-          ['Situação:', item.situacao_compra_item_nome]
-        ];
-
-        itemInfo.forEach(([label, value]) => {
-          checkNewPage(8);
-          doc.setFont('helvetica', 'bold');
-          doc.text(label, margin + 5, yPosition);
-          doc.setFont('helvetica', 'normal');
-          const lines = doc.splitTextToSize(String(value), maxWidth - 70);
-          doc.text(lines, margin + 45, yPosition);
-          yPosition += lines.length * 5 + 3;
-        });
-
-        // Resultados do Item
-        if (item.resultados && item.resultados.length > 0) {
-          checkNewPage(20);
-          yPosition += 3;
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'bold');
-          doc.text('Resultados:', margin + 5, yPosition);
-          yPosition += 7;
-
-          item.resultados.forEach((resultado, resIndex) => {
-            checkNewPage(25);
-            doc.setFontSize(9);
-            doc.setFont('helvetica', 'normal');
-            const resultadoInfo = [
-              ['Fornecedor:', resultado.fornecedor_detalhes.razao_social],
-              ['CNPJ:', resultado.fornecedor_detalhes.cnpj_fornecedor],
-              ['Quantidade Homologada:', resultado.quantidade_homologada.toString()],
-              ['Valor Unitário Homologado:', this.formatarValor(resultado.valor_unitario_homologado)],
-              ['Valor Total Homologado:', this.formatarValor(resultado.valor_total_homologado)]
-            ];
-
-            resultadoInfo.forEach(([label, value]) => {
-              checkNewPage(7);
-              doc.setFont('helvetica', 'bold');
-              doc.text(label, margin + 10, yPosition);
-              doc.setFont('helvetica', 'normal');
-              const lines = doc.splitTextToSize(String(value), maxWidth - 80);
-              doc.text(lines, margin + 50, yPosition);
-              yPosition += lines.length * 5 + 2;
-            });
-
-            if (item.resultados && item.resultados.length > 0 && resIndex < item.resultados.length - 1) {
-              yPosition += 3;
-              doc.setLineWidth(0.1);
-              doc.line(margin + 10, yPosition, pageWidth - margin - 10, yPosition);
-              yPosition += 5;
-            }
-          });
-        }
-
-        if (index < compra.itens.length - 1) {
-          yPosition += 5;
-          doc.setLineWidth(0.2);
-          doc.line(margin, yPosition, pageWidth - margin, yPosition);
-          yPosition += 8;
-        }
-      });
-    }
-
-    // Atualiza rodapé de todas as páginas com o número total correto
-    for (let i = 1; i <= totalPages; i++) {
-      doc.setPage(i);
-      addFooter(i, totalPages);
-    }
-
-    // Salva o PDF
-    const nomeArquivo = `Relatorio_Contratacao_${compraSelecionada.numero_compra.replace(/\//g, '_')}_${this.anoSelecionado()}.pdf`;
-    doc.save(nomeArquivo);
+    // Usa o serviço para gerar o PDF
+    await this.relatorioPdfService.gerarRelatorioPDF(
+      compra,
+      compraSelecionada,
+      this.getUasgSelecionadaTexto(),
+      this.anoSelecionado()
+    );
 
     this.snackBar.open('Relatório PDF gerado com sucesso', 'Fechar', {
+      duration: 3000
+    });
+  }
+
+  /**
+   * Gera relatório em XLSX da compra detalhada
+   * @param compraListagem Opcional: compra da listagem para gerar relatório diretamente
+   */
+  async gerarRelatorioXLSX(compraListagem?: CompraListagem): Promise<void> {
+    let compra: CompraDetalhada | null = null;
+    let compraSelecionada: CompraListagem | null = null;
+
+    if (compraListagem) {
+      compraSelecionada = compraListagem;
+
+      if (!compraListagem.modalidade?.id) {
+        this.snackBar.open('Modalidade não disponível para esta compra', 'Fechar', {
+          duration: 3000
+        });
+        return;
+      }
+
+      try {
+        this.loadingDetalhada.set(true);
+        compra = await firstValueFrom(
+          this.pncpService.getCompraDetalhada(
+            compraListagem.codigo_unidade,
+            compraListagem.numero_compra,
+            compraListagem.ano_compra,
+            compraListagem.modalidade.id
+          )
+        );
+      } catch (error) {
+        this.snackBar.open('Erro ao carregar detalhes da compra para o relatório', 'Fechar', {
+          duration: 3000
+        });
+        this.loadingDetalhada.set(false);
+        return;
+      } finally {
+        this.loadingDetalhada.set(false);
+      }
+    } else {
+      compra = this.compraDetalhada();
+      compraSelecionada = this.compraSelecionadaParaDetalhes();
+    }
+
+    if (!compra || !compraSelecionada) {
+      this.snackBar.open('Não há dados de compra para gerar o relatório', 'Fechar', {
+        duration: 3000
+      });
+      return;
+    }
+
+    this.relatorioXlsxService.gerarRelatorioXLSX(
+      compra,
+      compraSelecionada,
+      this.getUasgSelecionadaTexto(),
+      this.anoSelecionado()
+    );
+
+    this.snackBar.open('Relatório XLSX gerado com sucesso', 'Fechar', {
       duration: 3000
     });
   }

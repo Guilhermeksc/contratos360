@@ -1,0 +1,98 @@
+<div class="planejamento-analises-container">
+	<div class="header-with-filters">
+		<div class="header-title-section">
+			<h1>Análises de Planejamento</h1>
+			@if (codigoUnidadeSelecionado()) {
+				<h2>UASG Selecionada: {{ getUasgSelecionadaTexto() }}</h2>
+			}
+		</div>
+		<div class="filters-grid">
+			<app-combobox
+				label="Ano"
+				[value]="anoSelecionado()"
+				[options]="anosDisponiveis()"
+				[disabled]="loadingCombo()"
+				(valueChange)="onAnoChange($event)">
+			</app-combobox>
+
+			<app-filtro-busca
+				label="Buscar Unidade (Código ou Sigla)"
+				placeholder="Digite código UASG ou sigla OM"
+				[value]="filtroUnidade()"
+				[disabled]="loadingCombo() || !anoSelecionado()"
+				[options]="unidadesDoAnoComTodas()"
+				[displayFn]="getUnidadeDisplayText.bind(this)"
+				trackBy="codigo_unidade"
+				(valueChange)="onFiltroUnidadeChange($event)"
+				(enterPressed)="onFiltroUnidadeEnter($event)"
+				(optionSelected)="onUnidadeSelected($event)">
+			</app-filtro-busca>
+		</div>
+
+		@if (loadingCombo()) {
+			<div class="loading-spinner">
+				<mat-spinner diameter="30"></mat-spinner>
+				<span>Carregando anos e unidades...</span>
+			</div>
+		}
+	</div>
+
+	<div class="content-section">
+		@if (loadingChart()) {
+			<div class="loading-center">
+				<mat-spinner></mat-spinner>
+				<p>Carregando modalidades...</p>
+			</div>
+		} @else if (!codigoUnidadeSelecionado() || !anoSelecionado()) {
+			<div class="empty-state">
+				<mat-icon>info</mat-icon>
+				<p>Selecione um ano e uma unidade para visualizar o gráfico</p>
+			</div>
+		} @else if (pieSlices().length === 0) {
+			<div class="empty-state">
+				<mat-icon>inbox</mat-icon>
+				<p>Nenhuma modalidade encontrada para os filtros selecionados</p>
+			</div>
+		} @else {
+			<mat-card class="chart-card">
+				<mat-card-header>
+					<mat-card-title>{{ getTituloGrafico() }}</mat-card-title>
+					<mat-card-subtitle>Total de compras: {{ totalQuantidade() }}</mat-card-subtitle>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="chart-grid">
+						<div class="pie-chart-container">
+							<svg viewBox="0 0 100 100" role="img" aria-label="Gráfico de modalidades">
+								@for (slice of pieSlices(); track slice.label) {
+									@if (slice.isFullCircle) {
+										<circle cx="50" cy="50" r="45" [attr.fill]="slice.color"></circle>
+									} @else {
+										<path [attr.d]="slice.path" [attr.fill]="slice.color"></path>
+									}
+								}
+							</svg>
+							<div class="chart-center">
+								<span class="total-label">Total</span>
+								<span class="total-value">{{ totalQuantidade() }}</span>
+							</div>
+						</div>
+
+						<div class="legend">
+							@for (slice of pieSlices(); track slice.label) {
+								<div class="legend-item">
+									<span class="legend-color" [style.background]="slice.color"></span>
+									<div class="legend-text">
+										<span class="legend-label">{{ slice.label }}</span>
+										<span class="legend-value">
+											{{ slice.value }} ({{ formatPercentual(slice.percentage) }})
+										</span>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		}
+	</div>
+</div>

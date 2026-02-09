@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.db.models import Q, Count, Sum, F
 from django.http import HttpResponse
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 import io
@@ -670,6 +671,72 @@ class CompraListagemView(views.APIView):
 
         except Exception as e:
             logger.error(f"Erro ao listar compras: {str(e)}")
+            return Response(
+                {'error': 'Erro ao processar requisição'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ModalidadesAgregadasAnoView(views.APIView):
+    """Endpoint para modalidades agregadas por ano (todas as UASG)"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        ano_compra = request.query_params.get('ano_compra')
+
+        if not ano_compra:
+            return Response(
+                {'error': 'Parâmetro ano_compra é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            ano_compra = int(ano_compra)
+        except ValueError:
+            return Response(
+                {'error': 'ano_compra deve ser um número inteiro'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        cache_key = f"pncp_modalidades_agregadas_ano_{ano_compra}"
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return Response(cached)
+
+        try:
+            modalidades = (
+                Compra.objects
+                .filter(ano_compra=ano_compra)
+                .select_related('modalidade')
+                .values('ano_compra', 'modalidade_id')
+                .annotate(
+                    quantidade_compras=Count('compra_id'),
+                    valor_total_homologado=Sum('valor_total_homologado')
+                )
+                .order_by('modalidade_id')
+            )
+
+            modalidades_formatted = []
+            for mod in modalidades:
+                modalidade_obj = None
+                modalidade_id = mod.get('modalidade_id')
+                if modalidade_id:
+                    modalidade_obj = Modalidade.objects.filter(id=modalidade_id).first()
+
+                modalidades_formatted.append({
+                    'ano_compra': mod['ano_compra'],
+                    'modalidade_id': modalidade_id,
+                    'modalidade': modalidade_obj,
+                    'quantidade_compras': mod['quantidade_compras'],
+                    'valor_total_homologado': mod['valor_total_homologado'],
+                })
+
+            serializer = ModalidadeAgregadaSerializer(modalidades_formatted, many=True)
+            response_data = serializer.data
+            cache.set(cache_key, response_data, timeout=60 * 60 * 2)
+            return Response(response_data)
+        except Exception as e:
+            logger.error(f"Erro ao buscar modalidades agregadas por ano {ano_compra}: {str(e)}")
             return Response(
                 {'error': 'Erro ao processar requisição'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

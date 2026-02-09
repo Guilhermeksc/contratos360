@@ -7,6 +7,7 @@ from .views import (
     FornecedorViewSet,
     CompraDetalhadaView,
     CompraListagemView,
+    ModalidadesAgregadasAnoView,
     UnidadesPorAnoView,
     AnosUnidadesComboView,
 )
@@ -21,6 +22,7 @@ router.register(r"resultados", ResultadoItemViewSet)
 urlpatterns = [
     path("compras/detalhada/", CompraDetalhadaView.as_view(), name="compra-detalhada"),
     path("compras/listagem/", CompraListagemView.as_view(), name="compra-listagem"),
+    path("compras/modalidades-agregadas-ano/", ModalidadesAgregadasAnoView.as_view(), name="modalidades-agregadas-ano"),
     path("unidades/por-ano/", UnidadesPorAnoView.as_view(), name="unidades-por-ano"),
     path("combo/anos-unidades/", AnosUnidadesComboView.as_view(), name="anos-unidades-combo"),
     path("", include(router.urls)),  # Router por último para não conflitar com rotas customizadas

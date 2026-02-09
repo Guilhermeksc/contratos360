@@ -1,0 +1,198 @@
+@use '../../../styles/variables' as *;
+
+.planejamento-analises-container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	padding: $spacing-xxl;
+	color: $text-primary;
+	box-sizing: border-box;
+	overflow: hidden;
+
+	.header-with-filters {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: $spacing-xl;
+		margin-bottom: $spacing-xl;
+		flex-wrap: wrap;
+		flex-shrink: 0;
+
+		.header-title-section {
+			display: flex;
+			flex-direction: column;
+			gap: $spacing-xs;
+			flex-shrink: 0;
+
+			h1 {
+				color: $text-primary;
+				margin: 0;
+				white-space: nowrap;
+			}
+
+			h2 {
+				color: rgba($blue, 0.7);
+				font-size: $font-size-md;
+				font-weight: $font-weight-normal;
+				margin: 0;
+				white-space: nowrap;
+			}
+		}
+
+		.filters-grid {
+			display: flex;
+			align-items: flex-start;
+			gap: $spacing-md;
+			flex-wrap: wrap;
+			min-width: 0;
+			margin-left: auto;
+		}
+	}
+
+	.loading-spinner {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+		color: $text-secondary;
+	}
+
+	.content-section {
+		flex: 1;
+		width: 100%;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.loading-center,
+	.empty-state {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		gap: $spacing-sm;
+	}
+
+	.empty-state mat-icon {
+		font-size: 48px;
+		width: 48px;
+		height: 48px;
+	}
+
+	::ng-deep mat-card {
+		background-color: #ffffff !important;
+		color: #212121 !important;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+
+		.mat-mdc-card-title,
+		.mat-mdc-card-header-text {
+			color: #212121 !important;
+		}
+	}
+
+	.chart-card {
+		flex: 1;
+	}
+
+	.chart-grid {
+		display: grid;
+		grid-template-columns: minmax(240px, 360px) 1fr;
+		gap: $spacing-xl;
+		align-items: center;
+		min-height: 0;
+	}
+
+	.pie-chart-container {
+		position: relative;
+		width: 100%;
+		max-width: 320px;
+		margin: 0 auto;
+	}
+
+	.pie-chart-container svg {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	.chart-center {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: #ffffff;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		gap: 2px;
+	}
+
+	.total-label {
+		font-size: $font-size-sm;
+		color: #000000;
+	}
+
+	.total-value {
+		font-size: $font-size-xl;
+		font-weight: $font-weight-bold;
+		color: #1f4e79;
+	}
+
+	.legend {
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-sm;
+		max-height: 100%;
+		overflow: auto;
+		padding-right: $spacing-sm;
+	}
+
+	.legend-item {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+	}
+
+	.legend-color {
+		width: 14px;
+		height: 14px;
+		border-radius: 4px;
+		flex-shrink: 0;
+	}
+
+	.legend-text {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.legend-label {
+		font-weight: $font-weight-medium;
+		color: #000000;
+	}
+
+	.legend-value {
+		font-size: $font-size-sm;
+		color: #1f4e79;
+	}
+
+	@media (max-width: 900px) {
+		.chart-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.legend {
+			max-height: none;
+		}
+	}
+}

@@ -41,8 +41,7 @@ export class SideNavComponent implements OnInit {
     ],
     // Opções específicas para Planejamento
     planejamento: [
-      { icon: 'calendar_today', label: 'Cronograma', route: '/planejamento/cronograma', tooltip: 'Cronograma' },
-      { icon: 'assessment', label: 'Relatórios', route: '/planejamento/relatorios', tooltip: 'Relatórios' },
+      { icon: 'search', label: 'Consulta de Contratações', route: '/planejamento/consulta', tooltip: 'Consulta de Contratações' },
       { icon: 'analytics', label: 'Análises', route: '/planejamento/analises', tooltip: 'Análises' }
     ],
     // Opções específicas para GerAta
