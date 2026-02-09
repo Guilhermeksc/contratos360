@@ -34,11 +34,11 @@ export class HomeLandingComponent implements OnInit {
     //   iconPath: '/assets/img/svg/dispensa.svg',
     //   route: '/dispensa-eletronica'
     // },    
-    // {
-    //   title: 'Controle de Contratos',
-    //   iconPath: '/assets/img/svg/contratos.svg',
-    //   route: '/contratos'
-    // },
+    {
+      title: 'Controle de Contratos',
+      iconPath: '/assets/img/svg/contratos.svg',
+      route: '/contratos'
+    },
     // {
     //   title: 'GerAta',
     //   iconPath: '/assets/img/svg/ata.svg',
