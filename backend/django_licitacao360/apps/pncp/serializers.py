@@ -87,3 +87,83 @@ class FornecedorAgregadoSerializer(serializers.Serializer):
     cnpj_fornecedor = serializers.CharField()
     razao_social = serializers.CharField(allow_null=True)
     valor_total_homologado = serializers.DecimalField(max_digits=19, decimal_places=4)
+
+
+class CompraDetalhadaSerializer(serializers.ModelSerializer):
+    """Serializer para compra detalhada com itens e resultados"""
+    modalidade = ModalidadeSerializer(read_only=True)
+    amparo_legal = AmparoLegalSerializer(read_only=True)
+    modo_disputa = ModoDisputaSerializer(read_only=True)
+    itens = ItemCompraSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Compra
+        fields = [
+            'sequencial_compra',
+            'objeto_compra',
+            'modalidade',
+            'amparo_legal',
+            'modo_disputa',
+            'data_publicacao_pncp',
+            'data_atualizacao',
+            'valor_total_estimado',
+            'valor_total_homologado',
+            'percentual_desconto',
+            'itens',
+        ]
+
+
+class CompraListagemSerializer(serializers.ModelSerializer):
+    """Serializer simplificado para listagem de compras"""
+    modalidade = ModalidadeSerializer(read_only=True)
+    amparo_legal = AmparoLegalSerializer(read_only=True)
+    modo_disputa = ModoDisputaSerializer(read_only=True)
+
+    class Meta:
+        model = Compra
+        fields = [
+            'compra_id',
+            'ano_compra',
+            'sequencial_compra',
+            'numero_compra',
+            'codigo_unidade',
+            'objeto_compra',
+            'modalidade',
+            'amparo_legal',
+            'modo_disputa',
+            'numero_processo',
+            'data_publicacao_pncp',
+            'data_atualizacao',
+            'valor_total_estimado',
+            'valor_total_homologado',
+            'percentual_desconto',
+        ]
+
+
+class UnidadePorAnoSerializer(serializers.Serializer):
+    """Serializer para unidades por ano com informações agregadas"""
+    codigo_unidade = serializers.CharField()
+    ano_compra = serializers.IntegerField()
+    quantidade_compras = serializers.IntegerField()
+    valor_total_estimado = serializers.DecimalField(max_digits=19, decimal_places=4, allow_null=True)
+    valor_total_homologado = serializers.DecimalField(max_digits=19, decimal_places=4, allow_null=True)
+
+
+class AnoUnidadeComboSerializer(serializers.Serializer):
+    """Serializer para estrutura de combobox de anos e unidades"""
+    ano_compra = serializers.IntegerField()
+    unidades = serializers.ListField(child=serializers.CharField())
+
+
+class UnidadeComSiglaSerializer(serializers.Serializer):
+    """Serializer para unidade com sigla_om"""
+    codigo_unidade = serializers.CharField()
+    sigla_om = serializers.CharField(allow_null=True)
+
+
+class AnosUnidadesComboSerializer(serializers.Serializer):
+    """Serializer para resposta completa de anos e unidades"""
+    anos = serializers.ListField(child=serializers.IntegerField())
+    unidades_por_ano = serializers.DictField(
+        child=serializers.ListField(child=UnidadeComSiglaSerializer())
+    )

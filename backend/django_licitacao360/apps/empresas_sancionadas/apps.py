@@ -6,6 +6,6 @@ class EmpresasSancionadasConfig(AppConfig):
     name = "django_licitacao360.apps.empresas_sancionadas"
     verbose_name = "Empresas Sancionadas"
     
-    def ready(self):
-        """Importa os signals quando o app estiver pronto."""
-        import django_licitacao360.apps.empresas_sancionadas.signals  # noqa
+    # def ready(self):
+    #     """Importa os signals quando o app estiver pronto."""
+    #     import django_licitacao360.apps.empresas_sancionadas.signals  # noqa

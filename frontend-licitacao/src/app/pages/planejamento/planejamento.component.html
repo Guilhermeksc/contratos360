@@ -1,5 +1,323 @@
 <div class="planejamento-container">
-  <h1>Planejamento</h1>
-  <p>Módulo de Planejamento em desenvolvimento...</p>
-</div>
+  <div class="header-with-filters">
+    <div class="header-title-section">
+      <h1>Consulta de Contratações</h1>
+      @if (codigoUnidadeSelecionado()) {
+        <h2>UASG Selecionada: {{ getUasgSelecionadaTexto() }}</h2>
+      }
+    </div>
+    <div class="filters-grid">
+        <!-- Seleção de Ano -->
+        <app-combobox
+          label="Ano"
+          [value]="anoSelecionado()"
+          [options]="anosDisponiveis()"
+          [disabled]="loadingCombo()"
+          (valueChange)="onAnoChange($event)">
+        </app-combobox>
 
+        <!-- Filtro de Busca de Unidade -->
+        <app-filtro-busca
+          label="Buscar Unidade (Código ou Sigla)"
+          placeholder="Digite código UASG ou sigla OM"
+          [value]="filtroUnidade()"
+          [disabled]="loadingCombo() || !anoSelecionado()"
+          [hint]="anoSelecionado() && unidadesFiltradas().length > 0 ? unidadesFiltradas().length + ' unidade(s) encontrada(s)' : ''"
+          [options]="unidadesDoAno()"
+          [displayFn]="getUnidadeDisplayText.bind(this)"
+          trackBy="codigo_unidade"
+          (valueChange)="onFiltroUnidadeChange($event)"
+          (enterPressed)="onFiltroUnidadeEnter($event)"
+          (optionSelected)="onUnidadeSelected($event)">
+        </app-filtro-busca>
+
+        <!-- Seleção de Modalidade -->
+        <app-combobox
+          label="Modalidade"
+          [value]="modalidadeSelecionada()"
+          [options]="modalidadesDisponiveis()"
+          [disabled]="loadingListagem() || comprasListagem().length === 0"
+          placeholder="Selecione uma modalidade"
+          [hint]="modalidadesDisponiveis().length > 0 ? modalidadesDisponiveis().length + ' modalidade(s) disponível(is)' : ''"
+          [emptyMessage]="comprasListagem().length > 0 && modalidadesDisponiveis().length === 0 ? 'Nenhuma modalidade encontrada' : ''"
+          trackBy="id"
+          [displayFn]="getModalidadeDisplayText.bind(this)"
+          (valueChange)="onModalidadeChange($event)">
+        </app-combobox>
+    </div>
+
+    @if (loadingCombo()) {
+      <div class="loading-spinner">
+        <mat-spinner diameter="30"></mat-spinner>
+        <span>Carregando anos e unidades...</span>
+      </div>
+    }
+  </div>
+
+  <!-- Visualização: Listagem de Compras -->
+  @if (visualizacaoAtual() === 'listagem') {
+    <div class="content-section">
+      @if (loadingListagem()) {
+        <div class="loading-center">
+          <mat-spinner></mat-spinner>
+          <p>Carregando compras...</p>
+        </div>
+      } @else if (!codigoUnidadeSelecionado() || !anoSelecionado()) {
+        <div class="empty-state">
+          <mat-icon>info</mat-icon>
+          <p>Selecione um ano e uma unidade para visualizar as compras</p>
+        </div>
+      } @else if (comprasListagemFiltradas().length === 0) {
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>Nenhuma compra encontrada para os filtros selecionados</p>
+        </div>
+      } @else {
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>
+              Compras Encontradas ({{ countCompras() }})
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="table-container">
+            <table mat-table [dataSource]="comprasListagemFiltradas()" class="compras-table">
+              <!-- Coluna: Número da Compra -->
+              <ng-container matColumnDef="numero_compra">
+                <th mat-header-cell *matHeaderCellDef>Número</th>
+                <td mat-cell *matCellDef="let compra">{{ compra.numero_compra }}</td>
+              </ng-container>
+
+              <!-- Coluna: Sequencial -->
+              <ng-container matColumnDef="sequencial_compra">
+                <th mat-header-cell *matHeaderCellDef>Sequencial</th>
+                <td mat-cell *matCellDef="let compra">{{ compra.sequencial_compra }}</td>
+              </ng-container>
+
+              <!-- Coluna: Modalidade -->
+              <ng-container matColumnDef="modalidade">
+                <th mat-header-cell *matHeaderCellDef>Modalidade</th>
+                <td mat-cell *matCellDef="let compra">{{ getNomeModalidade(compra) }}</td>
+              </ng-container>
+
+              <!-- Coluna: Objeto -->
+              <ng-container matColumnDef="objeto_compra">
+                <th mat-header-cell *matHeaderCellDef>Objeto</th>
+                <td mat-cell *matCellDef="let compra" class="objeto-cell">
+                  {{ compra.objeto_compra }}
+                </td>
+              </ng-container>
+
+              <!-- Coluna: Valor Estimado -->
+              <ng-container matColumnDef="valor_total_estimado">
+                <th mat-header-cell *matHeaderCellDef>Valor Estimado</th>
+                <td mat-cell *matCellDef="let compra">
+                  {{ formatarValor(compra.valor_total_estimado) }}
+                </td>
+              </ng-container>
+
+              <!-- Coluna: Valor Homologado -->
+              <ng-container matColumnDef="valor_total_homologado">
+                <th mat-header-cell *matHeaderCellDef>Valor Homologado</th>
+                <td mat-cell *matCellDef="let compra">
+                  {{ formatarValor(compra.valor_total_homologado) }}
+                </td>
+              </ng-container>
+
+              <!-- Coluna: Percentual Desconto -->
+              <ng-container matColumnDef="percentual_desconto">
+                <th mat-header-cell *matHeaderCellDef>% Desconto</th>
+                <td mat-cell *matCellDef="let compra">
+                  {{ formatarPercentual(compra.percentual_desconto) }}
+                </td>
+              </ng-container>
+
+              <!-- Coluna: Ações -->
+              <ng-container matColumnDef="acoes">
+                <th mat-header-cell *matHeaderCellDef>Ações</th>
+                <td mat-cell *matCellDef="let compra">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="$event.stopPropagation(); abrirDetalhesCompra(compra)"
+                    [disabled]="loadingDetalhada()"
+                    title="Ver detalhes da compra">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="accent"
+                    (click)="$event.stopPropagation(); gerarRelatorioPDF(compra)"
+                    [disabled]="loadingDetalhada()"
+                    title="Gerar relatório PDF">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumnsListagem"></tr>
+              <tr 
+                mat-row 
+                *matRowDef="let row; columns: displayedColumnsListagem"
+                (click)="!loadingDetalhada() && abrirDetalhesCompra(row)"
+                [class.clickable-row]="true"
+                [class.disabled-row]="loadingDetalhada()"
+                [style.cursor]="loadingDetalhada() ? 'default' : 'pointer'"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+
+  <!-- Visualização: Compra Detalhada -->
+  @if (visualizacaoAtual() === 'detalhada') {
+    <div class="content-section">
+      @if (loadingDetalhada()) {
+        <div class="loading-center">
+          <mat-spinner></mat-spinner>
+          <p>Carregando compra detalhada...</p>
+        </div>
+      } @else if (compraDetalhada()) {
+        <div class="detalhada-header">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="voltarParaListagem()">
+            <mat-icon>arrow_back</mat-icon>
+            Voltar para Listagem
+          </button>
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="gerarRelatorioPDF()"
+            [disabled]="loadingDetalhada()">
+            <mat-icon>picture_as_pdf</mat-icon>
+            Gerar Relatório PDF
+          </button>
+        </div>
+        
+        <mat-card class="detalhada-card">
+          <mat-card-header>
+            <mat-card-title>Detalhes da Compra</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="compra-info">
+              <div class="info-row">
+                <strong>Sequencial:</strong> {{ compraDetalhada()?.sequencial_compra }}
+              </div>
+              <div class="info-row">
+                <strong>Objeto:</strong> {{ compraDetalhada()?.objeto_compra }}
+              </div>
+              <div class="info-row">
+                <strong>Amparo Legal:</strong>
+                {{ compraDetalhada()?.amparo_legal?.nome || 'N/A' }}
+              </div>
+              <div class="info-row">
+                <strong>Modo de Disputa:</strong>
+                {{ compraDetalhada()?.modo_disputa?.nome || 'N/A' }}
+              </div>
+              <div class="info-row">
+                <strong>Data Publicação PNCP:</strong>
+                {{ formatarData(compraDetalhada()?.data_publicacao_pncp) }}
+              </div>
+              <div class="info-row">
+                <strong>Valor Total Estimado:</strong>
+                {{ formatarValor(compraDetalhada()?.valor_total_estimado) }}
+              </div>
+              <div class="info-row">
+                <strong>Valor Total Homologado:</strong>
+                {{ formatarValor(compraDetalhada()?.valor_total_homologado) }}
+              </div>
+              <div class="info-row">
+                <strong>Percentual de Desconto:</strong>
+                {{ formatarPercentual(compraDetalhada()?.percentual_desconto) }}
+              </div>
+            </div>
+
+            <!-- Itens da Compra -->
+            @if (compraDetalhada()?.itens && compraDetalhada()!.itens.length > 0) {
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Itens da Compra ({{ compraDetalhada()!.itens.length }})
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                @for (item of compraDetalhada()!.itens; track item.item_id) {
+                  <mat-card class="item-card">
+                    <mat-card-header>
+                      <mat-card-title>Item {{ item.numero_item }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <div class="item-info">
+                        <p><strong>Descrição:</strong> {{ item.descricao }}</p>
+                        <p><strong>Quantidade:</strong> {{ item.quantidade }} {{ item.unidade_medida }}</p>
+                        <p><strong>Valor Total Estimado:</strong>
+                          {{ formatarValor(item.valor_total_estimado) }}
+                        </p>
+                        <p><strong>Situação:</strong> {{ item.situacao_compra_item_nome }}</p>
+                      </div>
+
+                      <!-- Resultados do Item -->
+                      @if (item.resultados && item.resultados.length > 0) {
+                        <div class="resultados-section">
+                          <h4>Resultados:</h4>
+                          <table mat-table [dataSource]="item.resultados" class="resultados-table">
+                            <ng-container matColumnDef="fornecedor">
+                              <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+                              <td mat-cell *matCellDef="let resultado">
+                                {{ resultado.fornecedor_detalhes.razao_social }}
+                                <br>
+                                <small>{{ resultado.fornecedor_detalhes.cnpj_fornecedor }}</small>
+                              </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="quantidade_homologada">
+                              <th mat-header-cell *matHeaderCellDef>Qtd. Homologada</th>
+                              <td mat-cell *matCellDef="let resultado">
+                                {{ resultado.quantidade_homologada }}
+                              </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="valor_unitario_homologado">
+                              <th mat-header-cell *matHeaderCellDef>Valor Unitário</th>
+                              <td mat-cell *matCellDef="let resultado">
+                                {{ formatarValor(resultado.valor_unitario_homologado) }}
+                              </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="valor_total_homologado">
+                              <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+                              <td mat-cell *matCellDef="let resultado">
+                                {{ formatarValor(resultado.valor_total_homologado) }}
+                              </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumnsResultados"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumnsResultados"></tr>
+                          </table>
+                        </div>
+                      }
+                    </mat-card-content>
+                  </mat-card>
+                }
+              </mat-expansion-panel>
+            }
+          </mat-card-content>
+        </mat-card>
+      } @else {
+        <div class="empty-state">
+          <mat-icon>error</mat-icon>
+          <p>Erro ao carregar detalhes da compra</p>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="voltarParaListagem()">
+            <mat-icon>arrow_back</mat-icon>
+            Voltar para Listagem
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

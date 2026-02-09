@@ -21,19 +21,22 @@ export class ImprensaNacionalService {
    * Lista todos os artigos do INLABS
    */
   list(params?: {
-    edition_date?: string;
+    pub_date?: string; // Data de publicação (formato YYYY-MM-DD)
     article_id?: string;
     pub_name?: string;
     art_type?: string;
-    search?: string;
-    ordering?: string;
+    uasg?: string;
+    nome_om?: string;
+    materia_id?: string;
+    search?: string; // Busca em: name, nome_om, body_identifica, body_texto
+    ordering?: string; // Campos: pub_date, article_id, pub_name (prefixo - para desc)
     page?: number;
   }): Observable<InlabsArticleListResponse | InlabsArticle[]> {
     let httpParams = new HttpParams();
     
     if (params) {
-      if (params.edition_date) {
-        httpParams = httpParams.set('edition_date', params.edition_date);
+      if (params.pub_date) {
+        httpParams = httpParams.set('pub_date', params.pub_date);
       }
       if (params.article_id) {
         httpParams = httpParams.set('article_id', params.article_id);
@@ -43,6 +46,15 @@ export class ImprensaNacionalService {
       }
       if (params.art_type) {
         httpParams = httpParams.set('art_type', params.art_type);
+      }
+      if (params.uasg) {
+        httpParams = httpParams.set('uasg', params.uasg);
+      }
+      if (params.nome_om) {
+        httpParams = httpParams.set('nome_om', params.nome_om);
+      }
+      if (params.materia_id) {
+        httpParams = httpParams.set('materia_id', params.materia_id);
       }
       if (params.search) {
         httpParams = httpParams.set('search', params.search);
@@ -78,10 +90,10 @@ export class ImprensaNacionalService {
   }
 
   /**
-   * Busca artigos por data de edição
+   * Busca artigos por data de publicação
    */
-  getByDate(editionDate: string): Observable<InlabsArticle[]> {
-    return this.list({ edition_date: editionDate }).pipe(
+  getByDate(pubDate: string): Observable<InlabsArticle[]> {
+    return this.list({ pub_date: pubDate }).pipe(
       map((response: any) => {
         if (Array.isArray(response)) {
           return response;

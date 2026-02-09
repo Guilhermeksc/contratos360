@@ -1,0 +1,91 @@
+@use '../../styles/variables' as *;
+
+.combobox-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  width: 100%;
+}
+
+.combobox-label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $text-secondary;
+  margin-bottom: $spacing-xs;
+}
+
+.combobox-container {
+  position: relative;
+  width: 100%;
+  
+  .combobox-select {
+    width: 100%;
+    height: 32px; // Altura reduzida
+    padding: $spacing-sm $spacing-xl $spacing-sm $spacing-md;
+    padding-right: 32px; // Espaço para a seta
+    background-color: #ffffff; // Fundo branco
+    border: 1px solid rgba(0, 0, 0, 0.12); // Borda discreta
+    border-radius: 4px;
+    color: #212121; // Texto escuro para contraste com fundo branco
+    font-family: $font-family;
+    font-size: $font-size-base;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+    cursor: pointer;
+    appearance: none; // Remove estilo padrão do navegador
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: all $transition-base;
+    
+    &:hover:not(:disabled) {
+      border-color: rgba(0, 0, 0, 0.2);
+      background-color: #fafafa;
+    }
+    
+    &:focus {
+      outline: none;
+      border-color: rgba($blue, 0.5);
+      box-shadow: 0 0 0 2px rgba($blue, 0.1);
+      background-color: #ffffff;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background-color: #f5f5f5;
+    }
+    
+    option {
+      background-color: #ffffff;
+      color: #212121;
+      padding: $spacing-sm;
+      
+      &:disabled {
+        color: #9e9e9e;
+      }
+    }
+  }
+  
+  .combobox-arrow {
+    position: absolute;
+    right: $spacing-md;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 10px;
+    transition: transform $transition-base;
+  }
+  
+  // Animação da seta quando o select está aberto (não funciona em todos os navegadores)
+  .combobox-select:focus + .combobox-arrow {
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.combobox-hint {
+  font-size: $font-size-xs;
+  color: $text-muted;
+  margin-top: $spacing-xs;
+  line-height: 1.4;
+}

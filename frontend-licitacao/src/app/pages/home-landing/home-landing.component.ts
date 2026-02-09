@@ -24,11 +24,11 @@ export class HomeLandingComponent implements OnInit {
   currentUser$: Observable<User | null>;
   
   features: FeatureCard[] = [
-    // {
-    //   title: 'Planejamento',
-    //   iconPath: '/assets/img/svg/plan.svg',
-    //   route: '/planejamento'
-    // },
+    {
+      title: 'Consultar Contratações',
+      iconPath: '/assets/img/svg/find.svg',
+      route: '/planejamento'
+    },
     // {
     //   title: 'Dispensa Eletrônica',
     //   iconPath: '/assets/img/svg/dispensa.svg',

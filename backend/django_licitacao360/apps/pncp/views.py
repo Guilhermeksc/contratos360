@@ -14,8 +14,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .models import AmparoLegal, Compra, ItemCompra, Modalidade, ModoDisputa, ResultadoItem, Fornecedor
+from django_licitacao360.apps.uasgs.models import Uasg
 from .serializers import (
     CompraSerializer,
+    CompraDetalhadaSerializer,
+    CompraListagemSerializer,
+    UnidadePorAnoSerializer,
+    AnosUnidadesComboSerializer,
     ItemCompraSerializer,
     ResultadoItemSerializer,
     FornecedorSerializer,
@@ -543,3 +548,254 @@ class ResultadoItemViewSet(viewsets.ModelViewSet):
     serializer_class = ResultadoItemSerializer
     permission_classes = [AllowAny]
     filterset_fields = ["item_compra", "fornecedor", "status"]
+
+
+class CompraDetalhadaView(views.APIView):
+    """Endpoint para buscar compra detalhada por codigo_unidade, numero_compra, ano_compra e modalidade"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        codigo_unidade = request.query_params.get('codigo_unidade')
+        numero_compra = request.query_params.get('numero_compra')
+        ano_compra = request.query_params.get('ano_compra')
+        modalidade = request.query_params.get('modalidade')
+
+        # Validação dos parâmetros obrigatórios
+        if not codigo_unidade:
+            return Response(
+                {'error': 'Parâmetro codigo_unidade é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if not numero_compra:
+            return Response(
+                {'error': 'Parâmetro numero_compra é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if not ano_compra:
+            return Response(
+                {'error': 'Parâmetro ano_compra é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if not modalidade:
+            return Response(
+                {'error': 'Parâmetro modalidade é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            ano_compra = int(ano_compra)
+            modalidade_id = int(modalidade)
+        except ValueError:
+            return Response(
+                {'error': 'ano_compra e modalidade devem ser números inteiros'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Buscar a compra com os parâmetros fornecidos
+            compra = Compra.objects.filter(
+                codigo_unidade=codigo_unidade,
+                numero_compra=numero_compra,
+                ano_compra=ano_compra,
+                modalidade_id=modalidade_id
+            ).select_related(
+                'modalidade',
+                'amparo_legal',
+                'modo_disputa'
+            ).prefetch_related(
+                'itens__resultados__fornecedor'
+            ).first()
+
+            if not compra:
+                return Response(
+                    {'error': 'Compra não encontrada com os parâmetros fornecidos'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            serializer = CompraDetalhadaSerializer(compra)
+            return Response(serializer.data)
+
+        except Exception as e:
+            logger.error(f"Erro ao buscar compra detalhada: {str(e)}")
+            return Response(
+                {'error': 'Erro ao processar requisição'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class CompraListagemView(views.APIView):
+    """Endpoint para listar compras por codigo_unidade e ano_compra"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        codigo_unidade = request.query_params.get('codigo_unidade')
+        ano_compra = request.query_params.get('ano_compra')
+
+        # Validação dos parâmetros obrigatórios
+        if not codigo_unidade:
+            return Response(
+                {'error': 'Parâmetro codigo_unidade é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if not ano_compra:
+            return Response(
+                {'error': 'Parâmetro ano_compra é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            ano_compra = int(ano_compra)
+        except ValueError:
+            return Response(
+                {'error': 'ano_compra deve ser um número inteiro'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Buscar todas as compras com os parâmetros fornecidos
+            compras = Compra.objects.filter(
+                codigo_unidade=codigo_unidade,
+                ano_compra=ano_compra
+            ).select_related(
+                'modalidade',
+                'amparo_legal',
+                'modo_disputa'
+            ).order_by('-sequencial_compra')
+
+            serializer = CompraListagemSerializer(compras, many=True)
+            return Response({
+                'count': compras.count(),
+                'results': serializer.data
+            })
+
+        except Exception as e:
+            logger.error(f"Erro ao listar compras: {str(e)}")
+            return Response(
+                {'error': 'Erro ao processar requisição'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class UnidadesPorAnoView(views.APIView):
+    """Endpoint para listar todos os codigo_unidade por ano_compra"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        ano_compra = request.query_params.get('ano_compra')
+
+        # Validação do parâmetro obrigatório
+        if not ano_compra:
+            return Response(
+                {'error': 'Parâmetro ano_compra é obrigatório'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            ano_compra = int(ano_compra)
+        except ValueError:
+            return Response(
+                {'error': 'ano_compra deve ser um número inteiro'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Buscar todas as unidades distintas com compras no ano especificado
+            unidades = (
+                Compra.objects
+                .filter(ano_compra=ano_compra)
+                .values('codigo_unidade', 'ano_compra')
+                .annotate(
+                    quantidade_compras=Count('compra_id'),
+                    valor_total_estimado=Sum('valor_total_estimado'),
+                    valor_total_homologado=Sum('valor_total_homologado')
+                )
+                .order_by('codigo_unidade')
+            )
+
+            serializer = UnidadePorAnoSerializer(unidades, many=True)
+            return Response({
+                'ano_compra': ano_compra,
+                'count': len(unidades),
+                'results': serializer.data
+            })
+
+        except Exception as e:
+            logger.error(f"Erro ao listar unidades por ano: {str(e)}")
+            return Response(
+                {'error': 'Erro ao processar requisição'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AnosUnidadesComboView(views.APIView):
+    """Endpoint para retornar todos os anos disponíveis e códigos de unidade com sigla_om por ano (para combobox)"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            # Buscar todos os anos distintos ordenados de forma decrescente
+            anos_distintos = (
+                Compra.objects
+                .values_list('ano_compra', flat=True)
+                .distinct()
+                .order_by('-ano_compra')
+            )
+            anos_list = list(anos_distintos)
+
+            # Buscar todos os códigos de unidade únicos de uma vez para otimizar
+            todos_codigos_unidade = (
+                Compra.objects
+                .values_list('codigo_unidade', flat=True)
+                .distinct()
+            )
+            
+            # Criar um dicionário de código_unidade -> sigla_om para lookup rápido
+            siglas_cache = {}
+            codigos_para_buscar = []
+            for codigo in todos_codigos_unidade:
+                try:
+                    codigo_int = int(codigo)
+                    codigos_para_buscar.append(codigo_int)
+                except (ValueError, TypeError):
+                    pass
+            
+            # Buscar todas as UASGs de uma vez
+            if codigos_para_buscar:
+                uasgs = Uasg.objects.filter(uasg__in=codigos_para_buscar).values('uasg', 'sigla_om')
+                for uasg in uasgs:
+                    siglas_cache[str(uasg['uasg'])] = uasg['sigla_om']
+
+            # Para cada ano, buscar os códigos de unidade distintos com sigla_om
+            unidades_por_ano = {}
+            for ano in anos_list:
+                # Buscar códigos de unidade distintos para o ano
+                codigos_unidade = (
+                    Compra.objects
+                    .filter(ano_compra=ano)
+                    .values_list('codigo_unidade', flat=True)
+                    .distinct()
+                    .order_by('codigo_unidade')
+                )
+                
+                # Criar lista de unidades com sigla_om usando o cache
+                unidades_com_sigla = []
+                for codigo in codigos_unidade:
+                    sigla_om = siglas_cache.get(codigo)
+                    unidades_com_sigla.append({
+                        'codigo_unidade': codigo,
+                        'sigla_om': sigla_om
+                    })
+                
+                unidades_por_ano[str(ano)] = unidades_com_sigla
+
+            return Response({
+                'anos': anos_list,
+                'unidades_por_ano': unidades_por_ano
+            })
+
+        except Exception as e:
+            logger.error(f"Erro ao buscar anos e unidades para combobox: {str(e)}")
+            return Response(
+                {'error': 'Erro ao processar requisição'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

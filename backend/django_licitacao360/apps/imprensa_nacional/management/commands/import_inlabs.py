@@ -37,6 +37,10 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Importação concluída: arquivo={result['downloaded_file']} artigos={result['saved_articles']}"
+                f"Importação concluída:\n"
+                f"  Arquivo: {result['downloaded_file']}\n"
+                f"  Artigos: {result['saved_articles']}\n"
+                f"  Avisos de Licitação: {result.get('saved_avisos', 0)}\n"
+                f"  Credenciamentos: {result.get('saved_credenciamentos', 0)}"
             )
         )

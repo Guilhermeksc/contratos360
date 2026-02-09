@@ -1,30 +1,64 @@
+export interface AvisoLicitacao {
+  id: number;
+  article_id: string;
+  modalidade: string | null;
+  numero: string | null;
+  ano: string | null;
+  uasg: string | null;
+  processo: string | null;
+  objeto: string | null;
+  itens_licitados: string | null;
+  publicacao: string | null;
+  entrega_propostas: string | null;
+  abertura_propostas: string | null;
+  nome_responsavel: string | null;
+  cargo: string | null;
+}
+
+export interface Credenciamento {
+  id: number;
+  article_id: string;
+  tipo: string | null;
+  numero: string | null;
+  ano: string | null;
+  uasg: string | null;
+  processo: string | null;
+  tipo_processo: string | null;
+  numero_processo: string | null;
+  ano_processo: string | null;
+  contratante: string | null;
+  contratado: string | null;
+  objeto: string | null;
+  fundamento_legal: string | null;
+  vigencia: string | null;
+  valor_total: string | null;
+  data_assinatura: string | null;
+  nome_responsavel: string | null;
+  cargo: string | null;
+}
+
 export interface InlabsArticle {
   id: number;
   article_id: string;
-  edition_date: string; // ISO date string
-  name: string;
-  id_oficio: string;
-  pub_name: string;
-  art_type: string;
-  pub_date: string;
-  art_class: string;
-  art_category: string;
-  art_notes: string;
-  pdf_page: string;
-  edition_number: string;
-  highlight_type: string;
-  highlight_priority: string;
-  highlight: string;
-  highlight_image: string;
-  highlight_image_name: string;
-  materia_id: string;
-  body_html: string;
-  source_filename: string;
-  source_zip: string;
-  raw_payload: Record<string, any>;
-  uasg?: string | null; // UASG extraído do Identifica
-  om_name?: string | null; // Nome da OM extraído da categoria
-  objeto?: string | null; // Objeto extraído (quando tipo é Aviso de Licitação-Pregão)
-  created_at: string; // ISO datetime string
-  updated_at: string; // ISO datetime string
+  name: string | null;
+  id_oficio: string | null;
+  pub_name: string | null;
+  art_type: string | null;
+  pub_date: string | null; // Data de publicação (formato YYYY-MM-DD)
+  nome_om: string | null; // Nome da Organização Militar
+  number_page: string | null;
+  pdf_page: string | null;
+  edition_number: string | null;
+  highlight_type: string | null;
+  highlight_priority: string | null;
+  highlight: string | null;
+  highlight_image: string | null;
+  highlight_image_name: string | null;
+  materia_id: string | null;
+  body_identifica: string | null; // Texto do campo Identifica
+  uasg: string | null; // UASG extraído (pode vir do campo uasg ou do body_identifica)
+  body_texto: string | null; // HTML do conteúdo do artigo (decodificado)
+  om_name: string | null; // Nome da OM extraído (alias para nome_om)
+  aviso_licitacao: AvisoLicitacao | null; // Aviso de licitação relacionado (se existir)
+  credenciamento: Credenciamento | null; // Credenciamento relacionado (se existir)
 }

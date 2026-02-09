@@ -90,3 +90,57 @@ export interface FornecedorAgregado {
   razao_social: string | null;
   valor_total_homologado: string;
 }
+
+export interface CompraDetalhada {
+  sequencial_compra: number;
+  objeto_compra: string;
+  amparo_legal: AmparoLegal | null;
+  modo_disputa: ModoDisputa | null;
+  data_publicacao_pncp: string | null;
+  data_atualizacao: string | null;
+  valor_total_estimado: string | null;
+  valor_total_homologado: string | null;
+  percentual_desconto: string | null;
+  itens: ItemCompra[];
+}
+
+export interface CompraListagem {
+  compra_id: string;
+  ano_compra: number;
+  sequencial_compra: number;
+  numero_compra: string;
+  codigo_unidade: string;
+  objeto_compra: string;
+  modalidade: Modalidade | null;
+  amparo_legal: AmparoLegal | null;
+  modo_disputa: ModoDisputa | null;
+  numero_processo: string;
+  data_publicacao_pncp: string | null;
+  data_atualizacao: string | null;
+  valor_total_estimado: string | null;
+  valor_total_homologado: string | null;
+  percentual_desconto: string | null;
+}
+
+export interface UnidadeComSigla {
+  codigo_unidade: string;
+  sigla_om: string | null;
+}
+
+export interface AnosUnidadesCombo {
+  anos: number[];
+  unidades_por_ano: { [ano: string]: UnidadeComSigla[] };
+}
+
+export interface UnidadePorAno {
+  codigo_unidade: string;
+  ano_compra: number;
+  quantidade_compras: number;
+  valor_total_estimado: string | null;
+  valor_total_homologado: string | null;
+}
+
+export interface ListagemComprasResponse {
+  count: number;
+  results: CompraListagem[];
+}

@@ -1,0 +1,51 @@
+<div class="filtro-busca-wrapper">
+  @if (label) {
+    <label class="filtro-busca-label">{{ label }}</label>
+  }
+  <div class="filtro-busca-container">
+    <span class="filtro-busca-icon">⌕</span>
+    <input
+      class="filtro-busca-input"
+      type="text"
+      [value]="value"
+      (input)="onInputChange($any($event.target).value)"
+      (keydown)="onKeyDown($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      [placeholder]="placeholder"
+      [disabled]="disabled">
+    @if (showClearButton && value) {
+      <button
+        class="filtro-busca-clear"
+        (click)="onClear()"
+        type="button"
+        aria-label="Limpar busca"
+        [disabled]="disabled">
+        ✕
+      </button>
+    }
+    
+    @if (showDropdown && options && options.length > 0) {
+      <div class="filtro-busca-dropdown">
+        @if (filteredOptions.length > 0) {
+          @for (option of filteredOptions; track trackBy ? getOptionValue(option) : option; let i = $index) {
+            <div
+              class="filtro-busca-option"
+              [class.highlighted]="i === highlightedIndex"
+              (mousedown)="selectOption(option)"
+              (mouseenter)="highlightedIndex = i">
+              {{ getDisplayText(option) }}
+            </div>
+          }
+        } @else {
+          <div class="filtro-busca-option disabled">
+            Nenhuma opção encontrada
+          </div>
+        }
+      </div>
+    }
+  </div>
+  @if (hint) {
+    <span class="filtro-busca-hint">{{ hint }}</span>
+  }
+</div>

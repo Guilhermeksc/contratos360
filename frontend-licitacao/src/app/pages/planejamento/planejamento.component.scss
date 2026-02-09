@@ -1,16 +1,357 @@
 @use '../../styles/variables' as *;
 
 .planejamento-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   padding: $spacing-xxl;
   color: $text-primary;
+  box-sizing: border-box;
+  overflow: hidden;
   
-  h1 {
-    color: $text-primary;
-    margin-bottom: $spacing-lg;
+  .header-with-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-xl;
+    margin-bottom: $spacing-xl;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    
+    .header-title-section {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      flex-shrink: 0;
+      
+      h1 {
+        color: $text-primary;
+        margin: 0;
+        white-space: nowrap;
+      }
+      
+      h2 {
+        color: rgba($blue, 0.7); // Azul ciano discreto
+        font-size: $font-size-md;
+        font-weight: $font-weight-normal;
+        margin: 0;
+        white-space: nowrap;
+      }
+    }
+    
+    .filters-grid {
+      display: flex;
+      align-items: flex-start;
+      gap: $spacing-md;
+      flex-wrap: wrap;
+      min-width: 0;
+      margin-left: auto; // Alinha à direita
+    }
   }
   
   p {
     color: $text-secondary;
+  }
+  
+  .content-section {
+    flex: 1;
+    width: 100%;
+    min-height: 0; // Importante para flex funcionar corretamente
+    display: flex;
+    flex-direction: column;
+    
+    // Mat-card com fundo branco
+    ::ng-deep mat-card {
+      background-color: #ffffff !important;
+      color: #212121 !important;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      
+      .mat-mdc-card-title,
+      .mat-mdc-card-header-text {
+        color: #212121 !important;
+      }
+      
+      // Mat-card-header fixo
+      .mat-mdc-card-header {
+        flex-shrink: 0;
+      }
+      
+      // Mat-card-content com scroll interno
+      .mat-mdc-card-content.table-container {
+        flex: 1;
+        overflow-x: auto;
+        overflow-y: auto;
+        min-height: 0;
+        padding: 0 $spacing-lg $spacing-lg $spacing-lg !important; // Remove padding superior
+        display: flex;
+        flex-direction: column;
+        
+        // Scrollbar customizado para fundo branco
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+          background: #f0f0f0;
+          border-radius: 4px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.4);
+          border-radius: 4px;
+          border: 1px solid #f0f0f0;
+          
+          &:hover {
+            background: rgba(0, 0, 0, 0.5);
+          }
+          
+          &:active {
+            background: rgba(0, 0, 0, 0.6);
+          }
+        }
+        
+        // Para Firefox
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.4) #f0f0f0;
+      }
+    }
+  }
+  
+  .detalhada-header {
+    margin-bottom: $spacing-lg;
+    display: flex;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+    }
+  }
+  
+  // Estilos para área de compra detalhada com fundo branco
+  .detalhada-card {
+    background-color: #ffffff !important;
+    
+    ::ng-deep .mat-mdc-card-header {
+      background-color: #ffffff !important;
+    }
+    
+    ::ng-deep .mat-mdc-card-content {
+      background-color: #ffffff !important;
+      color: #212121 !important;
+    }
+    
+    .compra-info {
+      background-color: #ffffff !important;
+      color: #212121 !important;
+      
+      .info-row {
+        color: #212121 !important;
+        padding: $spacing-sm 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        strong {
+          color: #212121 !important;
+        }
+      }
+    }
+    
+    .item-card {
+      background-color: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.12) !important;
+      margin-bottom: $spacing-md;
+      
+      ::ng-deep .mat-mdc-card-header {
+        background-color: #f5f5f5 !important;
+      }
+      
+      ::ng-deep .mat-mdc-card-content {
+        background-color: #ffffff !important;
+        color: #212121 !important;
+      }
+      
+      .item-info {
+        color: #212121 !important;
+        
+        p {
+          color: #212121 !important;
+          margin: $spacing-sm 0;
+          
+          strong {
+            color: #212121 !important;
+          }
+        }
+      }
+      
+      .resultados-section {
+        background-color: #ffffff !important;
+        margin-top: $spacing-md;
+        
+        h4 {
+          color: #212121 !important;
+          margin-bottom: $spacing-md;
+        }
+      }
+    }
+    
+    // Expansion panel
+    ::ng-deep mat-expansion-panel {
+      background-color: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.12) !important;
+      
+      .mat-expansion-panel-header {
+        background-color: #f5f5f5 !important;
+        color: #212121 !important;
+        
+        &:hover {
+          background-color: #fafafa !important;
+        }
+      }
+      
+      .mat-expansion-panel-body {
+        background-color: #ffffff !important;
+        color: #212121 !important;
+      }
+    }
+  }
+  
+  // Estilo para célula de objeto com quebra de linha
+  .objeto-cell {
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 300px; // Limita largura máxima para melhor legibilidade
+  }
+  
+  // Estilo para coluna de ações
+  ::ng-deep .mat-column-acoes {
+    width: 120px;
+    text-align: center;
+    
+    td {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+    }
+  }
+  
+  // Estilos para tabela de compras com fundo branco
+  .compras-table {
+    background-color: #ffffff !important;
+    width: 100%;
+    display: table;
+    table-layout: auto;
+    
+    // Cabeçalho da tabela - fixo durante scroll
+    ::ng-deep .mat-mdc-header-row {
+      background-color: #f5f5f5 !important;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 !important;
+      
+      th.mat-mdc-header-cell {
+        background-color: #f5f5f5 !important;
+        color: #212121 !important;
+        font-weight: $font-weight-semibold;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+        padding: $spacing-sm $spacing-md;
+        padding-top: $spacing-sm !important; // Remove padding superior extra
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12); // Sombra sutil para destacar quando sticky
+      }
+    }
+    
+    // Linhas da tabela
+    ::ng-deep .mat-mdc-row {
+      background-color: #ffffff !important;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: #f0f0f0 !important;
+      }
+      
+      &:active {
+        background-color: #e0e0e0 !important;
+      }
+      
+      td.mat-mdc-cell {
+        background-color: transparent !important;
+        color: #212121 !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+        padding: $spacing-sm $spacing-md;
+      }
+      
+      &:hover td.mat-mdc-cell {
+        background-color: transparent !important;
+      }
+      
+      // Desabilita cursor pointer quando loading
+      &.disabled-row {
+        cursor: default !important;
+        opacity: 0.6;
+        
+        &:hover {
+          background-color: #ffffff !important;
+        }
+      }
+    }
+    
+    // Remove borda da última linha
+    ::ng-deep .mat-mdc-row:last-child td.mat-mdc-cell {
+      border-bottom: none !important;
+    }
+  }
+  
+  // Estilos para tabela de resultados (dentro dos detalhes)
+  .resultados-table {
+    background-color: #ffffff !important;
+    width: 100%;
+    
+    ::ng-deep .mat-mdc-header-row {
+      background-color: #f5f5f5 !important;
+      
+      th.mat-mdc-header-cell {
+        background-color: #f5f5f5 !important;
+        color: #212121 !important;
+        font-weight: $font-weight-semibold;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+        padding: $spacing-sm $spacing-md;
+      }
+    }
+    
+    ::ng-deep .mat-mdc-row {
+      background-color: #ffffff !important;
+      
+      &:hover {
+        background-color: #fafafa !important;
+      }
+      
+      td.mat-mdc-cell {
+        background-color: #ffffff !important;
+        color: #212121 !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+        padding: $spacing-sm $spacing-md;
+      }
+      
+      &:hover td.mat-mdc-cell {
+        background-color: #fafafa !important;
+      }
+    }
   }
 }
 

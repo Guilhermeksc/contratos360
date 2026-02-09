@@ -65,9 +65,11 @@ def collect_inlabs_articles(self, target_date: str | None = None) -> dict:
         connections.close_all()
         
         logger.info(
-            "Coleta INLABS finalizada. data=%s artigos=%s",
+            "Coleta INLABS finalizada. data=%s artigos=%s avisos=%s credenciamentos=%s",
             result["edition_date"],
             result["saved_articles"],
+            result.get("saved_avisos", 0),
+            result.get("saved_credenciamentos", 0),
         )
         return result
     except Exception as exc:

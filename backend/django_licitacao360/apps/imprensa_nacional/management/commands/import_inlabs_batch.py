@@ -112,12 +112,16 @@ class Command(BaseCommand):
         error_count = 0
         skipped_count = 0
         total_articles = 0
+        total_avisos = 0
+        total_credenciamentos = 0
         errors: List[tuple[date, str]] = []
 
         delay = options.get("delay", 2)
         continue_on_error = options.get("continue_on_error", False)
 
         # Processar cada data
+        # Nota: O retry já está implementado no nível do downloader (inlabs_downloader.py)
+        # que tenta até 2 vezes com espera de 20 segundos entre tentativas
         for idx, target_date in enumerate(dates_to_import, 1):
             self.stdout.write(
                 self.style.NOTICE(
@@ -129,10 +133,16 @@ class Command(BaseCommand):
                 result = ingest_inlabs_articles(target_date)
                 success_count += 1
                 articles_count = result.get("saved_articles", 0)
+                avisos_count = result.get("saved_avisos", 0)
+                credenciamentos_count = result.get("saved_credenciamentos", 0)
                 total_articles += articles_count
+                total_avisos += avisos_count
+                total_credenciamentos += credenciamentos_count
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"✅ {target_date}: {articles_count} artigos salvos"
+                        f"✅ {target_date}: {articles_count} artigos"
+                        + (f", {avisos_count} avisos" if avisos_count > 0 else "")
+                        + (f", {credenciamentos_count} credenciamentos" if credenciamentos_count > 0 else "")
                     )
                 )
             except InlabsDownloadError as exc:
@@ -174,6 +184,10 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING(f"⚠️  Puladas (arquivo não disponível): {skipped_count}"))
         self.stdout.write(self.style.ERROR(f"❌ Erros: {error_count}"))
         self.stdout.write(f"📊 Total de artigos salvos: {total_articles}")
+        if total_avisos > 0:
+            self.stdout.write(f"📋 Total de avisos de licitação: {total_avisos}")
+        if total_credenciamentos > 0:
+            self.stdout.write(f"📝 Total de credenciamentos: {total_credenciamentos}")
 
         if errors:
             self.stdout.write("\n" + self.style.ERROR("ERROS ENCONTRADOS:"))

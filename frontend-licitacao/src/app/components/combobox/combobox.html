@@ -1,0 +1,29 @@
+<div class="combobox-wrapper">
+  @if (label) {
+    <label class="combobox-label">{{ label }}</label>
+  }
+  <div class="combobox-container">
+    <select
+      #selectElement
+      class="combobox-select"
+      [value]="getSelectValue()"
+      (change)="onSelectionChange($any($event.target).value)"
+      [disabled]="disabled">
+      @if (placeholder) {
+        <option value="">{{ placeholder }}</option>
+      }
+      @if (emptyMessage && options.length === 0) {
+        <option disabled>{{ emptyMessage }}</option>
+      }
+      @for (option of options; track trackBy ? getOptionValue(option) : option) {
+        <option [value]="getOptionValue(option)">
+          {{ getDisplayText(option) }}
+        </option>
+      }
+    </select>
+    <span class="combobox-arrow">▼</span>
+  </div>
+  @if (hint) {
+    <span class="combobox-hint">{{ hint }}</span>
+  }
+</div>
