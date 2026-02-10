@@ -1,80 +1,122 @@
 @use '../../../styles/variables' as *;
 
 .pncp-container {
-  padding: $spacing-xl;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: $spacing-xxl;
+  color: $text-primary;
+  box-sizing: border-box;
+  overflow: hidden;
   
-  .header-section {
+  .header-with-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-xl;
     margin-bottom: $spacing-xl;
-    
-    h1 {
-      color: $text-primary;
-      margin-bottom: $spacing-sm;
-      font-size: 2rem;
-      font-weight: 600;
-    }
-    
-    .subtitle {
-      color: $text-secondary;
-      font-size: 1rem;
-    }
-  }
-  
-  .search-section {
-    margin-bottom: $spacing-xl;
-    
-    mat-card {
-      padding: $spacing-lg;
-    }
-    
-    .search-controls {
+    flex-wrap: wrap;
+    flex-shrink: 0;
+
+    .header-title-section {
       display: flex;
-      gap: $spacing-md;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      
-      mat-form-field {
-        flex: 1;
-        min-width: 200px;
+      flex-direction: column;
+      gap: $spacing-xs;
+      flex-shrink: 0;
+
+      .header-title-row {
+        display: flex;
+        align-items: flex-start;
+        gap: $spacing-md;
       }
-      
-      button {
-        height: 56px;
-        
-        mat-icon {
-          margin-right: $spacing-xs;
+
+      .header-texts {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xs;
+      }
+
+      .exportar-xlsx-button {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        padding: 6px;
+        border: none;
+        border-radius: 50%;
+        background-color: transparent;
+
+        &:hover:not(:disabled) {
+          background-color: rgba($blue, 0.12);
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
         }
       }
+
+      h1 {
+        color: $text-primary;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      h2 {
+        color: rgba($blue, 0.7);
+        font-size: $font-size-md;
+        font-weight: $font-weight-normal;
+        margin: 0;
+        white-space: nowrap;
+      }
+    }
+
+    .filters-grid {
+      display: flex;
+      align-items: flex-start;
+      gap: $spacing-md;
+      flex-wrap: wrap;
+      min-width: 0;
+      margin-left: auto;
     }
   }
-  
+
   .loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: $spacing-xxl;
-    
+
     mat-spinner {
       margin-bottom: $spacing-md;
     }
-    
+
     p {
       color: $text-secondary;
     }
   }
-  
+
   .content-section {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
     mat-tab-group {
+      flex: 1;
+      min-height: 0;
+
       ::ng-deep .mat-mdc-tab-body-content {
         padding: $spacing-lg 0;
       }
     }
-    
+
     .tab-content {
       position: relative;
       min-height: 400px;
-      
+
       .tab-loading {
         display: flex;
         flex-direction: column;
@@ -82,24 +124,24 @@
         justify-content: center;
         padding: $spacing-xxl;
         min-height: 400px;
-        
+
         mat-spinner {
           margin-bottom: $spacing-md;
         }
-        
+
         p {
           color: $text-secondary;
           font-size: 0.95rem;
         }
       }
-      
+
       mat-card {
         margin-bottom: $spacing-lg;
         animation: fadeIn 0.3s ease-in;
-        
+
         mat-card-header {
           margin-bottom: $spacing-md;
-          
+
           mat-card-title {
             color: $text-primary;
             font-size: 1.25rem;
@@ -108,25 +150,74 @@
         }
       }
     }
-    
-    .table-container {
-      overflow-x: auto;
-      
-      .data-table {
-        width: 100%;
-        
-        th {
-          font-weight: 600;
-          color: $text-primary;
+
+    ::ng-deep mat-card {
+      background-color: #ffffff !important;
+      color: #212121 !important;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+
+      .mat-mdc-card-title,
+      .mat-mdc-card-header-text {
+        color: #212121 !important;
+      }
+
+      .mat-mdc-card-header {
+        flex-shrink: 0;
+      }
+
+      .mat-mdc-card-content.table-container {
+        flex: 1;
+        overflow-x: auto;
+        overflow-y: auto;
+        min-height: 0;
+        padding: 0 $spacing-lg $spacing-lg $spacing-lg !important;
+        display: flex;
+        flex-direction: column;
+
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
         }
-        
-        td {
-          color: $text-secondary;
+
+        &::-webkit-scrollbar-track {
+          background: #f0f0f0;
+          border-radius: 4px;
         }
+
+        &::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.4);
+          border-radius: 4px;
+          border: 1px solid #f0f0f0;
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.5);
+          }
+
+          &:active {
+            background: rgba(0, 0, 0, 0.6);
+          }
+        }
+
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.4) #f0f0f0;
+      }
+    }
+
+    .data-table {
+      width: 100%;
+
+      th {
+        font-weight: 600;
+        color: #212121;
+      }
+
+      td {
+        color: $text-secondary;
       }
     }
   }
-  
   .empty-state {
     display: flex;
     flex-direction: column;
@@ -170,13 +261,29 @@
 @media (max-width: 768px) {
   .pncp-container {
     padding: $spacing-md;
-    
-    .search-section .search-controls {
-      flex-direction: column;
-      
-      mat-form-field,
-      button {
+
+    .header-with-filters {
+      align-items: flex-start;
+
+      .header-title-section {
         width: 100%;
+
+        .header-title-row {
+          width: 100%;
+          align-items: flex-start;
+        }
+      }
+
+      .filters-grid {
+        width: 100%;
+        margin-left: 0;
+        flex-direction: column;
+        align-items: stretch;
+
+        app-filtro-busca,
+        .buscar-button {
+          width: 100%;
+        }
       }
     }
     

@@ -1,22 +1,21 @@
 <app-standard-table [isDarkTheme]="isDarkTheme" [showBorder]="true">
-  <table class="preview-table">
-    <thead>
-      <tr>
-        <th>UASG</th>
-        <th>Alerta</th>
-        <th>Status</th>
-        <th>Dias</th>
-        <th>Contrato / ID</th>
-        <th>Número / Nup</th>
-        <th>Fornecedor</th>
-        <th>Objeto</th>
-        <th>Valor Global</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let contrato of data" 
-          (click)="onRowClick(contrato)"
-          class="preview-row">
+  <div class="preview-table-scroll">
+    <table class="preview-table">
+      <thead>
+        <tr>
+          <th>UASG</th>
+          <th>Dias</th>
+          <th>Contrato / ID</th>
+          <th>Número / Nup</th>
+          <th>Fornecedor</th>
+          <th>Objeto</th>
+          <th>Valor Global</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let contrato of data" 
+            (click)="onRowClick(contrato)"
+            class="preview-row">
         <!-- UASG -->
         <td>
           <div class="cell-content">
@@ -36,21 +35,6 @@
               <span *ngIf="!contrato.uasg" class="cell-subtitle">N/A</span>
             </div>
           </div>
-        </td>
-        
-        <!-- Alerta -->
-        <td class="alerta-cell">
-          <div class="alerta-content">
-            <!-- Placeholder para ícones de alerta - lógica será implementada posteriormente -->
-            <mat-icon *ngIf="getAlertaIcon(contrato)" [class]="'alerta-icon-' + getAlertaType(contrato)">
-              {{ getAlertaIcon(contrato) }}
-            </mat-icon>
-          </div>
-        </td>
-        
-        <!-- Status -->
-        <td class="status-cell">
-          <app-status-badge [status]="contrato.status_atual || 'SEÇÃO CONTRATOS'" [isDarkTheme]="isDarkTheme"></app-status-badge>
         </td>
         
         <!-- Dias -->
@@ -131,11 +115,12 @@
             <span class="cell-main">{{ formatCurrency(contrato.valor_global) }}</span>
           </div>
         </td>
-      </tr>
-      <tr *ngIf="data.length === 0">
-        <td colspan="9" class="empty-message">Nenhum contrato encontrado</td>
-      </tr>
-    </tbody>
-  </table>
+        </tr>
+        <tr *ngIf="data.length === 0">
+          <td colspan="7" class="empty-message">Nenhum contrato encontrado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </app-standard-table>
 

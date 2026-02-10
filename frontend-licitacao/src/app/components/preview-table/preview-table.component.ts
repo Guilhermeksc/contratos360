@@ -3,16 +3,13 @@ import { CommonModule } from '@angular/common';
 import { Contrato } from '../../interfaces/contrato.interface';
 import { calcularDiasRestantes, getDiasRestantesStyle } from '../../utils/date.utils';
 import { formatCurrency } from '../../utils/currency.utils';
-import { getStatusColor } from '../../utils/status.utils';
-import { StatusBadgeComponent } from '../status-badge/status-badge.component';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { StandardTableComponent } from '../standard-table/standard-table.component';
 
 @Component({
   selector: 'app-preview-table',
   standalone: true,
-  imports: [CommonModule, StatusBadgeComponent, MatIconModule, MatTooltipModule, StandardTableComponent],
+  imports: [CommonModule, MatTooltipModule, StandardTableComponent],
   templateUrl: './preview-table.component.html',
   styleUrl: './preview-table.component.scss'
 })
@@ -24,7 +21,6 @@ export class PreviewTableComponent {
   calcularDiasRestantes = calcularDiasRestantes;
   getDiasRestantesStyle = getDiasRestantesStyle;
   formatCurrency = formatCurrency;
-  getStatusColor = getStatusColor;
 
   copiedTooltips: Map<string, boolean> = new Map();
 
@@ -83,30 +79,5 @@ export class PreviewTableComponent {
     return text.substring(0, maxLength) + '...';
   }
 
-  /**
-   * Retorna o ícone de alerta para o contrato.
-   * Lógica será implementada posteriormente.
-   * @param contrato Contrato para verificar alertas
-   * @returns Nome do ícone Material ou null se não houver alerta
-   */
-  getAlertaIcon(contrato: Contrato): string | null {
-    // TODO: Implementar lógica de alertas
-    // Exemplo de estrutura futura:
-    // if (algumaCondicao) return 'warning';
-    // if (outraCondicao) return 'error';
-    // return null;
-    return null;
-  }
-
-  /**
-   * Retorna o tipo de alerta para aplicar classes CSS específicas.
-   * Lógica será implementada posteriormente.
-   * @param contrato Contrato para verificar alertas
-   * @returns Tipo de alerta (ex: 'warning', 'error', 'info')
-   */
-  getAlertaType(contrato: Contrato): string {
-    // TODO: Implementar lógica de tipos de alerta
-    return 'default';
-  }
 }
 

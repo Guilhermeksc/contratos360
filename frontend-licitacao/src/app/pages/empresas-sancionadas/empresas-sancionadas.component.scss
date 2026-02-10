@@ -189,4 +189,39 @@
   }
 }
 
+.empresas-table {
+  @include table;
+  width: 100%;
+  font-size: $font-size-sm;
+  table-layout: auto;
+  color: #000000;
+  background-color: #ffffff;
+
+  th {
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #000000;
+    background-color: #e0e0e0;
+  }
+
+  td {
+    color: #000000;
+  }
+
+  tbody tr:hover {
+    background-color: #e0e0e0 !important;
+  }
+
+  tbody tr:hover td {
+    background-color: #e0e0e0 !important;
+  }
+}
+
+::ng-deep app-standard-table .table-wrapper table.empresas-table thead,
+::ng-deep app-standard-table .table-wrapper table.empresas-table th {
+  background-color: #e0e0e0 !important;
+  color: #000000 !important;
+}
+
 

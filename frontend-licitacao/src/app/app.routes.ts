@@ -55,6 +55,31 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'controle-atas',
+        children: [
+          {
+            path: '',
+            redirectTo: 'lista',
+            pathMatch: 'full'
+          },
+          {
+            path: 'lista',
+            loadComponent: () => import('./pages/controle-atas/controle-atas').then((m) => m.ControleAtas),
+            data: { breadcrumb: 'Controle de Atas' }
+          },
+          {
+            path: 'buscar',
+            loadComponent: () => import('./pages/controle-atas/controle-atas').then((m) => m.ControleAtas),
+            data: { breadcrumb: 'Buscar Ata' }
+          },
+          {
+            path: 'unidades',
+            loadComponent: () => import('./pages/controle-atas/controle-atas').then((m) => m.ControleAtas),
+            data: { breadcrumb: 'Unidades por Ano' }
+          }
+        ]
+      },
+      {
         path: 'gerata',
         loadComponent: () => import('./pages/gerata/gerata.component').then((m) => m.GerataComponent),
         data: { breadcrumb: 'GerAta' }

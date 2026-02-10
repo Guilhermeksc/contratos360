@@ -70,4 +70,7 @@ urlpatterns = [
     
     # PNCP (Portal Nacional de Contratações Públicas)
     path('api/pncp/', include('django_licitacao360.apps.pncp.urls')),
+    
+    # Gestão de Atas
+    path('api/', include('django_licitacao360.apps.gestao_atas.urls')),
 ]

@@ -1,0 +1,297 @@
+@use '../../styles/variables' as *;
+
+.controle-atas-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  
+  app-page-header {
+    margin: 0;
+  }
+  
+  .unidade-selecionada {
+    h2 {
+      color: rgba($blue, 0.7);
+      font-size: $font-size-md;
+      font-weight: $font-weight-normal;
+      margin: 0;
+      white-space: nowrap;
+    }
+  }
+  
+  ::ng-deep app-page-header {
+    .exportar-xlsx-button {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      padding: 6px;
+      border: none;
+      border-radius: 50%;
+      background-color: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover:not(:disabled) {
+        background-color: rgba($blue, 0.12);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+    
+    .loading-spinner {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      color: $text-secondary;
+    }
+    
+    // Garantir que headerControls tenha layout horizontal e espaçamento adequado
+    [headerControls] {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: flex-start !important;
+      gap: $spacing-md !important;
+      flex-wrap: nowrap !important;
+      
+      // Estilos para app-combobox e app-filtro-busca dentro do headerControls
+      app-combobox {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 0 0 auto !important;
+        min-width: 150px;
+        max-width: 200px;
+        width: auto !important;
+        align-self: flex-start !important;
+        
+        ::ng-deep .combobox-wrapper {
+          width: 100%;
+        }
+      }
+      
+      app-filtro-busca {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 1 auto !important;
+        min-width: 250px;
+        max-width: 400px;
+        width: auto !important;
+        align-self: flex-start !important;
+        
+        ::ng-deep .filtro-busca-wrapper {
+          width: 100%;
+        }
+      }
+      
+      // Responsividade - apenas em mobile
+      @media (max-width: 768px) {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        
+        app-combobox,
+        app-filtro-busca {
+          width: 100% !important;
+          max-width: 100%;
+          
+          ::ng-deep .combobox-wrapper,
+          ::ng-deep .filtro-busca-wrapper {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+  
+  p {
+    color: $text-secondary;
+  }
+  
+  .content-section {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    .loading-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-md;
+      color: $text-secondary;
+    }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: $spacing-sm;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: $text-secondary;
+      }
+    }
+    
+    // Mat-card com fundo branco
+    ::ng-deep mat-card {
+      background-color: #ffffff !important;
+      color: #212121 !important;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      
+      .mat-mdc-card-title,
+      .mat-mdc-card-header-text {
+        color: #212121 !important;
+      }
+      
+      // Mat-card-header fixo
+      .mat-mdc-card-header {
+        flex-shrink: 0;
+      }
+      
+      // Mat-card-content com scroll interno
+      .mat-mdc-card-content.table-container {
+        flex: 1;
+        overflow-x: auto;
+        overflow-y: auto;
+        min-height: 0;
+        padding: 0 $spacing-lg $spacing-lg $spacing-lg !important;
+        display: flex;
+        flex-direction: column;
+        
+        // Scrollbar customizado para fundo branco
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+          background: #f0f0f0;
+          border-radius: 4px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.4);
+          border-radius: 4px;
+          border: 1px solid #f0f0f0;
+          
+          &:hover {
+            background: rgba(0, 0, 0, 0.5);
+          }
+          
+          &:active {
+            background: rgba(0, 0, 0, 0.6);
+          }
+        }
+        
+        // Para Firefox
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.4) #f0f0f0;
+      }
+    }
+  }
+  
+  // Estilos para tabela de atas com fundo branco
+  .atas-table {
+    background-color: #ffffff !important;
+    width: 100%;
+    display: table;
+    table-layout: auto;
+    
+    // Cabeçalho da tabela - fixo durante scroll
+    ::ng-deep .mat-mdc-header-row {
+      background-color: #f5f5f5 !important;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 !important;
+      
+      th.mat-mdc-header-cell {
+        background-color: #f5f5f5 !important;
+        color: #212121 !important;
+        font-weight: $font-weight-semibold;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+        padding: $spacing-sm $spacing-md;
+        padding-top: $spacing-sm !important;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+      }
+    }
+    
+    // Linhas da tabela
+    ::ng-deep .mat-mdc-row {
+      background-color: #ffffff !important;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: #f0f0f0 !important;
+      }
+      
+      td.mat-mdc-cell {
+        background-color: transparent !important;
+        color: #212121 !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+        padding: $spacing-sm $spacing-md;
+      }
+      
+      &:hover td.mat-mdc-cell {
+        background-color: transparent !important;
+      }
+    }
+    
+    // Remove borda da última linha
+    ::ng-deep .mat-mdc-row:last-child td.mat-mdc-cell {
+      border-bottom: none !important;
+    }
+
+    // Estilo para célula de objeto com quebra de linha
+    .objeto-cell {
+      white-space: normal;
+      word-wrap: break-word;
+      word-break: break-word;
+      max-width: 300px;
+    }
+
+    // Estilo para coluna de ações
+    ::ng-deep .mat-column-acoes {
+      width: 120px;
+      text-align: center;
+      white-space: nowrap;
+      
+      td {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: $spacing-xs;
+        
+        button {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

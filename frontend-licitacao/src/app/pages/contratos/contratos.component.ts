@@ -1,27 +1,33 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import * as XLSX from 'xlsx';
 import { ContractsService } from '../../services/contracts.service';
 import { UasgService } from '../../services/uasg.service';
 import { PreviewTableComponent } from '../../components/preview-table/preview-table.component';
 import { RecordPopupComponent } from '../../components/record-popup/record-popup.component';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { Contrato } from '../../interfaces/contrato.interface';
+import { Combobox } from '../../components/combobox/combobox';
+import { FiltroBusca } from '../../components/filtro-busca/filtro-busca';
+import { calcularDiasRestantes } from '../../utils/date.utils';
+import { formatCurrency } from '../../utils/currency.utils';
 
 @Component({
   selector: 'app-contratos',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     PreviewTableComponent,
     RecordPopupComponent,
-    PageHeaderComponent
+    PageHeaderComponent,
+    Combobox,
+    FiltroBusca
   ],
   templateUrl: './contratos.component.html',
   styleUrl: './contratos.component.scss'
 })
 export class ContratosComponent implements OnInit {
+  private readonly uasgFilterStorageKey = 'contratos.selectedUasgFilter';
   previewData = signal<Contrato[]>([]);
   filteredPreviewData = signal<Contrato[]>([]);
   searchTerm = signal('');
@@ -37,6 +43,7 @@ export class ContratosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.restoreUasgFilter();
     this.loadUasgs();
     this.loadPreviewData();
     
@@ -45,12 +52,56 @@ export class ContratosComponent implements OnInit {
   }
 
   onUasgFilterChange(): void {
+    this.persistUasgFilter();
     this.applyFilter();
+  }
+
+  onUasgFilterValueChange(value: string | null): void {
+    this.selectedUasgFilter = value;
+    this.onUasgFilterChange();
   }
 
   onSearchChange(searchValue: string): void {
     this.searchTerm.set(searchValue);
     this.applyFilter();
+  }
+
+  getUasgOptions(): Array<{ value: string; label: string }> {
+    return this.uasgs()
+      .map(uasg => {
+        const code = (uasg.uasg_code ?? uasg.uasg ?? '').toString();
+        const sigla = uasg.sigla_om || 'Sem sigla';
+        return { value: code, label: `${code} - ${sigla}` };
+      })
+      .filter(option => option.value !== '');
+  }
+
+  getUasgOptionLabel = (option: { value: string; label: string }): string => option.label;
+
+  exportarContratosXlsx(): void {
+    const contratos = this.filteredPreviewData();
+    if (contratos.length === 0) {
+      return;
+    }
+
+    const data = contratos.map(contrato => ({
+      UASG: contrato.uasg_sigla || contrato.uasg_nome || 'N/A',
+      'Código UASG': contrato.uasg?.toString() || 'N/A',
+      Dias: calcularDiasRestantes(contrato.vigencia_fim) ?? 'Sem Data',
+      Contrato: contrato.numero || 'N/A',
+      ID: contrato.id || 'N/A',
+      'Número / Nup': contrato.licitacao_numero || 'N/A',
+      Processo: contrato.processo || 'N/A',
+      Fornecedor: contrato.fornecedor_nome || 'N/A',
+      CNPJ: contrato.fornecedor_cnpj || 'N/A',
+      Objeto: contrato.objeto || 'N/A',
+      'Valor Global': formatCurrency(contrato.valor_global)
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'contratos');
+    XLSX.writeFile(wb, `Contratos_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
   applyFilter(): void {
@@ -186,6 +237,19 @@ export class ContratosComponent implements OnInit {
         this.filteredPreviewData.set([]);
       }
     });
+  }
+
+  private restoreUasgFilter(): void {
+    const saved = localStorage.getItem(this.uasgFilterStorageKey);
+    this.selectedUasgFilter = saved ? saved : null;
+  }
+
+  private persistUasgFilter(): void {
+    if (!this.selectedUasgFilter) {
+      localStorage.removeItem(this.uasgFilterStorageKey);
+      return;
+    }
+    localStorage.setItem(this.uasgFilterStorageKey, this.selectedUasgFilter);
   }
 }
 

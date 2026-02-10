@@ -73,13 +73,13 @@ python manage.py import_inlabs_batch --start-date YYYY-MM-DD [opções]
 **Exemplos:**
 ```bash
 # Importar intervalo de datas
-python manage.py import_inlabs_batch --start-date 2025-01-01 --end-date 2025-01-31
+docker compose exec backend python manage.py import_inlabs_batch --start-date 2026-02-02 --end-date 2026-02-06
 
 # Importar até a data atual
 python manage.py import_inlabs_batch --start-date 2025-01-01
 
 # Importar lista específica de datas
-python manage.py import_inlabs_batch --dates 2025-01-15 2025-01-20 2025-01-25
+docker compose exec backend python manage.py import_inlabs_batch --dates 2026-02-02 2026-02-03 2026-02-04 2026-02-05 2026-02-06 2026-02-09
 
 # Pular datas que já têm artigos
 python manage.py import_inlabs_batch --start-date 2025-01-01 --skip-existing

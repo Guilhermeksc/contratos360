@@ -44,6 +44,12 @@ export class SideNavComponent implements OnInit {
       { icon: 'search', label: 'Consulta de Contratações', route: '/planejamento/consulta', tooltip: 'Consulta de Contratações' },
       { icon: 'analytics', label: 'Análises', route: '/planejamento/analises', tooltip: 'Análises' }
     ],
+    // Opções específicas para Controle de Atas
+    'controle-atas': [
+      { icon: 'list', label: 'Lista de Atas', route: '/controle-atas/lista', tooltip: 'Listar Atas' },
+      { icon: 'search', label: 'Buscar Ata', route: '/controle-atas/buscar', tooltip: 'Buscar Ata Específica' },
+      { icon: 'analytics', label: 'Unidades por Ano', route: '/controle-atas/unidades', tooltip: 'Visualizar Unidades por Ano' }
+    ],
     // Opções específicas para GerAta
     gerata: [
       { icon: 'add', label: 'Nova Ata', route: '/gerata/nova', tooltip: 'Criar Nova Ata' },
@@ -130,6 +136,9 @@ export class SideNavComponent implements OnInit {
     }
     if (route.startsWith('/planejamento')) {
       return 'planejamento';
+    }
+    if (route.startsWith('/controle-atas')) {
+      return 'controle-atas';
     }
     if (route.startsWith('/gerata')) {
       return 'gerata';

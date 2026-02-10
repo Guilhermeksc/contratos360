@@ -39,6 +39,11 @@ export class HomeLandingComponent implements OnInit {
       iconPath: '/assets/img/svg/contratos.svg',
       route: '/contratos'
     },
+    {
+      title: 'Controle de Atas',
+      iconPath: '/assets/img/svg/sign.svg',
+      route: '/controle-atas'
+    },    
     // {
     //   title: 'GerAta',
     //   iconPath: '/assets/img/svg/ata.svg',

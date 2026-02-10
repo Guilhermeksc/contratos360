@@ -2,30 +2,37 @@
   <!-- Cabeçalho e Filtros -->
   <app-page-header
     title="Controle de Contratos"
-    iconPath="assets/img/svg/contratos.svg"
     [showThemeToggle]="true"
     [isDarkTheme]="isDarkTheme()"
     (themeToggle)="onThemeToggle($event)">
+
+    <button
+      headerLeading
+      type="button"
+      class="exportar-xlsx-button"
+      (click)="exportarContratosXlsx()"
+      [disabled]="filteredPreviewData().length === 0"
+      aria-label="Exportar XLSX"
+      title="Exportar XLSX">
+      <img src="assets/img/svg/excel.svg" alt="" />
+    </button>
     
     <!-- Controles do header (filtros, etc.) -->
     <div headerControls>
-      <select 
-        class="uasg-select"
-        [(ngModel)]="selectedUasgFilter"
-        (ngModelChange)="onUasgFilterChange()">
-        <option [ngValue]="null">Todas as UASGs</option>
-        <option *ngFor="let uasg of uasgs()" [ngValue]="uasg.uasg_code || uasg.uasg">
-          {{ uasg.uasg_code || uasg.uasg }} - {{ uasg.sigla_om || 'Sem sigla' }}
-        </option>
-      </select>
+      <app-combobox
+        [value]="selectedUasgFilter"
+        [options]="getUasgOptions()"
+        placeholder="Todas as UASGs"
+        trackBy="value"
+        [displayFn]="getUasgOptionLabel"
+        (valueChange)="onUasgFilterValueChange($event)">
+      </app-combobox>
       
-      <input 
-        type="text" 
-        class="uasg-input-inline search-input"
-        [ngModel]="searchTerm()"
-        (ngModelChange)="onSearchChange($event)"
-        placeholder="Digite o texto para buscar..."
-      />
+      <app-filtro-busca
+        [value]="searchTerm()"
+        (valueChange)="onSearchChange($event)"
+        placeholder="Digite o texto para buscar...">
+      </app-filtro-busca>
     </div>
     
     <!-- Conteúdo abaixo do header (tabela, etc.) -->

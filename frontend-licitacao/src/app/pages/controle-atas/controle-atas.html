@@ -1,0 +1,163 @@
+<div class="controle-atas-container">
+  <app-page-header title="Consulta de Ata">
+    <button
+      headerLeading
+      type="button"
+      class="exportar-xlsx-button"
+      (click)="exportarAtasXlsx()"
+      [disabled]="atasListagemFiltradas().length === 0"
+      aria-label="Exportar XLSX"
+      title="Exportar XLSX">
+      <img src="assets/img/svg/excel.svg" alt="" />
+    </button>
+    
+    <!-- Controles do header (filtros, etc.) -->
+    <div headerControls>
+      <!-- Seleção de Ano -->
+      <app-combobox
+        label="Ano"
+        [value]="anoSelecionado()"
+        [options]="anosDisponiveis()"
+        [disabled]="loadingCombo()"
+        (valueChange)="onAnoChange($event)">
+      </app-combobox>
+
+      <!-- Filtro de Busca de Unidade -->
+      <app-filtro-busca
+        label="Buscar Unidade (UASG ou Sigla OM)"
+        placeholder="Digite código UASG ou sigla OM"
+        [value]="filtroUnidade()"
+        [disabled]="loadingCombo() || !anoSelecionado()"
+        [hint]="anoSelecionado() && unidadesFiltradas().length > 0 ? unidadesFiltradas().length + ' unidade(s) encontrada(s)' : ''"
+        [options]="unidadesDoAno()"
+        [displayFn]="getUnidadeDisplayText.bind(this)"
+        trackBy="codigo_unidade_orgao"
+        (valueChange)="onFiltroUnidadeChange($event)"
+        (enterPressed)="onFiltroUnidadeEnter($event)"
+        (optionSelected)="onUnidadeSelected($event)">
+      </app-filtro-busca>
+    </div>
+    
+    @if (loadingCombo()) {
+      <div headerContent class="loading-spinner">
+        <mat-spinner diameter="30"></mat-spinner>
+        <span>Carregando anos e unidades...</span>
+      </div>
+    } @else {
+      <!-- Conteúdo abaixo do header (tabela, etc.) -->
+      <div headerContent class="content-section">
+    @if (loadingListagem()) {
+      <div class="loading-center">
+        <mat-spinner></mat-spinner>
+        <p>Carregando atas...</p>
+      </div>
+    } @else if (!codigoUnidadeSelecionado() || !anoSelecionado()) {
+      <div class="empty-state">
+        <mat-icon>info</mat-icon>
+        <p>Selecione um ano e uma unidade para visualizar as atas</p>
+      </div>
+    } @else if (atasListagemFiltradas().length === 0) {
+      <div class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <p>Nenhuma ata encontrada para os filtros selecionados</p>
+      </div>
+    } @else {
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            {{ getTituloAtas() }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="table-container">
+          <table mat-table [dataSource]="atasListagemFiltradas()" class="atas-table">
+            <!-- Coluna: Código da Unidade do Órgão -->
+            <ng-container matColumnDef="codigo_unidade_orgao">
+              <th mat-header-cell *matHeaderCellDef>Código da Unidade</th>
+              <td mat-cell *matCellDef="let ata">{{ ata.codigo_unidade_orgao }}</td>
+            </ng-container>
+
+            <!-- Coluna: Número da Ata de Registro de Preço -->
+            <ng-container matColumnDef="numero_ata_registro_preco">
+              <th mat-header-cell *matHeaderCellDef>Número da Ata</th>
+              <td mat-cell *matCellDef="let ata">{{ getNumeroAtaFormatado(ata) }}</td>
+            </ng-container>
+
+            <!-- Coluna: Número da Compra -->
+            <ng-container matColumnDef="numero_compra">
+              <th mat-header-cell *matHeaderCellDef>Pregão Eletrônico</th>
+              <td mat-cell *matCellDef="let ata">{{ getNumeroCompraFormatado(ata) }}</td>
+            </ng-container>
+
+            <!-- Coluna: Ano -->
+            <ng-container matColumnDef="ano">
+              <th mat-header-cell *matHeaderCellDef>Ano</th>
+              <td mat-cell *matCellDef="let ata">{{ ata.ano || ata.ano_ata }}</td>
+            </ng-container>
+
+            <!-- Coluna: Sequencial -->
+            <ng-container matColumnDef="sequencial">
+              <th mat-header-cell *matHeaderCellDef>Sequencial</th>
+              <td mat-cell *matCellDef="let ata">{{ ata.sequencial || 'N/A' }}</td>
+            </ng-container>
+
+            <!-- Coluna: Vigência Início -->
+            <ng-container matColumnDef="vigencia_inicio">
+              <th mat-header-cell *matHeaderCellDef>Vigência Início</th>
+              <td mat-cell *matCellDef="let ata">{{ formatarData(ata.vigencia_inicio) }}</td>
+            </ng-container>
+
+            <!-- Coluna: Objeto da Contratação -->
+            <ng-container matColumnDef="objeto_contratacao">
+              <th mat-header-cell *matHeaderCellDef>Objeto da Contratação</th>
+              <td mat-cell *matCellDef="let ata" class="objeto-cell">
+                {{ ata.objeto_contratacao || 'N/A' }}
+              </td>
+            </ng-container>
+
+            <!-- Coluna: Vigência Fim -->
+            <ng-container matColumnDef="vigencia_fim">
+              <th mat-header-cell *matHeaderCellDef>Vigência Fim</th>
+              <td mat-cell *matCellDef="let ata">{{ formatarData(ata.vigencia_fim) }}</td>
+            </ng-container>
+
+            <!-- Coluna: Ações -->
+            <ng-container matColumnDef="acoes">
+              <th mat-header-cell *matHeaderCellDef>Ações</th>
+              <td mat-cell *matCellDef="let ata">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="$event.stopPropagation(); abrirLinkContratacao(ata)"
+                  [disabled]="!getLinkContratacaoPncp(ata)"
+                  title="Abrir contratação no PNCP"
+                  matTooltip="Abrir contratação no PNCP">
+                  <mat-icon>open_in_new</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="$event.stopPropagation(); abrirLinkDownload(ata)"
+                  [disabled]="!getLinkDownloadPncp(ata)"
+                  title="Download do arquivo no PNCP"
+                  matTooltip="Download do arquivo no PNCP">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+      }
+      </div>
+    }
+  </app-page-header>
+  
+  @if (codigoUnidadeSelecionado()) {
+    <div class="unidade-selecionada">
+      <h2>Unidade Selecionada: {{ getUasgSelecionadaTexto() }}</h2>
+    </div>
+  }
+</div>

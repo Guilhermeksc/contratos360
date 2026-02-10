@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'django_licitacao360.apps.empresas_sancionadas',
     # PNCP
     'django_licitacao360.apps.pncp',
+    # Gestão de Atas
+    'django_licitacao360.apps.gestao_atas',
 ]
 
 MIDDLEWARE = [

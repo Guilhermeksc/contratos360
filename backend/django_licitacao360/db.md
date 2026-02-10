@@ -25,6 +25,12 @@ O acesso às API's deverá ser feito passando os seguintes dados no header da re
             "[{"key":"chave-api-dados","value":"60d95214ce10336130ff2cdcb166c3a2"}]
         
 
+scp /home/guilherme/Projetos/pv/projeto_pric-OBT/backend/django_licitacao360/apps/imprensa_nacional/fixtures/inlabs_articles.db \
+root@72.60.52.231:~/contratos360/backend/django_licitacao360/apps/imprensa_nacional/fixtures/inlabs_articles.db
+
+
+
+
 scp /home/guilherme/Projetos/gerata/backend_worker/pncp.db \
 root@72.60.52.231:~/contratos360/backend/django_licitacao360/apps/pncp/fixtures/
 

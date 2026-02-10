@@ -1,40 +1,40 @@
 <div class="pncp-container">
-  <div class="header-section">
-    <h1>Portal Nacional de Contratações Públicas (PNCP)</h1>
-    <p class="subtitle">Acesse dados de compras públicas por código de unidade</p>
-  </div>
-
-  <div class="search-section">
-    <mat-card>
-      <mat-card-content>
-        <div class="search-controls">
-          <mat-form-field appearance="outline">
-            <mat-label>Código da Unidade</mat-label>
-            <input 
-              matInput 
-              [(ngModel)]="codigoUnidade" 
-              placeholder="Ex: 765701"
-              (keyup.enter)="carregarDados()" />
-          </mat-form-field>
-          <button 
-            mat-raised-button 
-            color="primary" 
-            (click)="carregarDados()"
-            [disabled]="loading()">
-            <mat-icon>search</mat-icon>
-            Buscar
-          </button>
-          <button 
-            mat-raised-button 
-            color="accent" 
-            (click)="exportarXlsx()"
-            [disabled]="loading() || compras().length === 0">
-            <mat-icon>download</mat-icon>
-            Exportar XLSX
-          </button>
+  <div class="header-with-filters">
+    <div class="header-title-section">
+      <div class="header-title-row">
+        <button
+          mat-icon-button
+          class="exportar-xlsx-button"
+          (click)="exportarXlsx()"
+          [disabled]="loading() || compras().length === 0"
+          aria-label="Exportar XLSX"
+          title="Exportar XLSX">
+          <img src="assets/img/svg/excel.svg" alt="" />
+        </button>
+        <div class="header-texts">
+          <h1>Portal Nacional de Contratações Públicas (PNCP)</h1>
+          @if (codigoUnidadeSelecionado()) {
+            <h2>UASG Selecionada: {{ getUasgSelecionadaTexto() }}</h2>
+          }
         </div>
-      </mat-card-content>
-    </mat-card>
+
+      </div>
+    </div>
+
+    <div class="filters-grid">
+      <app-filtro-busca
+        label="Buscar Unidade (Código ou Sigla)"
+        placeholder="Digite código UASG ou sigla OM"
+        [value]="filtroUnidade()"
+        [disabled]="loading()"
+        [options]="unidadesDisponiveis()"
+        [displayFn]="getUnidadeDisplayText.bind(this)"
+        trackBy="codigo_unidade"
+        (valueChange)="onFiltroUnidadeChange($event)"
+        (enterPressed)="onFiltroUnidadeEnter($event)"
+        (optionSelected)="onUnidadeSelected($event)">
+      </app-filtro-busca>
+    </div>
   </div>
 
   <div class="loading-container" *ngIf="loading()">
@@ -55,8 +55,7 @@
             <mat-card-header>
               <mat-card-title>Compras ({{ compras().length }})</mat-card-title>
             </mat-card-header>
-            <mat-card-content>
-              <div class="table-container">
+            <mat-card-content class="table-container">
                 <table mat-table [dataSource]="compras()" class="data-table">
                   <ng-container matColumnDef="numero_compra">
                     <th mat-header-cell *matHeaderCellDef>Número</th>
@@ -91,7 +90,6 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsCompras"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumnsCompras;"></tr>
                 </table>
-              </div>
             </mat-card-content>
           </mat-card>
         </div>
@@ -108,8 +106,7 @@
             <mat-card-header>
               <mat-card-title>Itens com Resultados ({{ itensMerge().length }})</mat-card-title>
             </mat-card-header>
-            <mat-card-content>
-              <div class="table-container">
+            <mat-card-content class="table-container">
                 <table mat-table [dataSource]="itensMerge()" class="data-table">
                   <ng-container matColumnDef="numero_item">
                     <th mat-header-cell *matHeaderCellDef>Item</th>
@@ -149,7 +146,6 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsItens"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumnsItens;"></tr>
                 </table>
-              </div>
             </mat-card-content>
           </mat-card>
         </div>
@@ -166,8 +162,7 @@
             <mat-card-header>
               <mat-card-title>Estatísticas por Modalidade</mat-card-title>
             </mat-card-header>
-            <mat-card-content>
-              <div class="table-container">
+            <mat-card-content class="table-container">
                 <table mat-table [dataSource]="modalidades()" class="data-table">
                   <ng-container matColumnDef="ano_compra">
                     <th mat-header-cell *matHeaderCellDef>Ano</th>
@@ -192,7 +187,6 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsModalidades"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumnsModalidades;"></tr>
                 </table>
-              </div>
             </mat-card-content>
           </mat-card>
         </div>
@@ -209,8 +203,7 @@
             <mat-card-header>
               <mat-card-title>Fornecedores Agregados ({{ fornecedores().length }})</mat-card-title>
             </mat-card-header>
-            <mat-card-content>
-              <div class="table-container">
+            <mat-card-content class="table-container">
                 <table mat-table [dataSource]="fornecedores()" class="data-table">
                   <ng-container matColumnDef="cnpj_fornecedor">
                     <th mat-header-cell *matHeaderCellDef>CNPJ</th>
@@ -230,7 +223,6 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsFornecedores"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumnsFornecedores;"></tr>
                 </table>
-              </div>
             </mat-card-content>
           </mat-card>
         </div>

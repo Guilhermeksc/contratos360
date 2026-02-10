@@ -1,11 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -13,11 +10,14 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { PncpService } from '../../../services/pncp.service';
+import { FiltroBusca } from '../../../components/filtro-busca/filtro-busca';
 import { 
   Compra, 
   ItemResultadoMerge, 
   ModalidadeAgregada, 
-  FornecedorAgregado 
+  FornecedorAgregado,
+  AnosUnidadesCombo,
+  UnidadeComSigla
 } from '../../../interfaces/pncp.interface';
 
 @Component({
@@ -25,22 +25,23 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
     MatTableModule,
     MatTabsModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    FiltroBusca
   ],
   templateUrl: './ccimar-pncp.html',
   styleUrl: './ccimar-pncp.scss',
 })
 export class CcimarPncp implements OnInit {
   private _codigoUnidade = signal<string>('765701');
+  filtroUnidade = signal<string>('765701');
+  codigoUnidadeSelecionado = signal<string>('765701');
+  unidadesDisponiveis = signal<UnidadeComSigla[]>([]);
   loading = signal<boolean>(false);
   loadingTab = signal<string | null>(null);
   
@@ -62,21 +63,13 @@ export class CcimarPncp implements OnInit {
   displayedColumnsModalidades: string[] = ['ano_compra', 'modalidade', 'quantidade_compras', 'valor_total_homologado'];
   displayedColumnsFornecedores: string[] = ['cnpj_fornecedor', 'razao_social', 'valor_total_homologado'];
 
-  // Getter/Setter para ngModel
-  get codigoUnidade(): string {
-    return this._codigoUnidade();
-  }
-
-  set codigoUnidade(value: string) {
-    this._codigoUnidade.set(value);
-  }
-
   constructor(
     private pncpService: PncpService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
+    this.carregarUnidadesDisponiveis();
     this.carregarDados();
   }
 
@@ -86,6 +79,7 @@ export class CcimarPncp implements OnInit {
       this.snackBar.open('Informe o código da unidade', 'Fechar', { duration: 3000 });
       return;
     }
+    this.codigoUnidadeSelecionado.set(codigo);
 
     this.loading.set(true);
     this.loadingCompras.set(true);
@@ -144,6 +138,49 @@ export class CcimarPncp implements OnInit {
         this.loadingTab.set(null);
       }, 200);
     }
+  }
+
+  async carregarUnidadesDisponiveis(): Promise<void> {
+    try {
+      const dados: AnosUnidadesCombo = await firstValueFrom(this.pncpService.getAnosUnidadesCombo());
+      const unidades = Object.values(dados.unidades_por_ano).flat();
+      const unidadesUnicas = Array.from(
+        new Map(unidades.map((unidade) => [unidade.codigo_unidade, unidade])).values()
+      );
+      this.unidadesDisponiveis.set(unidadesUnicas);
+    } catch (error) {
+      console.error('Erro ao carregar unidades para busca:', error);
+    }
+  }
+
+  onFiltroUnidadeChange(valor: string): void {
+    this.filtroUnidade.set(valor);
+  }
+
+  onFiltroUnidadeEnter(valor: string): void {
+    this.buscarPorTexto(valor);
+  }
+
+  onUnidadeSelected(unidade: UnidadeComSigla): void {
+    this._codigoUnidade.set(unidade.codigo_unidade);
+    this.filtroUnidade.set(this.getUnidadeDisplayText(unidade));
+    this.codigoUnidadeSelecionado.set(unidade.codigo_unidade);
+    this.carregarDados();
+  }
+
+  buscarPorFiltro(): void {
+    this.buscarPorTexto(this.filtroUnidade());
+  }
+
+  getUnidadeDisplayText(unidade: UnidadeComSigla): string {
+    const sigla = unidade.sigla_om ? ` - ${unidade.sigla_om}` : '';
+    return `${unidade.codigo_unidade}${sigla}`;
+  }
+
+  getUasgSelecionadaTexto(): string {
+    const codigo = this.codigoUnidadeSelecionado();
+    const unidade = this.unidadesDisponiveis().find((item) => item.codigo_unidade === codigo);
+    return unidade ? this.getUnidadeDisplayText(unidade) : codigo;
   }
 
   exportarXlsx(): void {
@@ -382,5 +419,30 @@ export class CcimarPncp implements OnInit {
   abrirLinkPncp(ano: number, sequencial: number): void {
     const url = `https://pncp.gov.br/app/editais/00394502000144/${ano}/${sequencial}`;
     window.open(url, '_blank');
+  }
+
+  private buscarPorTexto(valor: string): void {
+    const texto = valor.trim();
+    if (!texto) {
+      this.snackBar.open('Informe o código da unidade', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    const textoNormalizado = texto.toLowerCase();
+    const unidade = this.unidadesDisponiveis().find((item) => {
+      const codigo = item.codigo_unidade.toLowerCase();
+      const sigla = (item.sigla_om ?? '').toLowerCase();
+      return codigo === textoNormalizado || sigla === textoNormalizado;
+    });
+
+    if (unidade) {
+      this.onUnidadeSelected(unidade);
+      return;
+    }
+
+    this._codigoUnidade.set(texto);
+    this.filtroUnidade.set(texto);
+    this.codigoUnidadeSelecionado.set(texto);
+    this.carregarDados();
   }
 }

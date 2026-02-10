@@ -52,6 +52,11 @@
   }
 }
 
+[headerLeading] {
+  display: inline-flex;
+  align-items: center;
+}
+
 .icon-container {
   display: flex;
   align-items: center;
